@@ -1,132 +1,78 @@
-import { Calendar, LayoutDashboard, ShoppingBasket, Users } from "lucide-react";
+"use client";
+import {
+  Calendar,
+  CreditCard,
+  LayoutDashboard,
+  ShoppingBasket,
+  Users,
+} from "lucide-react";
 import Link from "next/link";
-import React from "react";
+import React, { FC } from "react";
 import { Sidebar, Menu, MenuItem, SubMenu } from "react-pro-sidebar";
-const AdminAside = () => {
+type Props = {
+  isToggle: boolean;
+  setIsToggle: React.Dispatch<React.SetStateAction<boolean>>;
+};
+const AdminAside: FC<Props> = ({ isToggle }) => {
   return (
-    <div className="sticky h-screen overflow-y-auto overflow-x-hidden top-0 bottom-0">
-      <Sidebar collapsed={false} toggled={true}>
-        <div className="pl-5">
-          <Link href={"/admin/dashboard"} className="text-2xl font-extralight ">
-            Neo Grocery
-          </Link>
-        </div>
-        <Menu closeOnClick={true}>
-          <MenuItem
-            icon={<LayoutDashboard />}
-            component={<Link href="/admin/dashboard" />}
+    <>
+      <div className="sticky h-screen  overflow-x-hidden top-0 bottom-0">
+        <Sidebar collapsed={isToggle} toggled={true}>
+          <div className="pl-5 h-[60px] flex items-center ">
+            {isToggle ? (
+              "D"
+            ) : (
+              <Link
+                href={"/admin/dashboard"}
+                className="text-2xl  font-extralight "
+              >
+                Neo Grocery
+              </Link>
+            )}
+          </div>
+          <Menu
+            closeOnClick={true}
+            className={`overflow-y-auto h-[calc(100vh-60px)]  scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-gray-100 `}
           >
-            Dashboard
-          </MenuItem>
-          <SubMenu icon={<ShoppingBasket />} label="E-commarce">
-            <MenuItem> Pie charts </MenuItem>
-            <MenuItem> Line charts </MenuItem>
-          </SubMenu>
-          <SubMenu icon={<Users />} label="Users">
-            <MenuItem> Active User </MenuItem>
-            <MenuItem> Pending User </MenuItem>
-            <MenuItem> Pending User </MenuItem>
-          </SubMenu>
-          <MenuItem icon={<Calendar />}> Calendar </MenuItem>
-          <MenuItem
-            icon={<LayoutDashboard />}
-            component={<Link href="/admin/dashboard" />}
-          >
-            Dashboard
-          </MenuItem>
-          <SubMenu icon={<ShoppingBasket />} label="E-commarce">
-            <MenuItem> Pie charts </MenuItem>
-            <MenuItem> Line charts </MenuItem>
-          </SubMenu>
-          <SubMenu icon={<Users />} label="Users">
-            <MenuItem> Active User </MenuItem>
-            <MenuItem> Pending User </MenuItem>
-            <MenuItem> Pending User </MenuItem>
-          </SubMenu>
-          <MenuItem icon={<Calendar />}> Calendar </MenuItem>
-          <MenuItem
-            icon={<LayoutDashboard />}
-            component={<Link href="/admin/dashboard" />}
-          >
-            Dashboard
-          </MenuItem>
-          <SubMenu icon={<ShoppingBasket />} label="E-commarce">
-            <MenuItem> Pie charts </MenuItem>
-            <MenuItem> Line charts </MenuItem>
-          </SubMenu>
-          <SubMenu icon={<Users />} label="Users">
-            <MenuItem> Active User </MenuItem>
-            <MenuItem> Pending User </MenuItem>
-            <MenuItem> Pending User </MenuItem>
-          </SubMenu>
-          <MenuItem icon={<Calendar />}> Calendar </MenuItem>
-          <MenuItem
-            icon={<LayoutDashboard />}
-            component={<Link href="/admin/dashboard" />}
-          >
-            Dashboard
-          </MenuItem>
-          <SubMenu icon={<ShoppingBasket />} label="E-commarce">
-            <MenuItem> Pie charts </MenuItem>
-            <MenuItem> Line charts </MenuItem>
-          </SubMenu>
-          <SubMenu icon={<Users />} label="Users">
-            <MenuItem> Active User </MenuItem>
-            <MenuItem> Pending User </MenuItem>
-            <MenuItem> Pending User </MenuItem>
-          </SubMenu>
-          <MenuItem icon={<Calendar />}> Calendar </MenuItem>
-          <MenuItem
-            icon={<LayoutDashboard />}
-            component={<Link href="/admin/dashboard" />}
-          >
-            Dashboard
-          </MenuItem>
-          <SubMenu icon={<ShoppingBasket />} label="E-commarce">
-            <MenuItem> Pie charts </MenuItem>
-            <MenuItem> Line charts </MenuItem>
-          </SubMenu>
-          <SubMenu icon={<Users />} label="Users">
-            <MenuItem> Active User </MenuItem>
-            <MenuItem> Pending User </MenuItem>
-            <MenuItem> Pending User </MenuItem>
-          </SubMenu>
-          <MenuItem icon={<Calendar />}> Calendar </MenuItem>
-          <MenuItem
-            icon={<LayoutDashboard />}
-            component={<Link href="/admin/dashboard" />}
-          >
-            Dashboard
-          </MenuItem>
-          <SubMenu icon={<ShoppingBasket />} label="E-commarce">
-            <MenuItem> Pie charts </MenuItem>
-            <MenuItem> Line charts </MenuItem>
-          </SubMenu>
-          <SubMenu icon={<Users />} label="Users">
-            <MenuItem> Active User </MenuItem>
-            <MenuItem> Pending User </MenuItem>
-            <MenuItem> Pending User </MenuItem>
-          </SubMenu>
-          <MenuItem icon={<Calendar />}> Calendar </MenuItem>
-          <MenuItem
-            icon={<LayoutDashboard />}
-            component={<Link href="/admin/dashboard" />}
-          >
-            Dashboard
-          </MenuItem>
-          <SubMenu icon={<ShoppingBasket />} label="E-commarce">
-            <MenuItem> Pie charts </MenuItem>
-            <MenuItem> Line charts </MenuItem>
-          </SubMenu>
-          <SubMenu icon={<Users />} label="Users">
-            <MenuItem> Active User </MenuItem>
-            <MenuItem> Pending User </MenuItem>
-            <MenuItem> Pending User </MenuItem>
-          </SubMenu>
-          <MenuItem icon={<Calendar />}> Calendar </MenuItem>
-        </Menu>
-      </Sidebar>
-    </div>
+            <MenuItem
+              icon={<LayoutDashboard />}
+              component={<Link href="/admin/dashboard" />}
+            >
+              Dashboard
+            </MenuItem>
+            <SubMenu icon={<ShoppingBasket />} label="E-commarce">
+              <MenuItem component={<Link href={"/admin/orders"} />}>
+                Orders
+              </MenuItem>
+              <MenuItem component={<Link href={"/admin/customers"} />}>
+                Customers
+              </MenuItem>
+              <MenuItem>Setting</MenuItem>
+            </SubMenu>
+            <SubMenu icon={<CreditCard />} label="Products">
+              <MenuItem component={<Link href={"/admin/all-products"} />}>
+                All Products
+              </MenuItem>
+              <MenuItem component={<Link href={"/admin/product"} />}>
+                New Product
+              </MenuItem>
+              <MenuItem component={<Link href={"/admin/attribute"} />}>
+                Attribute
+              </MenuItem>
+              <MenuItem component={<Link href={"/admin/categorys"} />}>
+                Categorys
+              </MenuItem>
+            </SubMenu>
+            <SubMenu icon={<Users />} label="Users">
+              <MenuItem> Active User </MenuItem>
+              <MenuItem> Pending User </MenuItem>
+              <MenuItem> Pending User </MenuItem>
+            </SubMenu>
+            <MenuItem icon={<Calendar />}> Calendar </MenuItem>
+          </Menu>
+        </Sidebar>
+      </div>
+    </>
   );
 };
 

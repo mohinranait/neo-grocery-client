@@ -4,7 +4,7 @@ const menus = [
     link: "/admin/dashboard",
   },
   {
-    label: "Products",
+    label: "E-commerce",
     children: [
       {
         label: "All Products",
@@ -13,6 +13,23 @@ const menus = [
       {
         label: "New Product",
         link: "/admin/new-product",
+      },
+      {
+        label: "Attribute",
+        link: "/admin/attribute",
+      },
+    ],
+  },
+  {
+    label: "Media ",
+    children: [
+      {
+        label: "All Media",
+        link: "/admin/all-media",
+      },
+      {
+        label: "New Media",
+        link: "/admin/new-media",
       },
     ],
   },

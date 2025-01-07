@@ -1,20 +1,23 @@
 "use client";
 import AdminAside from "@/components/admin/shared/AdminAside";
 import AdminHeader from "@/components/admin/shared/AdminHeader";
-import React from "react";
+import React, { Suspense, useState } from "react";
 
 const AdminLayout = ({ children }: { children: React.ReactNode }) => {
+  const [isToggle, setIsToggle] = useState(false);
   return (
-    <div className="flex min-h-screen bg-blue-400">
-      <div>
-        <AdminAside />
-      </div>
+    <Suspense fallback={<div>Loading</div>}>
+      <div className="flex overflow-x-hidden min-h-screen ">
+        <div>
+          <AdminAside isToggle={isToggle} setIsToggle={setIsToggle} />
+        </div>
 
-      <div className="w-full bg-gray-300 h-full">
-        <AdminHeader />
-        <div>{children}</div>
+        <div className="w-full bg-gray-100 h-full">
+          <AdminHeader setIsToggle={setIsToggle} />
+          <div>{children}</div>
+        </div>
       </div>
-    </div>
+    </Suspense>
   );
 };
 
