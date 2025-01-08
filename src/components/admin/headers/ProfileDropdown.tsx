@@ -10,8 +10,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Image from "next/image";
 import { LogOut, ShoppingCart, User } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const ProfileDropdown = () => {
+  const router = useRouter();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="outline-none">
@@ -47,7 +49,10 @@ const ProfileDropdown = () => {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="cursor-pointer">
+        <DropdownMenuItem
+          onClick={() => router.push("/admin/profile")}
+          className="cursor-pointer"
+        >
           <User /> Profile
         </DropdownMenuItem>
         <DropdownMenuItem className="cursor-pointer">

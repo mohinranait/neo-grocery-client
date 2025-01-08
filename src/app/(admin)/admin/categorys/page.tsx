@@ -15,7 +15,7 @@ const CategoryPage = () => {
       <div className="flex flex-col lg:flex-row gap-4">
         <div className=" lg:min-w-[350px]  ">
           <div className="rounded-lg border bg-card text-card-foreground shadow">
-            <div className="flex flex-col space-y-1.5 p-6">
+            <div className="flex flex-col  p-6">
               <div className="font-semibold tracking-tight text-xl">
                 Create new category
               </div>
