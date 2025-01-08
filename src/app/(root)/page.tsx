@@ -4,7 +4,7 @@ import { useFormik } from "formik";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import * as Yup from "yup";
 
 const SignupSchema = Yup.object().shape({
@@ -17,12 +17,14 @@ const SignupSchema = Yup.object().shape({
 
 export default function Home() {
   const [isShowPass, setIsShowPass] = useState<boolean>(false);
+  const [user, setUser] = useState<{
+    email: string;
+    password: string;
+  } | null>(null);
 
   const formik = useFormik({
-    initialValues: {
-      email: "",
-      password: "",
-    },
+    initialValues: { ...user },
+    enableReinitialize: true,
     validationSchema: SignupSchema,
     onSubmit: (values) => {
       console.log(values);
@@ -30,6 +32,15 @@ export default function Home() {
       alert(JSON.stringify(values, null, 2));
     },
   });
+
+  useEffect(() => {
+    setUser({
+      email: "mohin@gmail.com",
+      password: "123456",
+    });
+  }, []);
+
+  console.log(user);
 
   return (
     <div className="w-full h-screen bg-slate-50 flex items-center justify-center">
