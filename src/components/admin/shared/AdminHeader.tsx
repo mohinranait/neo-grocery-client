@@ -4,20 +4,29 @@ import React, { FC } from "react";
 import ProfileDropdown from "../headers/ProfileDropdown";
 type Props = {
   setIsToggle: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsMobileMenu: React.Dispatch<React.SetStateAction<boolean>>;
 };
-const AdminHeader: FC<Props> = ({ setIsToggle }) => {
+const AdminHeader: FC<Props> = ({ setIsToggle, setIsMobileMenu }) => {
   return (
     <header className="h-[60px]  bg-white px-3 top-0 sticky w-full flex justify-between items-center">
+      {/* Desktop menu icon */}
       <Menu
-        className="cursor-pointer"
+        className="cursor-pointer hidden md:block"
         onClick={() => setIsToggle((prev) => !prev)}
       />
+      {/* Mobile Menu icon */}
+      <Menu
+        className="cursor-pointer  md:hidden"
+        onClick={() => setIsMobileMenu(true)}
+      />
       <ul className="flex gap-2 items-center">
+        {/* Full Screen icon */}
         <li>
           <div className="w-10 h-10 relative flex items-center justify-center rounded-full bg-slate-100">
             <Fullscreen size={20} className="cursor-pointer" />
           </div>
         </li>
+        {/* Notification Icon */}
         <li>
           <div className="w-10 cursor-pointer h-10 relative flex items-center justify-center rounded-full bg-slate-100">
             <Bell size={18} />
@@ -26,6 +35,7 @@ const AdminHeader: FC<Props> = ({ setIsToggle }) => {
             </span>
           </div>
         </li>
+        {/* Email Icon */}
         <li>
           <div className="w-10 cursor-pointer h-10 relative flex items-center justify-center rounded-full bg-slate-100">
             <Mail size={18} />
@@ -34,6 +44,7 @@ const AdminHeader: FC<Props> = ({ setIsToggle }) => {
             </span>
           </div>
         </li>
+        {/* Profile Dropdown */}
         <li>
           <ProfileDropdown />
         </li>
