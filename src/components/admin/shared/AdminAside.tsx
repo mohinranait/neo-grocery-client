@@ -61,6 +61,9 @@ const AdminAside: FC<Props> = ({ isToggle }) => {
             <MenuItem component={<Link href={"/admin/categorys"} />}>
               Categorys
             </MenuItem>
+            <MenuItem component={<Link href={"/admin/brands"} />}>
+              Brands
+            </MenuItem>
           </SubMenu>
           <SubMenu icon={<Users />} label="Users">
             <MenuItem> Active User </MenuItem>

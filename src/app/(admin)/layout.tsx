@@ -51,7 +51,7 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
             setIsMobileMenu={setIsMobileMenu}
           />
           {/* Children for render all page here */}
-          <div className="min-h-screen">{children}</div>
+          <div className="min-h-screen w-full pt-3 px-3">{children}</div>
         </div>
       </div>
     </Suspense>

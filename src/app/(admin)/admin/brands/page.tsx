@@ -1,15 +1,9 @@
-import CategoryTable from "@/components/tables/CategoryTable";
 import React from "react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { UploadCloudIcon } from "lucide-react";
 
-const CategoryPage = () => {
+import { UploadCloudIcon } from "lucide-react";
+import BrandTable from "@/components/tables/BrandTable";
+
+const BrandPage = () => {
   return (
     <div>
       <div className="flex flex-col lg:flex-row gap-4">
@@ -17,10 +11,10 @@ const CategoryPage = () => {
           <div className="rounded-lg border bg-card text-card-foreground shadow">
             <div className="flex flex-col space-y-1.5 p-6">
               <div className="font-semibold tracking-tight text-xl">
-                Create new category
+                Create new Brand
               </div>
               <div className="text-sm text-muted-foreground">
-                Create and update all category information
+                Create and update all brand information
               </div>
             </div>
             <form action={"/"} className="p-6 pt-0 grid gap-5">
@@ -29,7 +23,7 @@ const CategoryPage = () => {
                   htmlFor="name"
                   className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
-                  Category name
+                  Brand Name
                 </label>
                 <input
                   className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
@@ -43,7 +37,7 @@ const CategoryPage = () => {
                   htmlFor="slug"
                   className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
-                  Category slug
+                  Brand Slug
                 </label>
                 <input
                   className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
@@ -52,30 +46,7 @@ const CategoryPage = () => {
                   placeholder="Slug"
                 />
               </div>
-              <div className="grid gap-2">
-                <label
-                  htmlFor="parent_id"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  Parent
-                </label>
-                <Select>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Theme" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="light" className="cursor-pointer">
-                      Light
-                    </SelectItem>
-                    <SelectItem value="dark" className="cursor-pointer">
-                      Dark
-                    </SelectItem>
-                    <SelectItem value="system" className="cursor-pointer">
-                      System
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+
               <div className="grid gap-2">
                 <label
                   htmlFor="thumbnail"
@@ -98,11 +69,11 @@ const CategoryPage = () => {
           </div>
         </div>
         <div className=" lg:w-full">
-          <CategoryTable />
+          <BrandTable />
         </div>
       </div>
     </div>
   );
 };
 
-export default CategoryPage;
+export default BrandPage;
