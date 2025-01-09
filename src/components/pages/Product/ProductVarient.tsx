@@ -10,6 +10,11 @@ import {
 import { Bed, Bone, Car, Link, Tag } from "lucide-react";
 import { TProductType, TProductTypeLists } from "@/types/product.type";
 import GeneralComponent from "./GeneralComponent";
+import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
+import { setProduct } from "@/redux/features/productSlice";
+import InventoryComponent from "./InventoryComponent";
+import ShippingComponent from "./ShippingComponent";
+import LinkComponent from "./LinkComponent";
 
 type TVariantTabType = {
   id: string;
@@ -46,6 +51,8 @@ const tabs: { type: TProductType; tabs: TProductTypeLists[] }[] = [
 ];
 
 const ProductVarient = () => {
+  const { product } = useAppSelector((state) => state.product);
+  const dispatch = useAppDispatch();
   const [variantTabs, setVariantTabs] = useState<TVariantTabType[]>([]);
   const [activeTab, setActiveTab] = useState<TVariantTabType | null>(null);
 
@@ -60,19 +67,19 @@ const ProductVarient = () => {
       id: "2",
       label: "Inventory",
       icon: <Tag size={16} />,
-      children: "Inventory",
+      children: <InventoryComponent />,
     },
     {
       id: "3",
       label: "Shipping",
       icon: <Car size={16} />,
-      children: "Shipping",
+      children: <ShippingComponent />,
     },
     {
       id: "4",
       label: "Link Product",
       icon: <Link size={16} />,
-      children: "Link Product",
+      children: <LinkComponent />,
     },
     {
       id: "5",
@@ -97,6 +104,7 @@ const ProductVarient = () => {
   // get tabs from selected product type
   const handleSelectVariant = (value: TProductType) => {
     getAllVariantTabs(value);
+    dispatch(setProduct({ ...product, variant: value }));
   };
 
   // Initial active tabs for single product

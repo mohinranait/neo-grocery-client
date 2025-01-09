@@ -1,10 +1,16 @@
+"use client";
 import { Pen } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
 import ProductVarient from "../pages/Product/ProductVarient";
+import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
+import { setProduct } from "@/redux/features/productSlice";
 
 const ProductForm = () => {
+  const { product } = useAppSelector((state) => state.product);
+  const dispatch = useAppDispatch();
+
   return (
     <form action={"/"}>
       <div>
@@ -18,6 +24,10 @@ const ProductForm = () => {
                 type="text"
                 className="py-2 text-lg  px-3 rounded-md focus-visible:outline-primary w-full"
                 placeholder="Add title"
+                value={product.name}
+                onChange={(e) =>
+                  dispatch(setProduct({ ...product, name: e.target.value }))
+                }
               />
               <div className="flex gap-1 items-center">
                 <p>Permalink: </p>
