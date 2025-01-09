@@ -19,9 +19,9 @@ const BrandTable = () => {
       <div className="p-6 pt-0">
         <div className="mb-4 flex items-center gap-4">
           <input
-            className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm max-w-sm"
-            placeholder="Filter brands..."
-            value=""
+            type="text"
+            placeholder="Filter brands"
+            className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors   placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring  disabled:opacity-50 md:text-sm"
           />
           <button
             className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 ml-auto"
@@ -51,15 +51,13 @@ const BrandTable = () => {
         <Table className="w-full border border-slate-100">
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[20px]"></TableHead>
-              <TableHead>Category</TableHead>
+              <TableHead>Brand</TableHead>
               <TableHead>Total</TableHead>
               <TableHead>Status</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             <TableRow>
-              <TableCell></TableCell>
               <TableCell>
                 <div className="flex gap-2">
                   <Image
@@ -96,8 +94,6 @@ const BrandTable = () => {
               </TableCell>
             </TableRow>
             <TableRow>
-              <TableCell className="pl-4">-</TableCell>
-
               <TableCell className="flex">
                 <div className="flex gap-2">
                   <Image

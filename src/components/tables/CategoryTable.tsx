@@ -7,6 +7,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import Image from "next/image";
 
 const CategoryTable = () => {
@@ -19,34 +26,26 @@ const CategoryTable = () => {
       <div className="p-6 pt-0">
         <div className="mb-4 flex items-center gap-4">
           <input
-            className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm max-w-sm"
-            placeholder="Filter categoris..."
-            value=""
+            type="text"
+            placeholder="Filter categorie"
+            className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors   placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring  disabled:opacity-50 md:text-sm"
           />
-          <button
-            className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 ml-auto"
-            type="button"
-            id="radix-:r71:"
-            aria-haspopup="menu"
-            aria-expanded="false"
-            data-state="closed"
-          >
-            Columns{" "}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              className="lucide lucide-chevron-down "
-            >
-              <path d="m6 9 6 6 6-6"></path>
-            </svg>
-          </button>
+          <Select>
+            <SelectTrigger className="w-[140px] h-9">
+              <SelectValue placeholder="All" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="All" className="cursor-pointer">
+                All
+              </SelectItem>
+              <SelectItem value="Active" className="cursor-pointer">
+                Active
+              </SelectItem>
+              <SelectItem value="Pending" className="cursor-pointer">
+                Pending
+              </SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         <div className=" overflow-y-auto">
           <div className="min-w-[550px] ">

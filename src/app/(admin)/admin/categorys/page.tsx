@@ -68,7 +68,7 @@ const CategoryPage = () => {
                       Light
                     </SelectItem>
                     <SelectItem value="dark" className="cursor-pointer">
-                      Dark
+                      - Dark
                     </SelectItem>
                     <SelectItem value="system" className="cursor-pointer">
                       System

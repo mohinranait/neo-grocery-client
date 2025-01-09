@@ -53,7 +53,6 @@ const AttributeTable = () => {
             <Table className="w-full border  border-slate-100">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[20px]"></TableHead>
                   <TableHead>Attribute</TableHead>
                   <TableHead>Total</TableHead>
                   <TableHead>Status</TableHead>
@@ -61,7 +60,6 @@ const AttributeTable = () => {
               </TableHeader>
               <TableBody>
                 <TableRow>
-                  <TableCell></TableCell>
                   <TableCell>
                     <div className="flex gap-2">
                       <Image
@@ -98,8 +96,6 @@ const AttributeTable = () => {
                   </TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell className="pl-4">-</TableCell>
-
                   <TableCell className="flex">
                     <div className="flex gap-2">
                       <Image
