@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import Image from "next/image";
 import { PlusIcon } from "lucide-react";
+import Link from "next/link";
 
 const AllProducts = () => {
   return (
@@ -29,12 +30,15 @@ const AllProducts = () => {
             <p className="text-sm text-muted-foreground">Manage your product</p>
           </div>
           <div>
-            <button className="border border-slate-100 gap-1 bg-primary text-white rounded-[60px] inline-flex items-center justify-center py-1 text-sm  px-1 pl-2">
+            <Link
+              href={"/admin/product"}
+              className="border border-slate-100 gap-1 bg-primary text-white rounded-[60px] inline-flex items-center justify-center py-1 text-sm  px-1 pl-2"
+            >
               Add New
               <span className="inline-flex items-center justify-center p-2 rounded-full w-[30px] h-[30px] bg-white text-slate-900">
                 <PlusIcon />
               </span>
-            </button>
+            </Link>
           </div>
         </div>
         <div className="p-6 pt-0">
