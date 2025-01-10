@@ -69,6 +69,7 @@ const LinkComponent = () => {
       setShowProducts((prev) => [...prev, product]);
     }
   };
+
   return (
     <div className="p-4 flex flex-col gap-3">
       <div className="flex items-start">
