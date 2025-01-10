@@ -1,59 +1,40 @@
 "use client";
-import AdminAside from "@/components/admin/shared/AdminAside";
-import AdminHeader from "@/components/admin/shared/AdminHeader";
-import { X } from "lucide-react";
-import { usePathname } from "next/navigation";
-import React, { Suspense, useEffect, useState } from "react";
-import { useMediaQuery } from "react-responsive";
+import { userLogout } from "@/actions/authApi";
+import AdminAuthLayout from "@/components/admin/AdminAuthLayout";
+import useAxios from "@/hooks/useAxios";
+import { useAppDispatch } from "@/hooks/useRedux";
+import {
+  logoutUser,
+  setAuthUser,
+  setLoading,
+} from "@/redux/features/authSlice";
+import React, { Suspense, useEffect } from "react";
 
 const AdminLayout = ({ children }: { children: React.ReactNode }) => {
-  const [isToggle, setIsToggle] = useState(false);
-  const [isMobileMenu, setIsMobileMenu] = useState(false);
-  const pathName = usePathname();
-  const tablate = useMediaQuery({ maxWidth: 768 });
-
-  // This useEffect call when change route for mobile
+  const axios = useAxios();
+  const dispatch = useAppDispatch();
   useEffect(() => {
-    if (tablate) {
-      setIsMobileMenu(false);
-    }
-  }, [pathName, tablate]);
+    (async () => {
+      try {
+        dispatch(setLoading(true));
+        const { data } = await axios.get(`/user`);
+        if (data?.success) {
+          dispatch(setAuthUser(data.payload));
+        } else {
+          await userLogout();
+          dispatch(logoutUser());
+        }
+      } catch (error) {
+        console.error("Authentication error:", error);
+      } finally {
+        dispatch(setLoading(false));
+      }
+    })();
+  }, []);
+
   return (
     <Suspense fallback={<div>Loading</div>}>
-      <div className="flex  min-h-screen ">
-        {/* Desktop sidebar */}
-        <div className="hidden md:block">
-          <div className="sticky h-screen  overflow-x-hidden top-0 bottom-0">
-            <AdminAside isToggle={isToggle} setIsToggle={setIsToggle} />
-          </div>
-        </div>
-
-        {/* Mobile Sidebar */}
-        <div
-          className={`md:hidden transition-all duration-500 fixed  ${
-            isMobileMenu ? "translate-x-0" : "-translate-x-full overflow-hidden"
-          }  z-10  bottom-0 h-screen top-0  bg-black left-0`}
-        >
-          <span
-            onClick={() => setIsMobileMenu(false)}
-            className="absolute top-3 right-3 z-20"
-          >
-            <X />
-          </span>
-          <AdminAside isToggle={false} setIsToggle={setIsToggle} />
-        </div>
-
-        {/* Main body for admin dashboard */}
-        <div className="w-full bg-gray-100 h-full">
-          {/* Admin header  */}
-          <AdminHeader
-            setIsToggle={setIsToggle}
-            setIsMobileMenu={setIsMobileMenu}
-          />
-          {/* Children for render all page here */}
-          <div className="min-h-screen w-full pt-3 px-3">{children}</div>
-        </div>
-      </div>
+      <AdminAuthLayout component={children} />
     </Suspense>
   );
 };

@@ -2,6 +2,7 @@
 import {
   Calendar,
   CreditCard,
+  Image as ImageIcon,
   LayoutDashboard,
   ShoppingBasket,
   Users,
@@ -65,6 +66,9 @@ const AdminAside: FC<Props> = ({ isToggle }) => {
               Brands
             </MenuItem>
           </SubMenu>
+          <MenuItem icon={<ImageIcon />} href="/admin/media">
+            Meida
+          </MenuItem>
           <SubMenu icon={<Users />} label="Users">
             <MenuItem> Active User </MenuItem>
             <MenuItem> Pending User </MenuItem>
