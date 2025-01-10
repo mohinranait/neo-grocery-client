@@ -15,6 +15,7 @@ import { setProduct } from "@/redux/features/productSlice";
 import InventoryComponent from "./InventoryComponent";
 import ShippingComponent from "./ShippingComponent";
 import LinkComponent from "./LinkComponent";
+import AttributeComponent from "./AttributeComponent";
 
 type TVariantTabType = {
   id: string;
@@ -85,7 +86,7 @@ const ProductVarient = () => {
       id: "5",
       label: "Attributes",
       icon: <Bed size={16} />,
-      children: "Attributes",
+      children: <AttributeComponent />,
     },
   ];
 
@@ -146,7 +147,7 @@ const ProductVarient = () => {
             </li>
           ))}
         </ul>
-        <div>{activeTab?.children}</div>
+        <div className="w-full">{activeTab?.children}</div>
       </div>
     </div>
   );
