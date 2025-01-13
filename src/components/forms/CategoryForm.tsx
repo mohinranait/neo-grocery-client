@@ -14,6 +14,7 @@ import { createNewCategory } from "@/actions/categoriesApi";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { addCategory } from "@/redux/features/categorySlice";
+import { useAppSelector } from "@/hooks/useRedux";
 
 // Category schema validation
 const categorySchema = Yup.object().shape({
@@ -29,6 +30,7 @@ const categorySchema = Yup.object().shape({
 });
 
 const CategoryForm = () => {
+  const { categories } = useAppSelector((state) => state.category);
   const dispatch = useDispatch();
   const formik = useFormik({
     initialValues: {
@@ -43,7 +45,11 @@ const CategoryForm = () => {
     validationSchema: categorySchema,
     onSubmit: async (values, { resetForm }) => {
       try {
-        const data = await createNewCategory({ ...values, status: "Active" });
+        const data = await createNewCategory({
+          ...values,
+          parent: values?.parent == "null" ? null : values?.parent,
+          status: "Active",
+        });
         if (data.success) {
           dispatch(addCategory({ data: data?.payload, type: "Single" }));
           toast.success("Category is created");
@@ -52,6 +58,7 @@ const CategoryForm = () => {
       } catch (error) {}
     },
   });
+
   return (
     <form onSubmit={formik.handleSubmit} className="p-6 pt-0 grid gap-5">
       <div className="grid gap-2">
@@ -94,23 +101,38 @@ const CategoryForm = () => {
         >
           Parent
         </label>
+
         <Select
           onValueChange={(value) => formik.setFieldValue("parent", value)}
           value={formik.values.parent}
         >
           <SelectTrigger className="w-full">
-            <SelectValue placeholder="Theme" />
+            <SelectValue placeholder="Parent not select" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="light" className="cursor-pointer">
-              Light
+            <SelectItem value={`${null}`} className="cursor-pointer">
+              No Parent
             </SelectItem>
-            <SelectItem value="dark" className="cursor-pointer">
-              - Dark
-            </SelectItem>
-            <SelectItem value="system" className="cursor-pointer">
-              System
-            </SelectItem>
+            {categories
+              ?.filter((par) => par.parent == null)
+              ?.map((cat) => (
+                <React.Fragment key={cat._id}>
+                  <SelectItem value={`${cat._id}`} className="cursor-pointer">
+                    {cat?.name}
+                  </SelectItem>
+                  {categories
+                    ?.filter((p) => p?.parent === cat._id)
+                    ?.map((child) => (
+                      <SelectItem
+                        key={child._id}
+                        value={`${child._id}`}
+                        className="cursor-pointer"
+                      >
+                        - {child?.name}
+                      </SelectItem>
+                    ))}
+                </React.Fragment>
+              ))}
           </SelectContent>
         </Select>
       </div>
@@ -135,8 +157,8 @@ const CategoryForm = () => {
           </div>
         </div>
       </div>
-      <div className="flex items-center p-6 pt-0">
-        <button className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2 w-full">
+      <div className="flex items-center pt-0">
+        <button className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none  bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2 w-full">
           Save
         </button>
       </div>
