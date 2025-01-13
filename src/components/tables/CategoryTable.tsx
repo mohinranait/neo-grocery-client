@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
@@ -15,8 +15,47 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Image from "next/image";
+import { useAppSelector } from "@/hooks/useRedux";
+import { deleteCategory } from "@/actions/categoriesApi";
+import DeleteModal from "../modals/DeleteModal";
+import { useDispatch } from "react-redux";
+import {
+  addCategory,
+  setSelectedCategory,
+} from "@/redux/features/categorySlice";
+import toast from "react-hot-toast";
 
 const CategoryTable = () => {
+  const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
+  const dispatch = useDispatch();
+  const { categories, selectedCategory } = useAppSelector(
+    (state) => state.category
+  );
+
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const handleDelete = async () => {
+    if (!selectedCategory?._id) return;
+
+    try {
+      setDeleteLoading(true);
+      const data = await deleteCategory(`${selectedCategory?._id}`);
+      console.log(data);
+
+      if (data.success) {
+        const filterCats = categories?.filter(
+          (cat) => cat?._id !== selectedCategory?._id
+        );
+        dispatch(addCategory({ data: filterCats, type: "Array" }));
+        toast.success("Category is deleted");
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsOpen(false);
+      setSelectedCategory(null);
+      setDeleteLoading(false);
+    }
+  };
   return (
     <div className="w-full rounded-lg border bg-card text-card-foreground shadow">
       <div className="p-6">
@@ -59,83 +98,59 @@ const CategoryTable = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                <TableRow>
-                  <TableCell></TableCell>
-                  <TableCell>
-                    <div className="flex gap-2">
-                      <Image
-                        src={"/images/avater.jpg"}
-                        className="w-[50] h-[50px] rounded"
-                        width={50}
-                        height={50}
-                        alt="cat image"
-                      />
+                {categories?.map((cat, index) => (
+                  <TableRow key={index}>
+                    <TableCell></TableCell>
+                    <TableCell>
+                      <div className="flex gap-2">
+                        <Image
+                          src={"/images/avater.jpg"}
+                          className="w-[50] h-[50px] rounded"
+                          width={50}
+                          height={50}
+                          alt="cat image"
+                        />
 
-                      <div>
-                        <p>Testyfy lucy</p>
-                        <div className="flex mt-[2px] gap-1 items-center">
-                          <span className="text-xs text-slate-500 hover:underline cursor-pointer hover:text-primary">
-                            Edit
-                          </span>
-                          <span className="text-xs text-slate-500 hover:underline cursor-pointer hover:text-primary">
-                            View
-                          </span>
-                          <span className="text-xs text-slate-500 hover:underline cursor-pointer hover:text-primary">
-                            Delete
-                          </span>
+                        <div>
+                          <p>{cat?.name}</p>
+                          <div className="flex mt-[2px] gap-1 items-center">
+                            <span className="text-xs text-slate-500 hover:underline cursor-pointer hover:text-primary">
+                              Edit
+                            </span>
+                            <span className="text-xs text-slate-500 hover:underline cursor-pointer hover:text-primary">
+                              View
+                            </span>
+                            <span
+                              onClick={() => {
+                                dispatch(setSelectedCategory(cat));
+                                setIsOpen(true);
+                              }}
+                              className="text-xs text-slate-500 hover:underline cursor-pointer hover:text-primary"
+                            >
+                              Delete
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>10 Product</TableCell>
-                  <TableCell>
-                    <div className="flex">
-                      <span className="inline-flex px-2 py-[2px] rounded bg-green-500 text-xs font-semibold text-white">
-                        Active
-                      </span>
-                    </div>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="pl-4">-</TableCell>
-
-                  <TableCell className="flex">
-                    <div className="flex gap-2">
-                      <Image
-                        src={"/images/avater.jpg"}
-                        className="w-[50] h-[50px] rounded"
-                        width={50}
-                        height={50}
-                        alt="cat image"
-                      />
-
-                      <div>
-                        <p>Testyfy lucy</p>
-                        <div className="flex mt-[2px] gap-1 items-center">
-                          <span className="text-xs text-slate-500 hover:underline cursor-pointer hover:text-primary">
-                            Edit
+                    </TableCell>
+                    <TableCell>10 Product</TableCell>
+                    <TableCell>
+                      <div className="flex">
+                        {cat?.status === "Active" ? (
+                          <span className="inline-flex px-2 py-[2px] rounded bg-green-500 text-xs font-semibold text-white">
+                            Active
                           </span>
-                          <span className="text-xs text-slate-500 hover:underline cursor-pointer hover:text-primary">
-                            View
+                        ) : (
+                          <span className="inline-flex px-2 py-[2px] rounded bg-red-500 text-xs font-semibold text-white">
+                            Active
                           </span>
-                          <span className="text-xs text-slate-500 hover:underline cursor-pointer hover:text-primary">
-                            Delete
-                          </span>
-                        </div>
+                        )}
                       </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>10 Product</TableCell>
-                  <TableCell>
-                    <div className="flex">
-                      <span className="inline-flex px-2 py-[2px] rounded bg-red-500 text-xs font-semibold text-white">
-                        Active
-                      </span>
-                    </div>
-                  </TableCell>
-                </TableRow>
+                    </TableCell>
+                  </TableRow>
+                ))}
               </TableBody>
-            </Table>{" "}
+            </Table>
           </div>
         </div>
         <div className="flex items-center justify-end space-x-2 pt-4">
@@ -158,6 +173,13 @@ const CategoryTable = () => {
           </div>
         </div>
       </div>
+
+      <DeleteModal
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        handleDelete={handleDelete}
+        isLoading={deleteLoading}
+      />
     </div>
   );
 };
