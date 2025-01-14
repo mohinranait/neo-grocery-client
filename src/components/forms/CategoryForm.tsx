@@ -12,9 +12,8 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { createNewCategory, updateCategory } from "@/actions/categoriesApi";
 import toast from "react-hot-toast";
-import { useDispatch } from "react-redux";
 import { addCategory } from "@/redux/features/categorySlice";
-import { useAppSelector } from "@/hooks/useRedux";
+import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { TCategoryType } from "@/types/category.type";
 
 // Category schema validation
@@ -37,7 +36,7 @@ const CategoryForm: FC<Props> = ({ selectedCategory }) => {
   const [slug, setSlug] = useState<string>(selectedCategory?.slug || "");
 
   const { categories } = useAppSelector((state) => state.category);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const formik = useFormik({
     initialValues: {
       name: selectedCategory?.name || "",
@@ -67,8 +66,6 @@ const CategoryForm: FC<Props> = ({ selectedCategory }) => {
             toast.success("Category is Updated");
             resetForm();
           }
-        } catch (error) {}
-        try {
         } catch (error) {}
       } else {
         try {

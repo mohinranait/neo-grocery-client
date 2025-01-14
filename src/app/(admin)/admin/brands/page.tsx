@@ -1,9 +1,30 @@
-import React from "react";
+"use client";
+import React, { useEffect } from "react";
 
-import { UploadCloudIcon } from "lucide-react";
 import BrandTable from "@/components/tables/BrandTable";
+import BrandForm from "@/components/forms/BrandForm";
+import { useAppDispatch } from "@/hooks/useRedux";
+import { getAllBrands } from "@/actions/brandApi";
+import { addBrand } from "@/redux/features/brandSlice";
+import toast from "react-hot-toast";
 
 const BrandPage = () => {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    (async function () {
+      try {
+        // Call API for load all brands
+        const data = await getAllBrands();
+        if (data?.success) {
+          dispatch(addBrand({ data: data?.payload, type: "Array" }));
+        }
+      } catch (error: unknown) {
+        toast.error(`${error}`);
+      }
+    })();
+  }, [dispatch]);
+
   return (
     <div>
       <div className="flex flex-col lg:flex-row gap-4">
@@ -17,54 +38,8 @@ const BrandPage = () => {
                 Create and update all brand information
               </div>
             </div>
-            <form action={"/"} className="p-6 pt-0 grid gap-5">
-              <div className="grid gap-2">
-                <label
-                  htmlFor="name"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  Brand Name
-                </label>
-                <input
-                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
-                  id="name"
-                  name="name"
-                  placeholder="Name"
-                />
-              </div>
-              <div className="grid gap-2">
-                <label
-                  htmlFor="slug"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  Brand Slug
-                </label>
-                <input
-                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
-                  id="slug"
-                  name="slug"
-                  placeholder="Slug"
-                />
-              </div>
-
-              <div className="grid gap-2">
-                <label
-                  htmlFor="thumbnail"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  Thumbnail
-                </label>
-                <div className="flex gap-4">
-                  <div className="w-[80px] h-[80px] cursor-pointer hover:bg-slate-200 flex items-center justify-center border-slate-200 rounded border border-dashed ">
-                    <UploadCloudIcon />
-                  </div>
-                </div>
-              </div>
-            </form>
-            <div className="flex items-center p-6 pt-0">
-              <button className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2 w-full">
-                Save
-              </button>
+            <div className="p-6 pt-0">
+              <BrandForm />
             </div>
           </div>
         </div>
