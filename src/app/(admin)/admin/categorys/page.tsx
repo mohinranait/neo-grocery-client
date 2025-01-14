@@ -35,7 +35,9 @@ const CategoryPage = () => {
                 Create and update all category information
               </div>
             </div>
-            <CategoryForm />
+            <div className="p-6 pt-0">
+              <CategoryForm />
+            </div>
           </div>
         </div>
         <div className=" lg:w-full">

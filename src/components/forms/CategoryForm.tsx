@@ -1,6 +1,6 @@
 "use client";
 import { UploadCloudIcon } from "lucide-react";
-import React from "react";
+import React, { FC, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -10,11 +10,12 @@ import {
 } from "@/components/ui/select";
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import { createNewCategory } from "@/actions/categoriesApi";
+import { createNewCategory, updateCategory } from "@/actions/categoriesApi";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { addCategory } from "@/redux/features/categorySlice";
 import { useAppSelector } from "@/hooks/useRedux";
+import { TCategoryType } from "@/types/category.type";
 
 // Category schema validation
 const categorySchema = Yup.object().shape({
@@ -29,38 +30,68 @@ const categorySchema = Yup.object().shape({
   catIcon: Yup.string().notRequired(),
 });
 
-const CategoryForm = () => {
+type Props = {
+  selectedCategory?: TCategoryType | null;
+};
+const CategoryForm: FC<Props> = ({ selectedCategory }) => {
+  const [slug, setSlug] = useState<string>(selectedCategory?.slug || "");
+
   const { categories } = useAppSelector((state) => state.category);
   const dispatch = useDispatch();
   const formik = useFormik({
     initialValues: {
-      name: "",
-      slug: "",
-      parent: "",
-      catBanner: "",
-      catThumbnail: null,
+      name: selectedCategory?.name || "",
+      slug: selectedCategory?.slug || "",
+      parent: selectedCategory?.parent || "",
+      catBanner: selectedCategory?.catBanner || "",
+      catThumbnail: selectedCategory?.catThumbnail || null,
       catIcon: "",
     },
     enableReinitialize: true,
     validationSchema: categorySchema,
     onSubmit: async (values, { resetForm }) => {
-      try {
-        const data = await createNewCategory({
-          ...values,
-          parent: values?.parent == "null" ? null : values?.parent,
-          status: "Active",
-        });
-        if (data.success) {
-          dispatch(addCategory({ data: data?.payload, type: "Single" }));
-          toast.success("Category is created");
-          resetForm();
-        }
-      } catch (error) {}
+      console.log({ values });
+
+      if (selectedCategory?._id) {
+        try {
+          const data = await updateCategory(selectedCategory?._id, {
+            ...values,
+            parent:
+              values?.parent == "null" || values?.parent === ""
+                ? null
+                : values?.parent,
+            status: "Active",
+          });
+          if (data.success) {
+            dispatch(addCategory({ data: data?.payload, type: "Single" }));
+            toast.success("Category is Updated");
+            resetForm();
+          }
+        } catch (error) {}
+        try {
+        } catch (error) {}
+      } else {
+        try {
+          const data = await createNewCategory({
+            ...values,
+            parent:
+              values?.parent == "null" || values?.parent === ""
+                ? null
+                : values?.parent,
+            status: "Active",
+          });
+          if (data.success) {
+            dispatch(addCategory({ data: data?.payload, type: "Single" }));
+            toast.success("Category is created");
+            resetForm();
+          }
+        } catch (error) {}
+      }
     },
   });
 
   return (
-    <form onSubmit={formik.handleSubmit} className="p-6 pt-0 grid gap-5">
+    <form onSubmit={formik.handleSubmit} className=" grid gap-5">
       <div className="grid gap-2">
         <label
           htmlFor="name"
@@ -91,6 +122,8 @@ const CategoryForm = () => {
           className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
           id="slug"
           name="slug"
+          value={slug || formik.values.name?.split(" ").join("-")}
+          onChange={(e) => setSlug(e.target.value)}
           placeholder="Slug"
         />
       </div>
@@ -159,7 +192,7 @@ const CategoryForm = () => {
       </div>
       <div className="flex items-center pt-0">
         <button className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none  bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2 w-full">
-          Save
+          {selectedCategory ? "Update" : "Save"}
         </button>
       </div>
     </form>

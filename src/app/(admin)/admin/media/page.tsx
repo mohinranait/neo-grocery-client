@@ -1,7 +1,8 @@
+import MediaWrapper from "@/components/pages/media/MediaWrapper";
 import React from "react";
 
 const MediaPage = () => {
-  return <div>MediaPage</div>;
+  return <MediaWrapper />;
 };
 
 export default MediaPage;

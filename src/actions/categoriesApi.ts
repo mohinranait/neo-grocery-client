@@ -16,6 +16,15 @@ export const getAllCategory = async () => {
     const {data} = await instance.get(`/categories`);
     return data;
 }
+
+/**
+ * @api {patch} Update category by ID
+*/
+export const updateCategory = async (id:string, formData:TCategoryType  ) => {
+    const {data} = await instance.patch(`/category/${id}`,{...formData});
+    return data;
+}
+
 /**
  * @api {delete} Delete category by ID method
 */
