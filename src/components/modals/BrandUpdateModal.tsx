@@ -1,3 +1,4 @@
+"use client";
 import React, { FC } from "react";
 import {
   Dialog,
@@ -6,7 +7,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useAppSelector } from "@/hooks/useRedux";
 import BrandForm from "../forms/BrandForm";
 
 type Props = {
@@ -14,7 +14,6 @@ type Props = {
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 const BrandUpdateModal: FC<Props> = ({ isOpen, setIsOpen }) => {
-  const { selectedBrand } = useAppSelector((state) => state.brand);
   return (
     <Dialog onOpenChange={setIsOpen} open={isOpen}>
       <DialogContent className="w-[350px]">
@@ -23,10 +22,7 @@ const BrandUpdateModal: FC<Props> = ({ isOpen, setIsOpen }) => {
           <DialogDescription>You want to update this data?</DialogDescription>
         </DialogHeader>
         <DialogDescription>
-          <BrandForm
-            selectedBrand={selectedBrand}
-            closeUpdateModal={setIsOpen}
-          />
+          <BrandForm closeUpdateModal={setIsOpen} />
         </DialogDescription>
       </DialogContent>
     </Dialog>

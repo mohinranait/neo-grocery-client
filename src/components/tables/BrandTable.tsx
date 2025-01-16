@@ -8,6 +8,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 import Image from "next/image";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import DeleteModal from "../modals/DeleteModal";
@@ -15,6 +23,7 @@ import { deleteBrand } from "@/actions/brandApi";
 import { addBrand, setSelectedBrand } from "@/redux/features/brandSlice";
 import toast from "react-hot-toast";
 import BrandUpdateModal from "../modals/BrandUpdateModal";
+import { defaultImage } from "@/utils/exportImages";
 
 const BrandTable = () => {
   const dispatch = useAppDispatch();
@@ -22,6 +31,33 @@ const BrandTable = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
   const [brandEditModal, setBrandEditModal] = useState<boolean>(false);
+
+  // State for filters and pagination
+  const [name, setName] = useState<string>("");
+  const [status, setStatus] = useState<"All" | "Active" | "Inactive">("All");
+  const [currentPage, setCurrentPage] = useState(1);
+  const perPage = 3;
+
+  // Filtered categories based on name and status
+  const filteredBrands = brands.filter((brand) => {
+    const matchName = name
+      ? brand.name.toLowerCase().includes(name.toLowerCase())
+      : true;
+    const matchStatus = status === "All" ? true : brand.status === status;
+    return matchName && matchStatus;
+  });
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredBrands.length / perPage);
+  const paginatedBrands = filteredBrands.slice(
+    (currentPage - 1) * perPage,
+    currentPage * perPage
+  );
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
   /**
    * Delete Brand Using API
    */
@@ -59,34 +95,27 @@ const BrandTable = () => {
       <div className="p-6 pt-0">
         <div className="mb-4 flex items-center gap-4">
           <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             type="text"
             placeholder="Filter brands"
-            className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors   placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring  disabled:opacity-50 md:text-sm"
+            className="flex h-9 w-full rounded-md border bg-transparent px-3 py-1 text-base shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           />
-          <button
-            className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 ml-auto"
-            type="button"
-            id="radix-:r71:"
-            aria-haspopup="menu"
-            aria-expanded="false"
-            data-state="closed"
+          <Select
+            value={status}
+            onValueChange={(value) =>
+              setStatus(value as "Active" | "All" | "Inactive")
+            }
           >
-            Columns{" "}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              className="lucide lucide-chevron-down "
-            >
-              <path d="m6 9 6 6 6-6"></path>
-            </svg>
-          </button>
+            <SelectTrigger className="w-[140px] h-9">
+              <SelectValue placeholder="All" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="All">All</SelectItem>
+              <SelectItem value="Active">Active</SelectItem>
+              <SelectItem value="Inactive">Inactive</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         <Table className="w-full border border-slate-100">
           <TableHeader>
@@ -97,12 +126,12 @@ const BrandTable = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {brands?.map((brand, index) => (
+            {paginatedBrands?.map((brand, index) => (
               <TableRow key={index}>
                 <TableCell>
                   <div className="flex gap-2">
                     <Image
-                      src={"/images/avater.jpg"}
+                      src={brand?.brandThumbnail || defaultImage}
                       className="w-[50] h-[50px] rounded"
                       width={50}
                       height={50}
@@ -156,22 +185,21 @@ const BrandTable = () => {
           </TableBody>
         </Table>
         <div className="flex items-center justify-end space-x-2 pt-4">
-          <div className="flex-1 text-sm text-muted-foreground">
-            0 of 4 row(s) selected.
-          </div>
           <div className="space-x-2">
-            <button
-              className="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-8 rounded-md px-3 text-xs"
-              disabled={true}
-            >
-              Previous
-            </button>
-            <button
-              className="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-8 rounded-md px-3 text-xs"
-              disabled={true}
-            >
-              Next
-            </button>
+            {Array.from({ length: totalPages }, (_, index) => (
+              <button
+                key={index}
+                onClick={() => handlePageChange(index + 1)}
+                disabled={currentPage === index + 1}
+                className={`px-3 py-1 rounded ${
+                  currentPage === index + 1
+                    ? "bg-primary text-white"
+                    : "bg-gray-200 text-black"
+                }`}
+              >
+                {index + 1}
+              </button>
+            ))}
           </div>
         </div>
       </div>

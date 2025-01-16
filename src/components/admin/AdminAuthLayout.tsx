@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useState } from "react";
 import AdminAside from "./shared/AdminAside";
 import { usePathname } from "next/navigation";
@@ -5,19 +6,35 @@ import { useMediaQuery } from "react-responsive";
 import AdminHeader from "./shared/AdminHeader";
 import { X } from "lucide-react";
 import withAuth from "@/hooks/withAuth";
+import { getAllImages } from "@/actions/mediaApi";
+import { setFiles } from "@/redux/features/meidaSlice";
+import { useAppDispatch } from "@/hooks/useRedux";
 
 const AdminAuthLayout = ({ component }: { component: React.ReactNode }) => {
   const [isToggle, setIsToggle] = useState(false);
   const [isMobileMenu, setIsMobileMenu] = useState(false);
   const pathName = usePathname();
   const tablate = useMediaQuery({ maxWidth: 768 });
-
+  const dispatch = useAppDispatch();
   // This useEffect call when change route for mobile
   useEffect(() => {
     if (tablate) {
       setIsMobileMenu(false);
     }
   }, [pathName, tablate]);
+
+  // Get all images from DB and store Redux
+  useEffect(() => {
+    (async function () {
+      try {
+        // Call API for get images
+        const data = await getAllImages();
+        if (data.success) {
+          dispatch(setFiles(data?.payload?.medias));
+        }
+      } catch (error) {}
+    })();
+  }, []);
   return (
     <div className="flex  min-h-screen ">
       {/* Desktop sidebar */}

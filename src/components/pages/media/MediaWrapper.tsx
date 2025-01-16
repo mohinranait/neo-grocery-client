@@ -3,8 +3,11 @@ import React, { useState } from "react";
 import ImageCard from "./ImageCard";
 import { X } from "lucide-react";
 import ImageDetailsModal from "@/components/modals/ImageDetailsModal";
+import UploadImageComponent from "./UploadImageComponent";
+import { useAppSelector } from "@/hooks/useRedux";
 
 const MediaWrapper = () => {
+  const { images, selectedFile } = useAppSelector((state) => state.media);
   const [isUploadSection, setIsUploadSection] = useState<boolean>(false);
   const [imageDetails, setImageDetails] = useState<number | null>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -27,22 +30,15 @@ const MediaWrapper = () => {
           >
             <X size={22} className="text-slate-700" />
           </span>
-          <label
-            htmlFor="upload_files"
-            className="border-2 bg-white  h-[150px] w-full flex items-center justify-center border-slate-300 border-dashed"
-          >
-            <div className="border border-primary rounded py-1 px-2 cursor-pointer">
-              Select files
-            </div>
-            <input type="file" hidden id="upload_files" />
-          </label>
+          <UploadImageComponent />
         </div>
       )}
       <div>
         <div className="grid gap-3 grid-cols-3 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8">
-          {[1, 2, 3, 4, 5, 5, 6]?.map((image, index) => (
+          {images?.map((img, index) => (
             <ImageCard
               key={index}
+              img={img}
               onCallBack={() => {
                 setImageDetails(index);
                 setIsOpen(true);

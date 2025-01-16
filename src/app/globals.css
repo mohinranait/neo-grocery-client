@@ -70,3 +70,34 @@ body {
     @apply bg-background text-foreground;
   }
 }
+:root {
+  --bar-color: #3c86fa;
+  --stripe-color: #5897f9;
+}
+
+.bg-bar-color {
+  background-color: var(--bar-color);
+}
+
+.bg-stripes {
+  background: linear-gradient(
+    135deg,
+    var(--stripe-color) 25%,
+    transparent 25%,
+    transparent 50%,
+    var(--stripe-color) 50%,
+    var(--stripe-color) 75%,
+    transparent 75%
+  );
+  background-size: 40px 40px;
+  animation: stripes 1s linear infinite;
+}
+
+@keyframes stripes {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 40px 0;
+  }
+}
