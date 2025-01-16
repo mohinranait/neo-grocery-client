@@ -23,23 +23,20 @@ import {
   setSelectedAttribute,
 } from "@/redux/features/attributeSlice";
 import toast from "react-hot-toast";
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-import { usePathname } from "next/navigation";
+import {
+  addAttributeConfig,
+  setSelectedAttributeConfig,
+} from "@/redux/features/attributeConfigSlice";
+import { deleteAttributeConfig } from "@/actions/attributeConfigApi";
 
-const AttributeTable = () => {
+const AttributeConfigTable = () => {
   const dispatch = useAppDispatch();
-  const { attributes, selectedAttribute } = useAppSelector(
-    (state) => state.attribute
+  const { attributeConfigs, selectedAttributeConfig } = useAppSelector(
+    (state) => state.attributeConfig
   );
-
-  // Hooks
-  const pathName = usePathname();
-  console.log({ pathName });
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
-  const [attributeEditModal, setAttributeEditModal] = useState<boolean>(false);
 
   // State for filters and pagination
   const [name, setName] = useState<string>("");
@@ -48,7 +45,7 @@ const AttributeTable = () => {
   const perPage = 3;
 
   // Filtered attributes based on name and status
-  const filteredAttributes = attributes.filter((attr) => {
+  const filteredAttributes = attributeConfigs.filter((attr) => {
     const matchName = name
       ? attr.name.toLowerCase().includes(name.toLowerCase())
       : true;
@@ -71,26 +68,30 @@ const AttributeTable = () => {
    * Delete attribute Using API
    */
   const handleDelete = async () => {
-    if (!selectedAttribute?._id) return;
+    if (!selectedAttributeConfig?._id) return;
 
     try {
       setDeleteLoading(true);
       // Call API for Delete attribute by ID
-      const data = await deleteAttribute(`${selectedAttribute?._id}`);
+      const data = await deleteAttributeConfig(
+        `${selectedAttributeConfig?._id}`
+      );
 
       if (data.success) {
-        const updatedAttributes = attributes.filter(
-          (attr) => attr._id !== selectedAttribute?._id
+        const updatedAttributes = attributeConfigs.filter(
+          (attr) => attr._id !== selectedAttributeConfig?._id
         );
         // Update UI
-        dispatch(addAttribute({ data: updatedAttributes, type: "Array" }));
+        dispatch(
+          addAttributeConfig({ data: updatedAttributes, type: "Array" })
+        );
         toast.success("Attribute is deleted");
       }
     } catch (error) {
       console.log(error);
     } finally {
       setIsOpen(false);
-      dispatch(setSelectedAttribute(null));
+      dispatch(setSelectedAttributeConfig(null));
       setDeleteLoading(false);
     }
   };
@@ -132,7 +133,6 @@ const AttributeTable = () => {
               <TableHead>Attribute</TableHead>
               <TableHead>Total</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Configure</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -145,8 +145,7 @@ const AttributeTable = () => {
                       <div className="flex mt-[2px] gap-1 items-center">
                         <span
                           onClick={() => {
-                            dispatch(setSelectedAttribute(attr));
-                            setAttributeEditModal(true);
+                            dispatch(setSelectedAttributeConfig(attr));
                           }}
                           className="text-xs text-slate-500 hover:underline cursor-pointer hover:text-primary"
                         >
@@ -157,7 +156,7 @@ const AttributeTable = () => {
                         </span>
                         <span
                           onClick={() => {
-                            dispatch(setSelectedAttribute(attr));
+                            dispatch(setSelectedAttributeConfig(attr));
                             setIsOpen(true);
                           }}
                           className="text-xs text-slate-500 hover:underline cursor-pointer hover:text-primary"
@@ -180,19 +179,6 @@ const AttributeTable = () => {
                         Inactive
                       </span>
                     )}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="flex">
-                    <Link
-                      className="inline-flex gap-1 items-center text-xs hover:text-slate-700"
-                      href={`${pathName}/${attr?._id}`}
-                    >
-                      Config Attribute{" "}
-                      <span>
-                        <ArrowRight size={16} />
-                      </span>{" "}
-                    </Link>
                   </div>
                 </TableCell>
               </TableRow>
@@ -225,9 +211,8 @@ const AttributeTable = () => {
         handleDelete={handleDelete}
         isLoading={deleteLoading}
       />
-      {/* <BrandUpdateModal isOpen={brandEditModal} setIsOpen={setBrandEditModal} /> */}
     </div>
   );
 };
 
-export default AttributeTable;
+export default AttributeConfigTable;

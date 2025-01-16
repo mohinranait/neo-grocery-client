@@ -4,6 +4,8 @@ import  authReducer  from "./features/authSlice";
 import  categoryReducer  from "./features/categorySlice";
 import  brandReducer  from "./features/brandSlice";
 import  mediaReducer  from "./features/meidaSlice";
+import  attributeReducer  from "./features/attributeSlice";
+import  attributeConfigReducer  from "./features/attributeConfigSlice";
 
 export  const store = configureStore({
     reducer:{
@@ -11,7 +13,9 @@ export  const store = configureStore({
         auth: authReducer,
         category: categoryReducer,
         brand: brandReducer,
-        media: mediaReducer
+        media: mediaReducer,
+        attribute: attributeReducer,
+        attributeConfig: attributeConfigReducer,
     }
 })
 
