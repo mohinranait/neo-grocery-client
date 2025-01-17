@@ -16,6 +16,7 @@ const initialState:TInitialStateType  = {
         productPrice:10
     },
     manageStock:false,
+    brand:["678a11e6b56dc08b671a1627","678a11f0b56dc08b671a1629","678a3746b56dc08b671a16d9"]
   } as TProduct,
   products: []
 }

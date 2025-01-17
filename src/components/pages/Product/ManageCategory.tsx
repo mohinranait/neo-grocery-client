@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useAppSelector } from "@/hooks/useRedux";
+import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { Plus } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import {
@@ -11,6 +11,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import CategoryForm from "@/components/forms/CategoryForm";
+import { setProduct } from "@/redux/features/productSlice";
 
 type TBuildTree = {
   _id: string;
@@ -47,10 +48,60 @@ function buildTree(items: TBuildTree[]): TTreeNode[] {
 
 const ManageCategory = () => {
   const { categories } = useAppSelector((state) => state.category);
-
+  const { product } = useAppSelector((state) => state.product);
+  const dispatch = useAppDispatch();
+  const [catIds, setCatIds] = useState<string[]>([]);
   // Local State
   const [openForm, setOpenForm] = useState<boolean>(false);
   const [showCategories, setShowCategories] = useState<TTreeNode[]>([]);
+
+  const selectedRecursion = (id: string | null, catIds?: string[]) => {
+    const newCatIds: string[] = catIds ? [...catIds] : [];
+    if (id && !catIds?.includes(id)) {
+      newCatIds.push(id);
+    }
+    const findCat = categories?.find((cat) => cat?._id === id);
+    if (findCat?.parent) {
+      const prevCategories = selectedRecursion(
+        findCat?.parent || "",
+        newCatIds
+      );
+      prevCategories.forEach((prevId) => {
+        if (!newCatIds.includes(prevId)) {
+          newCatIds.push(prevId);
+        }
+      });
+    }
+
+    return newCatIds;
+  };
+
+  const deselectRecursion = (id: string | null) => {
+    setCatIds((prev) => prev.filter((cid) => cid !== id));
+
+    const children = categories.filter((cat) => cat.parent === id);
+
+    if (children.length > 0) {
+      children.forEach((child) => {
+        deselectRecursion(child?._id as string);
+      });
+    }
+  };
+
+  const handleChangeMethod = (value: string) => {
+    const copyProduct = { ...product };
+    // const bategoryIds = copyProduct?.category || [];
+    const updateProduct = { ...copyProduct };
+    if (catIds.includes(value)) {
+      deselectRecursion(value);
+    } else {
+      const newcatIds = selectedRecursion(value);
+      setCatIds((prev) => [...prev, ...newcatIds]);
+      dispatch(
+        setProduct({ ...updateProduct, category: [...catIds, ...newcatIds] })
+      );
+    }
+  };
 
   useEffect(() => {
     const formate = categories?.map((d) => ({
@@ -64,13 +115,19 @@ const ManageCategory = () => {
     setShowCategories(categoryFormateForTree);
   }, [categories]);
 
+  console.log(catIds);
+
   const renderCategories = (categories: TTreeNode[], level = 0) => {
     return categories.map((category, index) => {
       const id = `level_${level}_cat_${category._id}`;
       return (
         <React.Fragment key={category._id}>
           <li className={`flex pl-${level * 4} items-center space-x-2`}>
-            <Checkbox id={id} />
+            <Checkbox
+              onCheckedChange={() => handleChangeMethod(category?._id)}
+              checked={catIds.includes(category._id)}
+              id={id}
+            />
             <label
               htmlFor={id}
               className="text-sm cursor-pointer font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"

@@ -3,12 +3,12 @@ export type TProductTypeLists = "General"| "Inventory"| "Shipping"| "Link Produc
 
 
 
-interface Delivery {
+type Delivery = {
   deliveryCharge: number;
   deliveryStatus: "Free" | "Pay";
 }
 
-interface FeatureImage {
+type FeatureImage = {
   images: string[];
   videoUrl?: string;
 }
@@ -18,21 +18,22 @@ type Price = {
   productPrice: number;
 }
 
-interface OfferDate {
+type OfferDate= {
   start_date?: Date;
   end_date?: Date;
   offerPrice: number;
 }
 
-interface ExtraFeature {
+type ExtraFeature= {
   label: string;
   value: string;
 }
 
 export type TProduct = {
+  _id?:string;
   author: string;
-  brand?: string;
-  category?: string;
+  brand?: string[];
+  category?: string[];
   details?: string;
   rating?: number;
   reviews?: number;
