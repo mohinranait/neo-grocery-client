@@ -9,6 +9,11 @@ import withAuth from "@/hooks/withAuth";
 import { getAllImages } from "@/actions/mediaApi";
 import { setFiles } from "@/redux/features/meidaSlice";
 import { useAppDispatch } from "@/hooks/useRedux";
+import { getAllCategory } from "@/actions/categoriesApi";
+import { addCategory } from "@/redux/features/categorySlice";
+import toast from "react-hot-toast";
+import { getAllBrands } from "@/actions/brandApi";
+import { addBrand } from "@/redux/features/brandSlice";
 
 const AdminAuthLayout = ({ component }: { component: React.ReactNode }) => {
   const [isToggle, setIsToggle] = useState(false);
@@ -35,6 +40,33 @@ const AdminAuthLayout = ({ component }: { component: React.ReactNode }) => {
       } catch (error) {}
     })();
   }, []);
+
+  useEffect(() => {
+    (async function () {
+      try {
+        const data = await getAllCategory();
+        if (data?.success) {
+          dispatch(addCategory({ data: data?.payload, type: "Array" }));
+        }
+      } catch (error: unknown) {
+        toast.error(`${error}`);
+      }
+    })();
+  }, [dispatch]);
+
+  useEffect(() => {
+    (async function () {
+      try {
+        // Call API for load all brands
+        const data = await getAllBrands();
+        if (data?.success) {
+          dispatch(addBrand({ data: data?.payload, type: "Array" }));
+        }
+      } catch (error: unknown) {
+        toast.error(`${error}`);
+      }
+    })();
+  }, [dispatch]);
   return (
     <div className="flex  min-h-screen ">
       {/* Desktop sidebar */}

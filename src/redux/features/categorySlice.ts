@@ -3,7 +3,7 @@ import { TCategoryType } from "@/types/category.type";
 
 type TAddCategorPaylaod = {
   data: TCategoryType[] | TCategoryType;
-  type: "Array" | "Single";
+  type: "Array" | "AddNew" | "Update"
 };
 
 type TInitialStateType = {
@@ -23,11 +23,24 @@ export const categorySlice = createSlice({
     addCategory: (state, action: { payload: TAddCategorPaylaod }) => {
       // Update categories state
       const { data, type } = action.payload;
-      if (type !== "Array") {
-        // When come single category
+
+      if (type === "AddNew") {
+        // When come single category for add categories array
         state.categories = [...state?.categories, data as TCategoryType];
+      } else if(type === 'Update'){
+        const singleData = data as TCategoryType
+        const arr = [...state.categories];
+        const findIndex = state.categories?.findIndex(d => d?._id === singleData?._id )
+        if(findIndex !== -1){
+            arr[findIndex] = {
+                ...arr[findIndex],
+                ...singleData,
+            }
+            state.categories = arr
+            
+        }
       } else {
-        // When come categories array
+        // When come categoris array
         state.categories = [...(data as TCategoryType[])];
       }
     },

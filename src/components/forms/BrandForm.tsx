@@ -31,10 +31,10 @@ const brandSchema = Yup.object().shape({
 });
 
 type Props = {
-  closeUpdateModal?: React.Dispatch<React.SetStateAction<boolean>>;
+  closeModal?: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const BrandForm: FC<Props> = ({ closeUpdateModal }) => {
+const BrandForm: FC<Props> = ({ closeModal }) => {
   // Redux state
   const { selectedBrand } = useAppSelector((state) => state.brand);
   const dispatch = useAppDispatch();
@@ -68,8 +68,8 @@ const BrandForm: FC<Props> = ({ closeUpdateModal }) => {
           if (data.success) {
             dispatch(addBrand({ data: data?.payload, type: "Update" }));
             toast.success("Brand is Updated");
-            if (closeUpdateModal) {
-              closeUpdateModal(false);
+            if (closeModal) {
+              closeModal(false);
             }
 
             dispatch(setSelectedBrand(null));
@@ -87,6 +87,9 @@ const BrandForm: FC<Props> = ({ closeUpdateModal }) => {
           });
           if (data.success) {
             dispatch(addBrand({ data: data?.payload, type: "AddNew" }));
+            if (closeModal) {
+              closeModal(false);
+            }
             dispatch(setSelectedBrand(null));
             toast.success("Brand is created");
             resetForm();
@@ -110,8 +113,6 @@ const BrandForm: FC<Props> = ({ closeUpdateModal }) => {
       setFile(null);
     }
   }, [selectedBrand]);
-
-  console.log({ images });
 
   return (
     <form onSubmit={formik.handleSubmit} className=" grid gap-5">

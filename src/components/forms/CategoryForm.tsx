@@ -1,6 +1,6 @@
 "use client";
 import { UploadCloudIcon } from "lucide-react";
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -15,6 +15,9 @@ import toast from "react-hot-toast";
 import { addCategory } from "@/redux/features/categorySlice";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { TCategoryType } from "@/types/category.type";
+import SelectImageFromModal from "../shared/SelectImageFromModal";
+import { addVariant, setIsModal } from "@/redux/features/meidaSlice";
+import { TMediaType } from "@/types/media.type";
 
 // Category schema validation
 const categorySchema = Yup.object().shape({
@@ -31,12 +34,18 @@ const categorySchema = Yup.object().shape({
 
 type Props = {
   selectedCategory?: TCategoryType | null;
+  closeModal?: React.Dispatch<React.SetStateAction<boolean>>;
 };
-const CategoryForm: FC<Props> = ({ selectedCategory }) => {
+const CategoryForm: FC<Props> = ({ selectedCategory, closeModal }) => {
+  // Redux State
+  const { categories } = useAppSelector((state) => state.category);
+  const { images } = useAppSelector((state) => state.media);
+  const dispatch = useAppDispatch();
+
+  // Local State
+  const [image, setImage] = useState<TMediaType | null>(null);
   const [slug, setSlug] = useState<string>(selectedCategory?.slug || "");
 
-  const { categories } = useAppSelector((state) => state.category);
-  const dispatch = useAppDispatch();
   const formik = useFormik({
     initialValues: {
       name: selectedCategory?.name || "",
@@ -49,8 +58,6 @@ const CategoryForm: FC<Props> = ({ selectedCategory }) => {
     enableReinitialize: true,
     validationSchema: categorySchema,
     onSubmit: async (values, { resetForm }) => {
-      console.log({ values });
-
       if (selectedCategory?._id) {
         try {
           const data = await updateCategory(selectedCategory?._id, {
@@ -62,8 +69,11 @@ const CategoryForm: FC<Props> = ({ selectedCategory }) => {
             status: "Active",
           });
           if (data.success) {
-            dispatch(addCategory({ data: data?.payload, type: "Single" }));
+            dispatch(addCategory({ data: data?.payload, type: "Update" }));
             toast.success("Category is Updated");
+            if (closeModal) {
+              closeModal(false);
+            }
             resetForm();
           }
         } catch (error) {}
@@ -78,14 +88,31 @@ const CategoryForm: FC<Props> = ({ selectedCategory }) => {
             status: "Active",
           });
           if (data.success) {
-            dispatch(addCategory({ data: data?.payload, type: "Single" }));
+            dispatch(addCategory({ data: data?.payload, type: "AddNew" }));
             toast.success("Category is created");
+            if (closeModal) {
+              closeModal(false);
+            }
             resetForm();
           }
         } catch (error) {}
       }
     },
   });
+
+  useEffect(() => {
+    if (selectedCategory) {
+      const allImages: TMediaType[] = [...images];
+      const findImg = allImages?.find(
+        (item) => item?.fileUrl === selectedCategory?.catThumbnail
+      );
+      if (findImg) {
+        setImage(findImg);
+      }
+    } else {
+      setImage(null);
+    }
+  }, [selectedCategory]);
 
   return (
     <form onSubmit={formik.handleSubmit} className=" grid gap-5">
@@ -174,17 +201,22 @@ const CategoryForm: FC<Props> = ({ selectedCategory }) => {
           Thumbnail
         </label>
         <div className="flex gap-4">
-          <div className="w-[80px] h-[80px] flex items-center justify-center border border-dashed rounded cursor-pointer hover:bg-slate-200">
-            {/* {thumbnailPreview ? (
-              <Image
-                src={thumbnailPreview}
-                alt="Thumbnail Preview"
-                className="w-full h-full object-cover rounded"
-              />
-            ) : ( */}
-            <UploadCloudIcon />
-            {/* )} */}
-          </div>
+          <SelectImageFromModal singleFile={setImage}>
+            <div
+              onClick={() => {
+                dispatch(setIsModal(true));
+                dispatch(addVariant("Single"));
+              }}
+              style={{
+                backgroundImage: `url('${image?.fileUrl}')`,
+                backgroundPosition: "center",
+                backgroundSize: "cover",
+              }}
+              className="w-[80px] h-[80px] cursor-pointer hover:bg-slate-200 flex items-center justify-center border-slate-200 rounded border border-dashed "
+            >
+              <UploadCloudIcon />
+            </div>
+          </SelectImageFromModal>
         </div>
       </div>
       <div className="flex items-center pt-0">

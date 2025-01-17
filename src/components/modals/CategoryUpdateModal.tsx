@@ -27,7 +27,10 @@ const CategoryUpdateModal: FC<Props> = ({ isOpen, setIsOpen }) => {
           <DialogDescription>You want to update this data?</DialogDescription>
         </DialogHeader>
         <DialogDescription>
-          <CategoryForm selectedCategory={selectedCategory} />
+          <CategoryForm
+            closeModal={setIsOpen}
+            selectedCategory={selectedCategory}
+          />
         </DialogDescription>
       </DialogContent>
     </Dialog>

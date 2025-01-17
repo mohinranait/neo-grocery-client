@@ -22,7 +22,7 @@ const BrandUpdateModal: FC<Props> = ({ isOpen, setIsOpen }) => {
           <DialogDescription>You want to update this data?</DialogDescription>
         </DialogHeader>
         <DialogDescription>
-          <BrandForm closeUpdateModal={setIsOpen} />
+          <BrandForm closeModal={setIsOpen} />
         </DialogDescription>
       </DialogContent>
     </Dialog>

@@ -25,6 +25,7 @@ import {
 } from "@/redux/features/categorySlice";
 import toast from "react-hot-toast";
 import CategoryUpdateModal from "../modals/CategoryUpdateModal";
+import { defaultImage } from "@/utils/exportImages";
 
 const CategoryTable = () => {
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
@@ -148,7 +149,7 @@ const CategoryTable = () => {
                       <TableCell>
                         <div className="flex gap-2">
                           <Image
-                            src={"/images/avater.jpg"}
+                            src={defaultImage}
                             className="w-[50] h-[50px] rounded"
                             width={50}
                             height={50}
@@ -206,7 +207,7 @@ const CategoryTable = () => {
                           <TableCell>
                             <div className="flex gap-2">
                               <Image
-                                src={"/images/avater.jpg"}
+                                src={defaultImage}
                                 className="w-[50] h-[50px] rounded"
                                 width={50}
                                 height={50}

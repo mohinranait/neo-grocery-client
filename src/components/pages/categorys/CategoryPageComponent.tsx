@@ -1,26 +1,9 @@
 "use client";
-import { getAllCategory } from "@/actions/categoriesApi";
 import CategoryForm from "@/components/forms/CategoryForm";
 import CategoryTable from "@/components/tables/CategoryTable";
-import { useAppDispatch } from "@/hooks/useRedux";
-import { addCategory } from "@/redux/features/categorySlice";
-import React, { useEffect } from "react";
-import toast from "react-hot-toast";
+import React from "react";
 
 const CategoryPageComponent = () => {
-  const dispatch = useAppDispatch();
-  useEffect(() => {
-    (async function () {
-      try {
-        const data = await getAllCategory();
-        if (data?.success) {
-          dispatch(addCategory({ data: data?.payload, type: "Array" }));
-        }
-      } catch (error: unknown) {
-        toast.error(`${error}`);
-      }
-    })();
-  }, [dispatch]);
   return (
     <div>
       <div className="flex flex-col lg:flex-row gap-4">

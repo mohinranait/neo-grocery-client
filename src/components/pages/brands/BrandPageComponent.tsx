@@ -1,29 +1,9 @@
 "use client";
-import { getAllBrands } from "@/actions/brandApi";
 import BrandForm from "@/components/forms/BrandForm";
 import BrandTable from "@/components/tables/BrandTable";
-import { useAppDispatch } from "@/hooks/useRedux";
-import { addBrand } from "@/redux/features/brandSlice";
-import React, { useEffect } from "react";
-import toast from "react-hot-toast";
+import React from "react";
 
 const BrandPageComponent = () => {
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    (async function () {
-      try {
-        // Call API for load all brands
-        const data = await getAllBrands();
-        if (data?.success) {
-          dispatch(addBrand({ data: data?.payload, type: "Array" }));
-        }
-      } catch (error: unknown) {
-        toast.error(`${error}`);
-      }
-    })();
-  }, [dispatch]);
-
   return (
     <div>
       <div className="flex flex-col lg:flex-row gap-4">
