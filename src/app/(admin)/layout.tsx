@@ -1,5 +1,6 @@
 "use client";
 import { userLogout } from "@/actions/authApi";
+import { getAllProducts } from "@/actions/productApi";
 import AdminAuthLayout from "@/components/admin/AdminAuthLayout";
 import useAxios from "@/hooks/useAxios";
 import { useAppDispatch } from "@/hooks/useRedux";
@@ -8,7 +9,9 @@ import {
   setAuthUser,
   setLoading,
 } from "@/redux/features/authSlice";
+import { setProducts } from "@/redux/features/productSlice";
 import React, { Suspense, useEffect } from "react";
+import toast from "react-hot-toast";
 
 const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   const axios = useAxios();
@@ -31,6 +34,20 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
       }
     })();
   }, []);
+
+  useEffect(() => {
+    (async function () {
+      try {
+        // Call API for get all Products
+        const data = await getAllProducts({ accessBy: "Admin" });
+        if (data?.success) {
+          dispatch(setProducts(data?.payload));
+        }
+      } catch (error: unknown) {
+        toast.error(`${error}`);
+      }
+    })();
+  }, [dispatch]);
 
   return (
     <Suspense fallback={<div>Loading</div>}>

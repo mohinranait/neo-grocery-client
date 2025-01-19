@@ -140,7 +140,11 @@ const ProductVarient = () => {
             <li
               key={idx}
               onClick={() => setActiveTab(variant)}
-              className="py-2 px-2 pl-4 text-sm flex gap-2 hover:bg-slate-100 cursor-pointer"
+              className={`py-2 px-2 pl-4 text-sm border-l-4 flex gap-2 hover:bg-slate-100 cursor-pointer ${
+                variant?.label === activeTab?.label
+                  ? "bg-white"
+                  : "bg-slate-200"
+              } `}
             >
               {variant?.icon}
               {variant?.label}

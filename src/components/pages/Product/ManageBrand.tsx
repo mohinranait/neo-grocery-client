@@ -43,6 +43,8 @@ const ManageBrand = () => {
     setShowBrands(brands);
   }, [brands]);
 
+  console.log({ da: product?.brand });
+
   return (
     <React.Fragment>
       <div className=" bg-white rounded border border-l-slate-100 bg-card text-card-foreground ">

@@ -93,61 +93,6 @@ const ShippingComponent = () => {
           </div>
         </div>
       </div>
-
-      <div className="flex items-center">
-        <div className="w-[150px]">
-          <label
-            htmlFor="stock_quantity"
-            className="text-sm text-muted-foreground"
-          >
-            Stock Quantity
-          </label>
-        </div>
-        <div>
-          <input
-            id="stock_quantity"
-            type="number"
-            className="flex h-8 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
-            placeholder="Stock quantity"
-            value={product?.isStock ?? ""}
-            onChange={(e) =>
-              dispatch(
-                setProduct({
-                  ...product,
-                  isStock: Number(e.target.value),
-                })
-              )
-            }
-          />
-        </div>
-      </div>
-      <div className="flex items-center">
-        <div className="w-[150px]">
-          <label
-            htmlFor="min_stock"
-            className="text-sm leading-3 text-muted-foreground"
-          >
-            Minimum Stock Quantity
-          </label>
-        </div>
-        <div>
-          <input
-            id="min_stock"
-            type="number"
-            className="flex h-8 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
-            placeholder="Min stock for warning"
-            value={product?.minStock ?? ""}
-            onChange={(e) =>
-              dispatch(
-                setProduct({
-                  ...product,
-                  minStock: Number(e.target.value),
-                })
-              )
-            }
-          />
-        </div>
-      </div>
     </div>
   );
 };

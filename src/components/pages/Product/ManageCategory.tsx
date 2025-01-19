@@ -89,17 +89,11 @@ const ManageCategory = () => {
   };
 
   const handleChangeMethod = (value: string) => {
-    const copyProduct = { ...product };
-    // const bategoryIds = copyProduct?.category || [];
-    const updateProduct = { ...copyProduct };
     if (catIds.includes(value)) {
       deselectRecursion(value);
     } else {
       const newcatIds = selectedRecursion(value);
       setCatIds((prev) => [...prev, ...newcatIds]);
-      dispatch(
-        setProduct({ ...updateProduct, category: [...catIds, ...newcatIds] })
-      );
     }
   };
 
@@ -115,7 +109,10 @@ const ManageCategory = () => {
     setShowCategories(categoryFormateForTree);
   }, [categories]);
 
-  console.log(catIds);
+  useEffect(() => {
+    const copyProduct = { ...product };
+    dispatch(setProduct({ ...copyProduct, category: catIds }));
+  }, [catIds]);
 
   const renderCategories = (categories: TTreeNode[], level = 0) => {
     return categories.map((category, index) => {

@@ -9,7 +9,7 @@ type Delivery = {
 }
 
 type FeatureImage = {
-  images: string[];
+  image: string;
   videoUrl?: string;
 }
 
