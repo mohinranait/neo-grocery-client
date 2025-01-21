@@ -18,7 +18,7 @@ type Price = {
   productPrice: number;
 }
 
-type OfferDate= {
+export type OfferDate= {
   start_date?: Date;
   end_date?: Date;
   offerPrice: number;
@@ -61,4 +61,7 @@ export type TProduct = {
   variant:TProductType;
   manageStock: boolean;
   weight: string ;
+  seo_title: string;
+  seo_desc:string;
+  seo_keyword:string[],
 }

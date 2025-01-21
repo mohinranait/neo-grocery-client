@@ -1,10 +1,55 @@
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { setProduct } from "@/redux/features/productSlice";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { format } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { OfferDate } from "@/types/product.type";
 
 const GeneralComponent = () => {
+  // Redux state
   const { product } = useAppSelector((state) => state.product);
   const dispatch = useAppDispatch();
+
+  // Local State
+  const [isOfferDateShow, setIsOfferDateShow] = useState<boolean>(false);
+  const [startDate, setStartDate] = React.useState<Date>();
+  const [endDate, setEndDate] = React.useState<Date>();
+
+  useEffect(() => {
+    dispatch(
+      setProduct({
+        ...product,
+        offerDate: {
+          ...product.offerDate,
+          start_date: startDate,
+        } as OfferDate,
+      })
+    );
+  }, [startDate]);
+
+  useEffect(() => {
+    dispatch(
+      setProduct({
+        ...product,
+        offerDate: {
+          ...product.offerDate,
+          end_date: endDate,
+        } as OfferDate,
+      })
+    );
+  }, [endDate]);
+
+  console.log({ startDate });
+  console.log({ endDate });
+
   return (
     <div className="p-4 flex flex-col gap-3">
       <div className="flex items-center">
@@ -62,11 +107,120 @@ const GeneralComponent = () => {
               )
             }
           />
-          <span className="text-primary underline cursor-pointer text-sm">
+          <span
+            onClick={() => setIsOfferDateShow(!isOfferDateShow)}
+            className="text-primary underline cursor-pointer text-sm"
+          >
             Schedule
           </span>
         </div>
       </div>
+
+      {isOfferDateShow && (
+        <>
+          <div className="flex items-center">
+            <div className="w-[150px]">
+              <label
+                htmlFor="sale_price"
+                className="text-sm text-muted-foreground"
+              >
+                Start Date
+              </label>
+            </div>
+            <div className="flex gap-2 items-center">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant={"outline"}
+                    className={cn(
+                      "w-full min-w-[200px] h-9 justify-start text-left font-normal",
+                      !startDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {startDate ? (
+                      format(startDate, "PPP")
+                    ) : (
+                      <span>Pick a date</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={startDate}
+                    onSelect={(e) => {
+                      setStartDate(e);
+                    }}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+              <span
+                onClick={() => {
+                  setStartDate(undefined);
+                  setEndDate(undefined);
+                }}
+                className="text-primary underline cursor-pointer text-sm"
+              >
+                Cancel
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center">
+            <div className="w-[150px]">
+              <label
+                htmlFor="sale_price"
+                className="text-sm text-muted-foreground"
+              >
+                End Date
+              </label>
+            </div>
+            <div className="flex gap-2 items-center">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant={"outline"}
+                    className={cn(
+                      "w-full min-w-[200px] h-9 justify-start text-left font-normal",
+                      !endDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {endDate ? (
+                      format(endDate, "PPP")
+                    ) : (
+                      <span>Pick a date</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={endDate}
+                    onSelect={(e) => {
+                      setEndDate(e);
+                      dispatch(
+                        setProduct({
+                          ...product,
+                          publish_date: e ? e : new Date(),
+                        })
+                      );
+                    }}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+              <span
+                onClick={() => setEndDate(undefined)}
+                className="text-primary underline cursor-pointer text-sm"
+              >
+                Cancel
+              </span>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };

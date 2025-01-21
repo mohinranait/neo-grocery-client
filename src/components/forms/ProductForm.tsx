@@ -7,6 +7,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
+import { TagsInput } from "react-tag-input-component";
 import {
   Popover,
   PopoverContent,
@@ -27,6 +28,7 @@ import { createNewProduct, getSingleProductBySlug } from "@/actions/productApi";
 import toast from "react-hot-toast";
 import { useRouter, useSearchParams } from "next/navigation";
 import { generateSlug } from "@/utils/helpers";
+import EditorElement from "../elements/EditorElement";
 
 const ProductForm = () => {
   // Redux state
@@ -45,6 +47,7 @@ const ProductForm = () => {
   const [gallarys, setGallarys] = useState<TMediaType[]>([]);
   const [isOpenSlug, setIsOpenSlug] = useState<boolean>(false);
   const [slug, setSlug] = useState<string>("");
+  const [keywords, setKeywords] = useState<string[]>([]);
 
   // Submit product form for SAVE Product in DB
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -62,6 +65,7 @@ const ProductForm = () => {
         },
         imageGallary: gallarys?.map((img) => img?.fileUrl),
         slug: product?.slug ? generateSlug(product?.slug) : generateSlug(slug),
+        seo_keyword: keywords,
       };
       const data = await createNewProduct(formate);
 
@@ -93,6 +97,12 @@ const ProductForm = () => {
       } catch (error) {}
     })();
   }, [editId]);
+
+  useEffect(() => {
+    if (product?.seo_keyword) {
+      setKeywords(product?.seo_keyword);
+    }
+  }, [product]);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -185,8 +195,66 @@ const ProductForm = () => {
               </div>
             </div>
 
-            <div className="p-5 bg-white rounded-md">Markdown Editor</div>
+            <div className="p-5 bg-white rounded-md">
+              <div className="flex items-center gap-2 border-b p-4 py-3">
+                <p>Editor</p>
+              </div>
+              <EditorElement />
+            </div>
             <ProductVarient />
+            <div className=" bg-white rounded-md">
+              <div className="flex items-center gap-2 border-b p-4 py-3">
+                <p>SEO</p>
+              </div>
+              <div className="px-4 py-2 space-y-3">
+                <div>
+                  <label htmlFor="">Meta Title</label>
+                  <input
+                    id="regularPrice"
+                    type="text"
+                    className="flex h-8 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                    placeholder="Regular Price"
+                    value={product?.seo_title ?? ""}
+                    onChange={(e) =>
+                      dispatch(
+                        setProduct({
+                          ...product,
+                          seo_title: e?.target?.value,
+                        })
+                      )
+                    }
+                  />
+                </div>
+                <div>
+                  <label htmlFor="">Meta Description</label>
+                  <textarea
+                    name=""
+                    id=""
+                    rows={3}
+                    className="flex  w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                    placeholder="Meta description"
+                    value={product?.seo_desc ?? ""}
+                    onChange={(e) =>
+                      dispatch(
+                        setProduct({
+                          ...product,
+                          seo_desc: e?.target?.value,
+                        })
+                      )
+                    }
+                  ></textarea>
+                </div>
+                <div>
+                  <label htmlFor="">Meta Keyword</label>
+                  <TagsInput
+                    value={keywords}
+                    onChange={setKeywords}
+                    name="keywords"
+                    placeHolder="Seo Keywords"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <div>

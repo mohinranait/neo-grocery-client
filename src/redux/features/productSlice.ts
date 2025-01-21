@@ -13,7 +13,8 @@ type TInitialStateType = {
 const initialState:TInitialStateType  = {
   product: {
     name:'',
-    brand:["678a11e6b56dc08b671a1627","678a11f0b56dc08b671a1629","678a3746b56dc08b671a16d9"]
+    brand:["678a11e6b56dc08b671a1627","678a11f0b56dc08b671a1629","678a3746b56dc08b671a16d9"],
+    category:["6789f817b56dc08b671a1612","678a27b8b56dc08b671a165a","678a1128b56dc08b671a1619"]
   } as TProduct,
   products: [],
   selectedProduct: null,

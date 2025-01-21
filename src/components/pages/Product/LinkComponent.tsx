@@ -73,12 +73,14 @@ const LinkComponent = () => {
   return (
     <div className="p-4 flex flex-col gap-3">
       <div className="flex items-start">
-        <div className="w-[150px]">
-          <label htmlFor="upsalss" className="text-sm text-muted-foreground">
-            Upsalss
-          </label>
-        </div>
         <div>
+          <div className="w-[150px]">
+            <label htmlFor="upsalss" className="text-sm text-muted-foreground">
+              Upsalss
+            </label>
+          </div>
+        </div>
+        <div className="w-full">
           <SearchAndMultiSelect />
           <hr />
           {/* {selectedProducts?.length > 0 && (
@@ -120,6 +122,19 @@ const LinkComponent = () => {
               </ul>
             )}
           </div> */}
+        </div>
+      </div>
+
+      <div className="flex items-start">
+        <div>
+          <div className="w-[150px]">
+            <label htmlFor="upsalss" className="text-sm text-muted-foreground">
+              Cros Salss
+            </label>
+          </div>
+        </div>
+        <div className="w-full">
+          <SearchAndMultiSelect />
         </div>
       </div>
     </div>

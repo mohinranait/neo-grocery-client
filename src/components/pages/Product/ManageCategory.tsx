@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
@@ -114,6 +115,12 @@ const ManageCategory = () => {
     dispatch(setProduct({ ...copyProduct, category: catIds }));
   }, [catIds]);
 
+  useEffect(() => {
+    if (product?.category && catIds?.length == 0) {
+      setCatIds(product?.category);
+    }
+  }, [product]);
+
   const renderCategories = (categories: TTreeNode[], level = 0) => {
     return categories.map((category, index) => {
       const id = `level_${level}_cat_${category._id}`;
@@ -122,7 +129,9 @@ const ManageCategory = () => {
           <li className={`flex pl-${level * 4} items-center space-x-2`}>
             <Checkbox
               onCheckedChange={() => handleChangeMethod(category?._id)}
-              checked={catIds.includes(category._id)}
+              checked={
+                product?.category?.includes(category?._id) ? true : false
+              }
               id={id}
             />
             <label

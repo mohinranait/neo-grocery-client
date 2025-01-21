@@ -39,22 +39,26 @@ const SearchAndMultiSelect = () => {
       const fidnOption = options?.find((option) => option?.value === data);
       if (fidnOption) {
         setSelecteds((prev) => [...prev, fidnOption]);
+        setSearch("");
       }
+    } else {
+      setSelecteds((prev) => prev?.filter((d) => d.value !== data));
     }
   };
 
   return (
-    <div className="relative">
-      <div className="border border-slate-200 p-2">
+    <div className="relative w-full">
+      <div className="border  border-slate-200 p-1">
         {selecteds?.length > 0 && (
           <ul className="flex flex-wrap gap-2 ">
             {selecteds?.map((item, index) => (
               <li
                 key={index}
-                className="px-3 py-1 inline-flex gap-1 items-center rounded bg-slate-50 text-sm text-slate-700 hover:bg-slate-100 "
+                className="px-3 py-[2px] inline-flex gap-1 items-center rounded bg-slate-50 text-sm text-slate-700 hover:bg-slate-100 "
               >
                 {item?.name}
                 <X
+                  onClick={() => handleSelectData(item?.value, "remove")}
                   className="text-slate-700 hover:text-slate-950 cursor-pointer"
                   size={12}
                 />
@@ -63,18 +67,18 @@ const SearchAndMultiSelect = () => {
           </ul>
         )}
 
-        <div className="">
+        <div className="w-full">
           <input
             value={search}
             onChange={(e) => handleSearch(e.target.value)}
             type="search"
-            className="w-full py-1 px-2 rounded focus-visible:outline-none "
+            className="w-full  rounded focus-visible:outline-none "
             placeholder="Search"
           />
         </div>
       </div>
       {options?.length > 0 && search && (
-        <ul className="flex flex-col gap-1 absolute top-full z-10 shadow border border-slate-50 left-0 bg-white w-full p-2 ">
+        <ul className="flex flex-col  gap-1 absolute top-full z-10 shadow border border-slate-50 left-0 bg-white w-full p-2 ">
           {options?.map((option, idx) => (
             <li
               key={idx}
