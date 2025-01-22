@@ -28,7 +28,7 @@ import { createNewProduct, getSingleProductBySlug } from "@/actions/productApi";
 import toast from "react-hot-toast";
 import { useRouter, useSearchParams } from "next/navigation";
 import { generateSlug } from "@/utils/helpers";
-import EditorElement from "../elements/EditorElement";
+import RichTextEditor from "../RichTextEditor/RichTextEditor";
 
 const ProductForm = () => {
   // Redux state
@@ -48,6 +48,7 @@ const ProductForm = () => {
   const [isOpenSlug, setIsOpenSlug] = useState<boolean>(false);
   const [slug, setSlug] = useState<string>("");
   const [keywords, setKeywords] = useState<string[]>([]);
+  const [content, setContent] = useState<string>("");
 
   // Submit product form for SAVE Product in DB
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -195,11 +196,12 @@ const ProductForm = () => {
               </div>
             </div>
 
-            <div className="p-5 bg-white rounded-md">
-              <div className="flex items-center gap-2 border-b p-4 py-3">
-                <p>Editor</p>
-              </div>
-              <EditorElement />
+            <div className="p-2 bg-white rounded-md">
+              <RichTextEditor
+                content={content}
+                onChange={(e) => setContent(e)}
+              />
+              {content}
             </div>
             <ProductVarient />
             <div className=" bg-white rounded-md">
