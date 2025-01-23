@@ -1,7 +1,7 @@
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { setProduct } from "@/redux/features/productSlice";
 import React, { useEffect, useState } from "react";
-import { format } from "date-fns";
+import { format, compareAsc } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -33,6 +33,10 @@ const GeneralComponent = () => {
         } as OfferDate,
       })
     );
+
+    if (endDate && !startDate) {
+      setEndDate(undefined);
+    }
   }, [startDate]);
 
   useEffect(() => {
@@ -61,12 +65,16 @@ const GeneralComponent = () => {
             Regular Price (৳){" "}
           </label>
         </div>
-        <div>
+        <div className="relative">
+          <span className="absolute left-4 top-2/4 -translate-y-2/4 text-muted-foreground">
+            ৳{" "}
+          </span>
           <input
             id="regularPrice"
-            type="text"
-            className="flex h-8 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
-            placeholder="Regular Price"
+            type="number"
+            min={0}
+            className="flex h-8 w-full rounded-md border border-input bg-transparent pr-3 pl-8 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+            // placeholder="Regular Price"
             value={product?.price?.productPrice ?? ""}
             onChange={(e) =>
               dispatch(
@@ -89,30 +97,45 @@ const GeneralComponent = () => {
           </label>
         </div>
         <div className="flex gap-2 items-center">
-          <input
-            id="sale_price"
-            type="text"
-            className="flex h-8 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
-            placeholder="Sale Price"
-            value={product?.price?.sellPrice ?? ""}
-            onChange={(e) =>
-              dispatch(
-                setProduct({
-                  ...product,
-                  price: {
-                    ...product?.price,
-                    sellPrice: parseFloat(e.target.value) || 0,
-                  },
-                })
-              )
-            }
-          />
-          <span
-            onClick={() => setIsOfferDateShow(!isOfferDateShow)}
-            className="text-primary underline cursor-pointer text-sm"
-          >
-            Schedule
-          </span>
+          <div>
+            <div className="relative">
+              <span className="absolute left-4 top-2/4 -translate-y-2/4 text-muted-foreground">
+                ৳{" "}
+              </span>
+              <input
+                id="sale_price"
+                type="number"
+                min={0}
+                className="flex h-8 w-full rounded-md border border-input bg-transparent pr-3 pl-8 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                // placeholder="Sale Price"
+                value={product?.price?.sellPrice ?? ""}
+                onChange={(e) =>
+                  dispatch(
+                    setProduct({
+                      ...product,
+                      price: {
+                        ...product?.price,
+                        sellPrice: parseFloat(e.target.value) || 0,
+                      },
+                    })
+                  )
+                }
+              />
+            </div>
+            {product?.price?.productPrice <= product?.price?.sellPrice && (
+              <p className="text-red-500 text-xs">
+                Sale Price must be less than Regular Price
+              </p>
+            )}
+          </div>
+          {!isOfferDateShow && (
+            <span
+              onClick={() => setIsOfferDateShow(!isOfferDateShow)}
+              className="text-primary underline cursor-pointer text-sm"
+            >
+              Schedule
+            </span>
+          )}
         </div>
       </div>
 
@@ -160,6 +183,7 @@ const GeneralComponent = () => {
                 onClick={() => {
                   setStartDate(undefined);
                   setEndDate(undefined);
+                  setIsOfferDateShow(false);
                 }}
                 className="text-primary underline cursor-pointer text-sm"
               >
@@ -177,46 +201,57 @@ const GeneralComponent = () => {
               </label>
             </div>
             <div className="flex gap-2 items-center">
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant={"outline"}
-                    className={cn(
-                      "w-full min-w-[200px] h-9 justify-start text-left font-normal",
-                      !endDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {endDate ? (
-                      format(endDate, "PPP")
-                    ) : (
-                      <span>Pick a date</span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={endDate}
-                    onSelect={(e) => {
-                      setEndDate(e);
-                      dispatch(
-                        setProduct({
-                          ...product,
-                          publish_date: e ? e : new Date(),
-                        })
-                      );
-                    }}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-              <span
-                onClick={() => setEndDate(undefined)}
-                className="text-primary underline cursor-pointer text-sm"
-              >
-                Cancel
-              </span>
+              <div>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "w-full min-w-[200px] h-9 justify-start text-left font-normal",
+                        !endDate && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {endDate ? (
+                        format(endDate, "PPP")
+                      ) : (
+                        <span>Pick a date</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={endDate}
+                      onSelect={(e) => {
+                        setEndDate(e);
+                        dispatch(
+                          setProduct({
+                            ...product,
+                            publish_date: e ? e : new Date(),
+                          })
+                        );
+                      }}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+                {startDate &&
+                  endDate &&
+                  compareAsc(startDate, endDate) === 1 && (
+                    <p className="text-red-500 text-xs">
+                      End Date must be greater than Start Date
+                    </p>
+                  )}
+              </div>
+              {endDate && (
+                <span
+                  onClick={() => setEndDate(undefined)}
+                  className="text-primary underline cursor-pointer text-sm"
+                >
+                  Cancel
+                </span>
+              )}
             </div>
           </div>
         </>
