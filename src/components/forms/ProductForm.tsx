@@ -4,7 +4,7 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { format } from "date-fns";
+import { compareAsc, format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { TagsInput } from "react-tag-input-component";
@@ -16,7 +16,11 @@ import {
 
 import ProductVarient from "../pages/Product/ProductVarient";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
-import { setProduct, updateProducts } from "@/redux/features/productSlice";
+import {
+  setProduct,
+  updateProducts,
+  updateSingleProduct,
+} from "@/redux/features/productSlice";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 import SelectImageFromModal from "../shared/SelectImageFromModal";
@@ -24,7 +28,11 @@ import { addVariant, setIsModal } from "@/redux/features/meidaSlice";
 import { TMediaType } from "@/types/media.type";
 import ManageCategory from "../pages/Product/ManageCategory";
 import ManageBrand from "../pages/Product/ManageBrand";
-import { createNewProduct, getSingleProductBySlug } from "@/actions/productApi";
+import {
+  createNewProduct,
+  getSingleProductBySlug,
+  updateProduct,
+} from "@/actions/productApi";
 import toast from "react-hot-toast";
 import { useRouter, useSearchParams } from "next/navigation";
 import { generateSlug } from "@/utils/helpers";
@@ -40,9 +48,10 @@ const ProductForm = () => {
   const searchParams = useSearchParams();
   const editId = searchParams.get("edit");
   console.log({ editId });
+  console.log({ product });
 
   // Local State
-  const [date, setDate] = React.useState<Date>();
+  // const [date, setDate] = React.useState<Date>();
   const [file, setFile] = useState<TMediaType | null>(null);
   const [gallarys, setGallarys] = useState<TMediaType[]>([]);
   const [isOpenSlug, setIsOpenSlug] = useState<boolean>(false);
@@ -54,56 +63,90 @@ const ProductForm = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    console.log({ product });
+    // Required field validation
     if (!product?.name) return toast.error("Product title is required");
     if (!product?.price?.productPrice) return toast.error("Price is required");
 
-    try {
-      const formate = {
-        ...product,
-        featureImage: {
-          image: file?.fileUrl || "",
-        },
-        imageGallary: gallarys?.map((img) => img?.fileUrl),
-        slug: product?.slug ? generateSlug(product?.slug) : generateSlug(slug),
-        seo_keyword: keywords,
-      };
-      const data = await createNewProduct(formate);
-
-      if (data?.success) {
-        dispatch(updateProducts(product));
-        router.push(`/admin/product?edit=${data?.payload?.slug}`);
-        toast.success("Product created");
-      } else {
-        toast.error("Somthing wrong");
+    // Price Validation
+    if (!product?.price?.sellPrice) {
+      if (product?.price?.sellPrice < product?.price?.productPrice) {
+        return toast.error("Sell Price is less than Product Price");
       }
-    } catch (error) {
-      console.log(error);
+    }
+
+    // Date Validation
+    if (product?.offerDate?.end_date) {
+      // If end date is selected then start date is required
+      if (!product?.offerDate?.start_date) {
+        return toast.error("Start date is required");
+      }
+
+      // Start date less than end date
+      if (
+        compareAsc(
+          product?.offerDate?.start_date,
+          product?.offerDate?.end_date
+        ) === 1
+      ) {
+        return toast.error("End date is less than start date");
+      }
+    }
+    const formate = {
+      ...product,
+      featureImage: {
+        image: file?.fileUrl || "",
+      },
+      publish_date: product?.publish_date ? product?.publish_date : new Date(),
+      imageGallary: gallarys?.map((img) => img?.fileUrl),
+      slug: product?.slug ? generateSlug(product?.slug) : generateSlug(slug),
+      seo_keyword: keywords,
+    };
+
+    if (editId) {
+      if (!product?._id) return;
+      try {
+        const data = await updateProduct(product?._id, formate);
+
+        if (data?.success) {
+          dispatch(updateSingleProduct(data?.payload));
+          router.push(`/admin/product?edit=${data?.payload?.slug}`);
+          toast.success("Product updated");
+        } else {
+          toast.error("Somthing wrong");
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      try {
+        const data = await createNewProduct(formate);
+
+        if (data?.success) {
+          dispatch(updateProducts(product));
+          router.push(`/admin/product?edit=${data?.payload?.slug}`);
+          toast.success("Product created");
+        } else {
+          toast.error("Somthing wrong");
+        }
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
   // handle delete Product by ID
-
   useEffect(() => {
     if (!editId) return;
-
     (async function () {
       try {
         const data = await getSingleProductBySlug(editId);
-        console.log({ data });
-
         if (data?.success) {
           dispatch(setProduct(data?.payload));
+          setSlug(data?.payload?.slug);
         }
       } catch (error) {}
     })();
   }, [editId]);
-
-  useEffect(() => {
-    if (product?.seo_keyword) {
-      setKeywords(product?.seo_keyword);
-    }
-  }, [product]);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -116,7 +159,7 @@ const ProductForm = () => {
           </Button>
           <Button>
             <Save />
-            Save
+            {editId ? "Update" : "Save"}
           </Button>
         </div>
       </div>
@@ -269,7 +312,8 @@ const ProductForm = () => {
                 <div>
                   <RadioGroup
                     className="flex flex-row gap-2"
-                    defaultValue="Active"
+                    defaultValue={"Active"}
+                    value={product?.status}
                     onValueChange={(e: "Active" | "Inactive") =>
                       dispatch(
                         setProduct({
@@ -280,13 +324,21 @@ const ProductForm = () => {
                     }
                   >
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="Active" id="option-one" />
+                      <RadioGroupItem
+                        value="Active"
+                        // checked={product?.status === "Active"}
+                        id="option-one"
+                      />
                       <Label htmlFor="option-one" className="cursor-pointer">
                         Published
                       </Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="Inactive" id="option-two" />
+                      <RadioGroupItem
+                        value="Inactive"
+                        // checked={product?.status === "Inactive"}
+                        id="option-two"
+                      />
                       <Label htmlFor="option-two" className="cursor-pointer">
                         Hidden
                       </Label>
@@ -301,19 +353,23 @@ const ProductForm = () => {
                         variant={"outline"}
                         className={cn(
                           "w-full h-9 justify-start text-left font-normal",
-                          !date && "text-muted-foreground"
+                          !product?.publish_date && "text-muted-foreground"
                         )}
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {date ? format(date, "PPP") : <span>Pick a date</span>}
+                        {product?.publish_date ? (
+                          format(product?.publish_date, "PPP")
+                        ) : (
+                          <span>Pick a date</span>
+                        )}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0">
                       <Calendar
                         mode="single"
-                        selected={date}
+                        selected={product?.publish_date}
                         onSelect={(e) => {
-                          setDate(e);
+                          // setDate(e);
                           dispatch(
                             setProduct({
                               ...product,

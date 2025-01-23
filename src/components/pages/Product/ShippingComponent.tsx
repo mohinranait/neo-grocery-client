@@ -19,12 +19,15 @@ const ShippingComponent = () => {
             type="text"
             className="flex h-8 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
             placeholder="Weight"
-            value={product?.weight ?? ""}
+            value={product?.shipping?.weight ?? ""}
             onChange={(e) =>
               dispatch(
                 setProduct({
                   ...product,
-                  weight: e.target.value,
+                  shipping: {
+                    ...product?.shipping,
+                    weight: e.target.value,
+                  },
                 })
               )
             }
@@ -48,12 +51,15 @@ const ShippingComponent = () => {
               type="number"
               className="flex h-8 w-[86px]  rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
               placeholder="Length"
-              value={product?.weight ?? ""}
+              value={product?.shipping?.length ?? ""}
               onChange={(e) =>
                 dispatch(
                   setProduct({
                     ...product,
-                    weight: e.target.value,
+                    shipping: {
+                      ...product?.shipping,
+                      length: e.target.value,
+                    },
                   })
                 )
               }
@@ -64,12 +70,15 @@ const ShippingComponent = () => {
               name="width"
               className="flex h-8 w-[80px]  rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
               placeholder="Width"
-              value={product?.weight ?? ""}
+              value={product?.shipping?.width ?? ""}
               onChange={(e) =>
                 dispatch(
                   setProduct({
                     ...product,
-                    weight: e.target.value,
+                    shipping: {
+                      ...product?.shipping,
+                      width: e.target.value,
+                    },
                   })
                 )
               }
@@ -80,12 +89,15 @@ const ShippingComponent = () => {
               name="height"
               className="flex h-8 w-[80px]  rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
               placeholder="Height"
-              value={product?.weight ?? ""}
+              value={product?.shipping?.height ?? ""}
               onChange={(e) =>
                 dispatch(
                   setProduct({
                     ...product,
-                    weight: e.target.value,
+                    shipping: {
+                      ...product?.shipping,
+                      height: e.target.value,
+                    },
                   })
                 )
               }

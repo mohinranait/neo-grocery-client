@@ -60,7 +60,12 @@ export type TProduct = {
   // Extra type
   variant:TProductType;
   manageStock: boolean;
-  weight: string ;
+  shipping:{
+    weight: string ;
+    length: string ;
+    width: string ;
+    height: string ;
+  },
   seo_title: string;
   seo_desc:string;
   seo_keyword:string[],

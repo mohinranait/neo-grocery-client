@@ -1,6 +1,7 @@
+"use client";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { setProduct } from "@/redux/features/productSlice";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { format, compareAsc } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
@@ -11,7 +12,6 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { OfferDate } from "@/types/product.type";
 
 const GeneralComponent = () => {
   // Redux state
@@ -20,39 +20,6 @@ const GeneralComponent = () => {
 
   // Local State
   const [isOfferDateShow, setIsOfferDateShow] = useState<boolean>(false);
-  const [startDate, setStartDate] = React.useState<Date>();
-  const [endDate, setEndDate] = React.useState<Date>();
-
-  useEffect(() => {
-    dispatch(
-      setProduct({
-        ...product,
-        offerDate: {
-          ...product.offerDate,
-          start_date: startDate,
-        } as OfferDate,
-      })
-    );
-
-    if (endDate && !startDate) {
-      setEndDate(undefined);
-    }
-  }, [startDate]);
-
-  useEffect(() => {
-    dispatch(
-      setProduct({
-        ...product,
-        offerDate: {
-          ...product.offerDate,
-          end_date: endDate,
-        } as OfferDate,
-      })
-    );
-  }, [endDate]);
-
-  console.log({ startDate });
-  console.log({ endDate });
 
   return (
     <div className="p-4 flex flex-col gap-3">
@@ -157,12 +124,12 @@ const GeneralComponent = () => {
                     variant={"outline"}
                     className={cn(
                       "w-full min-w-[200px] h-9 justify-start text-left font-normal",
-                      !startDate && "text-muted-foreground"
+                      !product?.offerDate?.start_date && "text-muted-foreground"
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {startDate ? (
-                      format(startDate, "PPP")
+                    {product?.offerDate?.start_date ? (
+                      format(product?.offerDate?.start_date, "PPP")
                     ) : (
                       <span>Pick a date</span>
                     )}
@@ -171,9 +138,18 @@ const GeneralComponent = () => {
                 <PopoverContent className="w-auto p-0">
                   <Calendar
                     mode="single"
-                    selected={startDate}
+                    selected={product?.offerDate?.start_date}
                     onSelect={(e) => {
-                      setStartDate(e);
+                      dispatch(
+                        setProduct({
+                          ...product,
+                          offerDate: {
+                            ...product?.offerDate,
+                            start_date: e || undefined,
+                            offerPrice: product?.offerDate?.offerPrice ?? 0,
+                          },
+                        })
+                      );
                     }}
                     initialFocus
                   />
@@ -181,8 +157,17 @@ const GeneralComponent = () => {
               </Popover>
               <span
                 onClick={() => {
-                  setStartDate(undefined);
-                  setEndDate(undefined);
+                  dispatch(
+                    setProduct({
+                      ...product,
+                      offerDate: {
+                        ...product?.offerDate,
+                        start_date: undefined,
+                        end_date: undefined,
+                        offerPrice: product?.offerDate?.offerPrice ?? 0,
+                      },
+                    })
+                  );
                   setIsOfferDateShow(false);
                 }}
                 className="text-primary underline cursor-pointer text-sm"
@@ -208,12 +193,12 @@ const GeneralComponent = () => {
                       variant={"outline"}
                       className={cn(
                         "w-full min-w-[200px] h-9 justify-start text-left font-normal",
-                        !endDate && "text-muted-foreground"
+                        !product?.offerDate?.end_date && "text-muted-foreground"
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {endDate ? (
-                        format(endDate, "PPP")
+                      {product?.offerDate?.end_date ? (
+                        format(product?.offerDate?.end_date, "PPP")
                       ) : (
                         <span>Pick a date</span>
                       )}
@@ -222,13 +207,16 @@ const GeneralComponent = () => {
                   <PopoverContent className="w-auto p-0">
                     <Calendar
                       mode="single"
-                      selected={endDate}
+                      selected={product?.offerDate?.end_date}
                       onSelect={(e) => {
-                        setEndDate(e);
                         dispatch(
                           setProduct({
                             ...product,
-                            publish_date: e ? e : new Date(),
+                            offerDate: {
+                              ...product?.offerDate,
+                              end_date: e || undefined,
+                              offerPrice: product?.offerDate?.offerPrice ?? 0,
+                            },
                           })
                         );
                       }}
@@ -236,17 +224,31 @@ const GeneralComponent = () => {
                     />
                   </PopoverContent>
                 </Popover>
-                {startDate &&
-                  endDate &&
-                  compareAsc(startDate, endDate) === 1 && (
+                {product?.offerDate?.start_date &&
+                  product?.offerDate?.end_date &&
+                  compareAsc(
+                    product?.offerDate?.start_date,
+                    product?.offerDate?.end_date
+                  ) === 1 && (
                     <p className="text-red-500 text-xs">
                       End Date must be greater than Start Date
                     </p>
                   )}
               </div>
-              {endDate && (
+              {product?.offerDate?.end_date && (
                 <span
-                  onClick={() => setEndDate(undefined)}
+                  onClick={() =>
+                    dispatch(
+                      setProduct({
+                        ...product,
+                        offerDate: {
+                          ...product?.offerDate,
+                          end_date: undefined,
+                          offerPrice: product?.offerDate?.offerPrice ?? 0,
+                        },
+                      })
+                    )
+                  }
                   className="text-primary underline cursor-pointer text-sm"
                 >
                   Cancel

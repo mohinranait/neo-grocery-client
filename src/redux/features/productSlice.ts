@@ -33,6 +33,11 @@ export const productSlice = createSlice({
       // Set all products
         state.products = action?.payload
     },
+    updateSingleProduct : (state, action: PayloadAction<TProduct>) => {
+      // Update single product
+        const product = action?.payload
+        state.products = state.products.map((d) => d._id === product._id ? product : d)
+    },
     updateProducts: (state, action: PayloadAction<TProduct>) => {
         state.products = [...state.products, action?.payload]
     },
@@ -45,6 +50,6 @@ export const productSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const {  setProduct,setProducts,updateProducts,setSelectedProduct } = productSlice.actions
+export const {  setProduct,setProducts,updateProducts,updateSingleProduct,setSelectedProduct } = productSlice.actions
 
 export default productSlice.reducer
