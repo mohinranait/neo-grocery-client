@@ -12,8 +12,8 @@ export const createNewProduct = async (formData: TProduct) => {
 /**
  * @api {get} Get all products method
 */
-export const getAllProducts = async ({accessBy}:{accessBy:'Admin'|"User"|"Manager"}) => {
-    const {data} = await instance.get(`/products?accessBy=${accessBy}`);
+export const getAllProducts = async (query:string) => {
+    const {data} = await instance.get(`/products${query && '?'+query }`);
     return data;
 }
 

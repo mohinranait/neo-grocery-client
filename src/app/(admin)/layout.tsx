@@ -39,9 +39,9 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
     (async function () {
       try {
         // Call API for get all Products
-        const data = await getAllProducts({ accessBy: "Admin" });
+        const data = await getAllProducts("accessBy=Admin");
         if (data?.success) {
-          dispatch(setProducts(data?.payload));
+          dispatch(setProducts(data?.payload?.products));
         }
       } catch (error: unknown) {
         toast.error(`${error}`);

@@ -14,8 +14,6 @@ import { addCategory } from "@/redux/features/categorySlice";
 import toast from "react-hot-toast";
 import { getAllBrands } from "@/actions/brandApi";
 import { addBrand } from "@/redux/features/brandSlice";
-import { getAllProducts } from "@/actions/productApi";
-import { setProducts } from "@/redux/features/productSlice";
 
 const AdminAuthLayout = ({ component }: { component: React.ReactNode }) => {
   const [isToggle, setIsToggle] = useState(false);
