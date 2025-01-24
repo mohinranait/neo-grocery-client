@@ -7,14 +7,13 @@ import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { addAttributeConfig } from "@/redux/features/attributeConfigSlice";
 import { TAttributeConfigType } from "@/types/attributeConfig.type";
 import { ArrowLeft } from "lucide-react";
-import { useRouter } from "next/navigation";
-import React, { FC, useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
-type Props = {
-  attributeId: string;
-};
-const AttributeConfigureComponent: FC<Props> = ({ attributeId }) => {
+const AttributeConfigureComponent = () => {
+  const attributeId: string = useParams()?.attrId as string;
+
   const { selectedAttributeConfig } = useAppSelector(
     (state) => state.attributeConfig
   );
@@ -24,6 +23,7 @@ const AttributeConfigureComponent: FC<Props> = ({ attributeId }) => {
   const [attribute, setAttribute] = useState<TAttributeConfigType | null>(null);
 
   useEffect(() => {
+    if (!attributeId) return;
     (async function () {
       try {
         // Call API for load all attributes
