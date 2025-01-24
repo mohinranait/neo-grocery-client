@@ -2,7 +2,7 @@
 
 import { uploadImage } from "@/actions/mediaApi";
 import { useAppDispatch } from "@/hooks/useRedux";
-import { addFile } from "@/redux/features/meidaSlice";
+import { addFile } from "@/redux/features/mediaSlice";
 import { useState } from "react";
 import toast from "react-hot-toast";
 

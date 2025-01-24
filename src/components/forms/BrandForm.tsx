@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { addVariant, setIsModal } from "@/redux/features/meidaSlice";
+import { addVariant, setIsModal } from "@/redux/features/mediaSlice";
 import SelectImageFromModal from "../shared/SelectImageFromModal";
 import { TMediaType } from "@/types/media.type";
 

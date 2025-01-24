@@ -30,7 +30,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
-import { TProduct } from "@/types/product.type";
 import ProductRow from "./ProductRow";
 import DeleteModal from "../modals/DeleteModal";
 import { deleteProduct, getAllProducts } from "@/actions/productApi";

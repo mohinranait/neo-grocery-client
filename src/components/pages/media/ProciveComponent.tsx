@@ -5,7 +5,7 @@ import Image from "next/image";
 import React, { useState } from "react";
 import UploadImageComponent from "./UploadImageComponent";
 import { Button } from "@/components/ui/button";
-import { setIsModal, setSelectedImage } from "@/redux/features/meidaSlice";
+import { setIsModal, setSelectedImage } from "@/redux/features/mediaSlice";
 
 const ProciveComponent = () => {
   // Redux state

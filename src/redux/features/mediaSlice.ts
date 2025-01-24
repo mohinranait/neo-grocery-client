@@ -35,7 +35,7 @@ export const mediaSlice = createSlice({
     },
     setFiles:(state, action: { payload: TMediaType[] }) => {
         // Add all images 
-        console.log("Medias files",action.payload);
+        // console.log("Medias files",action.payload);
         
         state.images = [...action.payload];
     },

@@ -7,7 +7,7 @@ import AdminHeader from "./shared/AdminHeader";
 import { X } from "lucide-react";
 import withAuth from "@/hooks/withAuth";
 import { getAllImages } from "@/actions/mediaApi";
-import { setFiles } from "@/redux/features/meidaSlice";
+import { setFiles } from "@/redux/features/mediaSlice";
 import { useAppDispatch } from "@/hooks/useRedux";
 import { getAllCategory } from "@/actions/categoriesApi";
 import { addCategory } from "@/redux/features/categorySlice";

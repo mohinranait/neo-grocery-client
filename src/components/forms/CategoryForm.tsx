@@ -16,7 +16,7 @@ import { addCategory } from "@/redux/features/categorySlice";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { TCategoryType } from "@/types/category.type";
 import SelectImageFromModal from "../shared/SelectImageFromModal";
-import { addVariant, setIsModal } from "@/redux/features/meidaSlice";
+import { addVariant, setIsModal } from "@/redux/features/mediaSlice";
 import { TMediaType } from "@/types/media.type";
 
 // Category schema validation

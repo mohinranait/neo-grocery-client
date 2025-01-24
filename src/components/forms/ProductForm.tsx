@@ -24,7 +24,7 @@ import {
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 import SelectImageFromModal from "../shared/SelectImageFromModal";
-import { addVariant, setIsModal } from "@/redux/features/meidaSlice";
+import { addVariant, setIsModal } from "@/redux/features/mediaSlice";
 import { TMediaType } from "@/types/media.type";
 import ManageCategory from "../pages/Product/ManageCategory";
 import ManageBrand from "../pages/Product/ManageBrand";
@@ -41,14 +41,13 @@ import RichTextEditor from "../RichTextEditor/RichTextEditor";
 const ProductForm = () => {
   // Redux state
   const { product } = useAppSelector((state) => state.product);
+  const { images } = useAppSelector((state) => state.media);
   const dispatch = useAppDispatch();
 
   // Hooks
   const router = useRouter();
   const searchParams = useSearchParams();
   const editId = searchParams.get("edit");
-  console.log({ editId });
-  console.log({ product });
 
   // Local State
   // const [date, setDate] = React.useState<Date>();
@@ -142,6 +141,17 @@ const ProductForm = () => {
         const data = await getSingleProductBySlug(editId);
         if (data?.success) {
           dispatch(setProduct(data?.payload));
+          const featureImg = images?.find(
+            (d) => d.fileUrl === data?.payload?.featureImage?.image
+          );
+          if (featureImg) {
+            setFile(featureImg);
+          }
+
+          const gallarysImg = images?.filter((d) =>
+            data?.payload?.imageGallary?.includes(d?.fileUrl)
+          );
+          setGallarys(gallarysImg);
           setSlug(data?.payload?.slug);
         }
       } catch (error) {}

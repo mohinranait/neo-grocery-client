@@ -12,7 +12,7 @@ import {
 import React from "react";
 import MediaModalWrapper from "../pages/media/MediaModalWrapper";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
-import { setIsModal, setResetSelected } from "@/redux/features/meidaSlice";
+import { setIsModal, setResetSelected } from "@/redux/features/mediaSlice";
 
 const MediaModal = () => {
   const { isModal } = useAppSelector((state) => state.media);

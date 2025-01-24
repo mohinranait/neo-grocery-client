@@ -1,6 +1,6 @@
 "use client";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
-import { setResetSelected } from "@/redux/features/meidaSlice";
+import { setResetSelected } from "@/redux/features/mediaSlice";
 import { TMediaType } from "@/types/media.type";
 import React, { useEffect } from "react";
 

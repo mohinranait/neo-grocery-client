@@ -3,7 +3,7 @@ import  productReducer  from "./features/productSlice";
 import  authReducer  from "./features/authSlice";
 import  categoryReducer  from "./features/categorySlice";
 import  brandReducer  from "./features/brandSlice";
-import  mediaReducer  from "./features/meidaSlice";
+import  mediaReducer  from "./features/mediaSlice";
 import  attributeReducer  from "./features/attributeSlice";
 import  attributeConfigReducer  from "./features/attributeConfigSlice";
 
