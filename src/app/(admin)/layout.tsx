@@ -1,9 +1,13 @@
 "use client";
+import { getAllAttributes, getSingleAttributes } from "@/actions/attributeApi";
+import { getAllAttributeConfigs } from "@/actions/attributeConfigApi";
 import { userLogout } from "@/actions/authApi";
 import { getAllProducts } from "@/actions/productApi";
 import AdminAuthLayout from "@/components/admin/AdminAuthLayout";
 import useAxios from "@/hooks/useAxios";
 import { useAppDispatch } from "@/hooks/useRedux";
+import { addAttributeConfig } from "@/redux/features/attributeConfigSlice";
+import { addAttribute } from "@/redux/features/attributeSlice";
 import {
   logoutUser,
   setAuthUser,
@@ -42,6 +46,34 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
         const data = await getAllProducts("accessBy=Admin");
         if (data?.success) {
           dispatch(setProducts(data?.payload?.products));
+        }
+      } catch (error: unknown) {
+        toast.error(`${error}`);
+      }
+    })();
+  }, [dispatch]);
+
+  useEffect(() => {
+    (async function () {
+      try {
+        // Call API for load all attributes
+        const data = await getAllAttributes();
+        if (data?.success) {
+          dispatch(addAttribute({ data: data?.payload, type: "Array" }));
+        }
+      } catch (error: unknown) {
+        toast.error(`${error}`);
+      }
+    })();
+  }, [dispatch]);
+
+  useEffect(() => {
+    (async function () {
+      try {
+        // Call API for load all attributes
+        const data = await getAllAttributeConfigs();
+        if (data?.success) {
+          dispatch(addAttributeConfig({ data: data?.payload, type: "Array" }));
         }
       } catch (error: unknown) {
         toast.error(`${error}`);

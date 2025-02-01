@@ -12,8 +12,8 @@ export const createNewAttributeConfig = async (formData: TAttributeConfigType) =
 /**
  * @api {get} Get all attributes configs method
 */
-export const getAllAttributeConfigs = async (id:string) => {
-    const {data} = await instance.get(`/config-attributes/${id}`);
+export const getAllAttributeConfigs = async () => {
+    const {data} = await instance.get(`/config-attributes`);
     return data;
 }
 
