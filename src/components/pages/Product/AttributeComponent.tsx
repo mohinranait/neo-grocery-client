@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -6,22 +6,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import ReactSelect from "react-select";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+
+import { Accordion } from "@/components/ui/accordion";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useAppSelector } from "@/hooks/useRedux";
 import { TAttributeType } from "@/types/attribute.type";
+import AttributeLine from "./AttributeLine";
 
 const AttributeComponent = () => {
   // Redux state
   const { attributes } = useAppSelector((state) => state.attribute);
+  const { product } = useAppSelector((state) => state.product);
 
   // Local state
   const [selectAttribute, setSelectAttribute] = useState<string | null>(null);
@@ -36,6 +32,19 @@ const AttributeComponent = () => {
       setSelectAttribute(null);
     }
   };
+
+  useEffect(() => {
+    const configs = [...(product?.attributes || [])];
+
+    const attr = attributes?.filter((attr) =>
+      configs?.map((d) => d?.attribute)?.includes(attr?._id)
+    );
+
+    if (attr?.length > 0) {
+      setSelectedAttributes(attr);
+    }
+  }, [product]);
+
   return (
     <div className="p-4 flex  flex-col gap-3">
       <div className="flex gap-2">
@@ -72,47 +81,7 @@ const AttributeComponent = () => {
         collapsible
       >
         {selectedAttributes?.map((attribute, index) => (
-          <AccordionItem
-            key={index}
-            value={`item-${attribute?._id} `}
-            className="bg-slate-100 overflow-auto px-3 border-b-0"
-          >
-            <AccordionTrigger className="hover:no-underline">
-              {attribute?.name}
-            </AccordionTrigger>
-            <AccordionContent className="flex min-h-[200px] ">
-              <div className="w-[250px]">
-                <p className="text-slate-600">
-                  Name: <span className="text-slate-900">Color</span>{" "}
-                </p>
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    checked={false}
-                    onCheckedChange={(e) => {}}
-                    id="color"
-                  />
-                  <label
-                    htmlFor="color"
-                    className="text-sm font-medium text-slate-600 leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    Visiable on the product page
-                  </label>
-                </div>
-              </div>
-              <div className="flex-grow">
-                <div>
-                  <ReactSelect
-                    isMulti
-                    options={[
-                      { value: "chocolate", label: "Chocolate" },
-                      { value: "strawberry", label: "Strawberry" },
-                      { value: "vanilla", label: "Vanilla" },
-                    ]}
-                  />
-                </div>
-              </div>
-            </AccordionContent>
-          </AccordionItem>
+          <AttributeLine key={index} attribute={attribute} />
         ))}
       </Accordion>
 
