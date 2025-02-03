@@ -69,4 +69,8 @@ export type TProduct = {
   seo_title: string;
   seo_desc:string;
   seo_keyword:string[],
+  attributes?: {
+    attribute?:string;
+    attributeConfig?:string[];
+  }[]
 }

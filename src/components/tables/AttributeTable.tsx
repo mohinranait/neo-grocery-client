@@ -35,7 +35,6 @@ const AttributeTable = () => {
 
   // Hooks
   const pathName = usePathname();
-  console.log({ pathName });
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);

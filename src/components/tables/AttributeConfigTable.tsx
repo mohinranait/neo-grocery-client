@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -17,24 +17,26 @@ import {
 } from "@/components/ui/select";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import DeleteModal from "../modals/DeleteModal";
-import { deleteAttribute } from "@/actions/attributeApi";
-import {
-  addAttribute,
-  setSelectedAttribute,
-} from "@/redux/features/attributeSlice";
 import toast from "react-hot-toast";
 import {
   addAttributeConfig,
   setSelectedAttributeConfig,
 } from "@/redux/features/attributeConfigSlice";
 import { deleteAttributeConfig } from "@/actions/attributeConfigApi";
+import { useParams } from "next/navigation";
+import { TAttributeConfigType } from "@/types/attributeConfig.type";
 
 const AttributeConfigTable = () => {
   const dispatch = useAppDispatch();
-  const { attributeConfigs, selectedAttributeConfig } = useAppSelector(
-    (state) => state.attributeConfig
-  );
+  const { attributeConfigs: allConfigs, selectedAttributeConfig } =
+    useAppSelector((state) => state.attributeConfig);
 
+  const params = useParams();
+  const attrId = params.attrId;
+
+  const [attributeConfigs, setAttributeConfigs] = useState<
+    TAttributeConfigType[]
+  >([...allConfigs?.filter((d) => d?.attribute === attrId)]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
 
@@ -95,6 +97,13 @@ const AttributeConfigTable = () => {
       setDeleteLoading(false);
     }
   };
+
+  useEffect(() => {
+    const filterConfigs = allConfigs?.filter((d) => d.attribute === attrId);
+    if (filterConfigs) {
+      setAttributeConfigs([...filterConfigs]);
+    }
+  }, [attrId, allConfigs]);
 
   return (
     <div className="w-full rounded-lg border bg-card text-card-foreground shadow">

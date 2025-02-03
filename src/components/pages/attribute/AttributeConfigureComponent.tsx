@@ -17,7 +17,6 @@ const AttributeConfigureComponent = () => {
   const { selectedAttributeConfig } = useAppSelector(
     (state) => state.attributeConfig
   );
-  const dispatch = useAppDispatch();
   const router = useRouter();
 
   const [attribute, setAttribute] = useState<TAttributeConfigType | null>(null);
@@ -36,20 +35,6 @@ const AttributeConfigureComponent = () => {
       }
     })();
   }, [attributeId]);
-
-  useEffect(() => {
-    (async function () {
-      try {
-        // Call API for load all attributes
-        const data = await getAllAttributeConfigs(attributeId);
-        if (data?.success) {
-          dispatch(addAttributeConfig({ data: data?.payload, type: "Array" }));
-        }
-      } catch (error: unknown) {
-        toast.error(`${error}`);
-      }
-    })();
-  }, [dispatch, attributeId]);
 
   return (
     <div>

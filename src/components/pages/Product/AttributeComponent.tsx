@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -6,22 +6,49 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+
+import { Accordion } from "@/components/ui/accordion";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import SearchAndMultiSelect from "@/components/shared/SearchAndMultiSelect";
+import { useAppSelector } from "@/hooks/useRedux";
+import { TAttributeType } from "@/types/attribute.type";
+import AttributeLine from "./AttributeLine";
 
 const AttributeComponent = () => {
+  // Redux state
+  const { attributes } = useAppSelector((state) => state.attribute);
+  const { product } = useAppSelector((state) => state.product);
+
+  // Local state
+  const [selectAttribute, setSelectAttribute] = useState<string | null>(null);
+  const [selectedAttributes, setSelectedAttributes] = useState<
+    TAttributeType[]
+  >([]);
+
+  const handleSelectAttribute = () => {
+    const find = attributes?.find((attr) => attr?._id === selectAttribute);
+    if (find) {
+      setSelectedAttributes((prev) => [...prev, find]);
+      setSelectAttribute(null);
+    }
+  };
+
+  useEffect(() => {
+    const configs = [...(product?.attributes || [])];
+
+    const attr = attributes?.filter((attr) =>
+      configs?.map((d) => d?.attribute)?.includes(attr?._id)
+    );
+
+    if (attr?.length > 0) {
+      setSelectedAttributes(attr);
+    }
+  }, [product]);
+
   return (
     <div className="p-4 flex  flex-col gap-3">
       <div className="flex gap-2">
-        <Select>
+        <Select onValueChange={(e) => setSelectAttribute(e)}>
           <SelectTrigger className="w-[200px] h-8">
             <SelectValue placeholder="Product Attribute" />
           </SelectTrigger>
@@ -29,57 +56,33 @@ const AttributeComponent = () => {
             <SelectItem value="Product Attribute" className="cursor-pointer">
               Product Attribute
             </SelectItem>
-            <SelectItem value="Size" className="cursor-pointer">
-              Size
-            </SelectItem>
-            <SelectItem value="Color" className="cursor-pointer">
-              Color
-            </SelectItem>
+            {attributes?.map((attr, index) => (
+              <SelectItem
+                key={index}
+                value={`${attr?._id}`}
+                className="cursor-pointer"
+              >
+                {attr?.name}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
-        <Button className="h-8 px-3">Add</Button>
+        <Button
+          type="button"
+          onClick={handleSelectAttribute}
+          className="h-8 px-3"
+        >
+          Add
+        </Button>
       </div>
       <Accordion
         type="single"
         className="w-full flex flex-col gap-3"
         collapsible
       >
-        <AccordionItem value="item-1" className="bg-slate-100 px-3 border-b-0">
-          <AccordionTrigger className="hover:no-underline">
-            Color
-          </AccordionTrigger>
-          <AccordionContent className="flex">
-            <div className="w-[250px]">
-              <p className="text-slate-600">
-                Name: <span className="text-slate-900">Color</span>{" "}
-              </p>
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  checked={false}
-                  onCheckedChange={(e) => {}}
-                  id="color"
-                />
-                <label
-                  htmlFor="color"
-                  className="text-sm font-medium text-slate-600 leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  Visiable on the product page
-                </label>
-              </div>
-            </div>
-            <div className="flex-grow">
-              <div>
-                <SearchAndMultiSelect />
-              </div>
-            </div>
-          </AccordionContent>
-        </AccordionItem>
-        <AccordionItem value="item-2" className="bg-slate-100 px-3 border-b-0">
-          <AccordionTrigger>Size</AccordionTrigger>
-          <AccordionContent>
-            Yes. It adheres to the WAI-ARIA design pattern.
-          </AccordionContent>
-        </AccordionItem>
+        {selectedAttributes?.map((attribute, index) => (
+          <AttributeLine key={index} attribute={attribute} />
+        ))}
       </Accordion>
 
       <div>
