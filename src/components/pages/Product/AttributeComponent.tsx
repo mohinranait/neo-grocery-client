@@ -84,10 +84,6 @@ const AttributeComponent = () => {
           <AttributeLine key={index} attribute={attribute} />
         ))}
       </Accordion>
-
-      <div>
-        <Button>Save</Button>
-      </div>
     </div>
   );
 };

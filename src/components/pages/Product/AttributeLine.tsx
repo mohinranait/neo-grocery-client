@@ -13,6 +13,7 @@ import ReactSelect, { MultiValue } from "react-select";
 type Props = {
   attribute: TAttributeType;
 };
+
 const AttributeLine = ({ attribute }: Props) => {
   const { product } = useAppSelector((state) => state.product);
   const { attributeConfigs } = useAppSelector((state) => state.attributeConfig);
@@ -83,11 +84,11 @@ const AttributeLine = ({ attribute }: Props) => {
       <AccordionTrigger className="hover:no-underline">
         {attribute?.name}
       </AccordionTrigger>
-      <AccordionContent className=" space-y-5 min-h-[200px] ">
-        <div className="flex ">
+      <AccordionContent className=" flex flex-col gap-5 min-h-[200px] ">
+        <div className="flex flex-grow ">
           <div className="w-[250px]">
             <p className="text-slate-600">
-              Name: <span className="text-slate-900">Color</span>{" "}
+              Name: <span className="text-slate-900">{attribute?.name}</span>{" "}
             </p>
             <div className="flex items-center space-x-2">
               <Checkbox
@@ -120,10 +121,17 @@ const AttributeLine = ({ attribute }: Props) => {
           </div>
         </div>
         <div className="flex justify-between">
-          <Button type="button" onClick={handleSaveAttribute}>
+          <Button
+            type="button"
+            className=" h-[30px]"
+            onClick={handleSaveAttribute}
+          >
             Save
           </Button>
-          <Button type="button" className="bg-red-100 text-red-400">
+          <Button
+            type="button"
+            className="bg-red-100 text-red-500 h-[30px] hover:bg-red-100 "
+          >
             Delete
           </Button>
         </div>

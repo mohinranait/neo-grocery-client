@@ -57,6 +57,7 @@ const ProductForm = () => {
   const [slug, setSlug] = useState<string>("");
   const [keywords, setKeywords] = useState<string[]>([]);
   const [content, setContent] = useState<string>("");
+  const [loading, setLoading] = useState(false);
 
   // Submit product form for SAVE Product in DB
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -137,6 +138,7 @@ const ProductForm = () => {
   useEffect(() => {
     if (!editId) return;
     (async function () {
+      setLoading(true);
       try {
         const data = await getSingleProductBySlug(editId);
         if (data?.success) {
@@ -155,8 +157,11 @@ const ProductForm = () => {
           setSlug(data?.payload?.slug);
         }
       } catch (error) {}
+      setLoading(false);
     })();
   }, [editId]);
+
+  if (loading) return <div>Data Fetching</div>;
 
   return (
     <form onSubmit={handleSubmit}>
