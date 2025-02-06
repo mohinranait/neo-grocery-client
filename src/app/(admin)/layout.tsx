@@ -1,5 +1,5 @@
 "use client";
-import { getAllAttributes, getSingleAttributes } from "@/actions/attributeApi";
+import { getAllAttributes } from "@/actions/attributeApi";
 import { getAllAttributeConfigs } from "@/actions/attributeConfigApi";
 import { userLogout } from "@/actions/authApi";
 import { getAllProducts } from "@/actions/productApi";

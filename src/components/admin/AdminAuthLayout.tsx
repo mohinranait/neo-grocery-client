@@ -99,7 +99,13 @@ const AdminAuthLayout = ({ component }: { component: React.ReactNode }) => {
           setIsMobileMenu={setIsMobileMenu}
         />
         {/* Children for render all page here */}
-        <div className="min-h-screen w-full pt-3 px-3">{component}</div>
+        <div
+          className={`min-h-screen w-full pt-3 px-3 ${
+            !pathName.includes("admin/product") && "mx-auto 2xl:max-w-[1600px]"
+          } `}
+        >
+          {component}
+        </div>
       </div>
     </div>
   );

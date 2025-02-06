@@ -160,7 +160,7 @@ const ProductForm = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center ">
         <p className="text-xl font-medium text-slate-950">Add New Product</p>
         <div className="space-x-4">
           <Button type="button" variant={"outline"}>
@@ -176,7 +176,7 @@ const ProductForm = () => {
       <hr className="my-3" />
       <div className="flex gap-4 mt-2">
         <div className="flex-grow  ">
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 2xl:max-w-[1400px] mx-auto">
             <div>
               <input
                 type="text"
