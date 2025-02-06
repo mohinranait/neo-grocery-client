@@ -13,6 +13,7 @@ import ReactSelect, { MultiValue } from "react-select";
 type Props = {
   attribute: TAttributeType;
 };
+
 const AttributeLine = ({ attribute }: Props) => {
   const { product } = useAppSelector((state) => state.product);
   const { attributeConfigs } = useAppSelector((state) => state.attributeConfig);
