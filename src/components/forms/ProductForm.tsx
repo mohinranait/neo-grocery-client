@@ -100,6 +100,7 @@ const ProductForm = () => {
       imageGallary: gallarys?.map((img) => img?.fileUrl),
       slug: product?.slug ? generateSlug(product?.slug) : generateSlug(slug),
       seo_keyword: keywords,
+      details: content,
     };
 
     if (editId) {
@@ -155,6 +156,7 @@ const ProductForm = () => {
           );
           setGallarys(gallarysImg);
           setSlug(data?.payload?.slug);
+          setContent(data?.payload?.details);
         }
       } catch (error) {}
       setLoading(false);
