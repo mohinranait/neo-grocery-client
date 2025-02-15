@@ -16,6 +16,14 @@ import InventoryComponent from "./InventoryComponent";
 import ShippingComponent from "./ShippingComponent";
 import LinkComponent from "./LinkComponent";
 import AttributeComponent from "./AttributeComponent";
+import dynamic from "next/dynamic";
+const VariationsComponent = dynamic(
+  () => import("@/components/pages/Product/VariationsComponent"),
+  {
+    ssr: false,
+    loading: () => <div>Loading</div>,
+  }
+);
 
 type TVariantTabType = {
   id: string;
@@ -39,7 +47,7 @@ const tabs: { type: TProductType; tabs: TProductTypeLists[] }[] = [
   },
   {
     type: "Variable Product",
-    tabs: ["General", "Shipping", "Attributes"],
+    tabs: ["General", "Shipping", "Attributes", "Variations"],
   },
   {
     type: "Group Product",
@@ -88,6 +96,12 @@ const ProductVarient = () => {
       icon: <Bed size={16} />,
       children: <AttributeComponent />,
     },
+    {
+      id: "6",
+      label: "Variations",
+      icon: <Bed size={16} />,
+      children: <VariationsComponent />,
+    },
   ];
 
   // Tabs are filtered by product type.
@@ -135,22 +149,24 @@ const ProductVarient = () => {
         </Select>
       </div>
       <div className="flex ">
-        <ul className="bg-slate-50 w-[200px]">
-          {variantTabs?.map((variant, idx) => (
-            <li
-              key={idx}
-              onClick={() => setActiveTab(variant)}
-              className={`py-2 px-2 pl-4 text-sm border-l-4 flex gap-2 hover:bg-slate-100 cursor-pointer ${
-                variant?.label === activeTab?.label
-                  ? "bg-white"
-                  : "bg-slate-200"
-              } `}
-            >
-              {variant?.icon}
-              {variant?.label}
-            </li>
-          ))}
-        </ul>
+        <div>
+          <ul className="bg-slate-100 w-[200px]">
+            {variantTabs?.map((variant, idx) => (
+              <li
+                key={idx}
+                onClick={() => setActiveTab(variant)}
+                className={`py-2 px-2 pl-4 text-sm border-l-4 flex gap-2 hover:bg-slate-200 cursor-pointer ${
+                  variant?.label === activeTab?.label
+                    ? "bg-white"
+                    : "bg-slate-100"
+                } `}
+              >
+                {variant?.icon}
+                {variant?.label}
+              </li>
+            ))}
+          </ul>
+        </div>
         <div className="w-full">{activeTab?.children}</div>
       </div>
     </div>
