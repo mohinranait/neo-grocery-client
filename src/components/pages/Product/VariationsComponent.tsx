@@ -23,6 +23,9 @@ const AttributeComponent = () => {
   // Redux state
   const { attributes } = useAppSelector((state) => state.attribute);
   const { product } = useAppSelector((state) => state.product);
+  const [existsAttributes, setexistsAttributes] = useState<TAttributeType[]>(
+    []
+  );
 
   // Local state
   const [selectAttribute, setSelectAttribute] = useState<string | null>(null);
@@ -37,6 +40,15 @@ const AttributeComponent = () => {
       setSelectAttribute(null);
     }
   };
+
+  useEffect(() => {
+    const prodAttributes = [...(product?.attributes || [])];
+    const existsAttributes = attributes?.filter((attr) =>
+      prodAttributes?.map((pAttr) => pAttr?.attribute).includes(attr?._id)
+    );
+    console.log({ existsAttributes });
+    setexistsAttributes(existsAttributes);
+  }, [product]);
 
   //   useEffect(() => {
   //     const configs = [...(product?.attributes || [])];
@@ -93,34 +105,25 @@ const AttributeComponent = () => {
             <div className="flex items-center justify-between w-full pr-6">
               <div className="flex items-center gap-2">
                 <span className="font-semibold">#48</span>
-                <Select onValueChange={(e) => setSelectAttribute(e)}>
-                  <SelectTrigger className="w-[120px] h-8">
-                    <SelectValue placeholder="Colors" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Colors" className="cursor-pointer">
-                      Colors
-                    </SelectItem>
+                {existsAttributes?.map((attr) => (
+                  <Select
+                    key={attr?._id}
+                    onValueChange={(e) => setSelectAttribute(e)}
+                  >
+                    <SelectTrigger className="w-[120px] h-8">
+                      <SelectValue placeholder={attr?.name || "Select"} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Colors" className="cursor-pointer">
+                        Colors
+                      </SelectItem>
 
-                    <SelectItem value={`red`} className="cursor-pointer">
-                      Red
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-                <Select onValueChange={(e) => setSelectAttribute(e)}>
-                  <SelectTrigger className="w-[120px] h-8">
-                    <SelectValue placeholder="Size" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Colors" className="cursor-pointer">
-                      Size
-                    </SelectItem>
-
-                    <SelectItem value={`5kg`} className="cursor-pointer">
-                      5kg
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
+                      <SelectItem value={`red`} className="cursor-pointer">
+                        Red
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                ))}
               </div>
               <div>
                 <span className="text-red-600 text-sm">Remove</span>
