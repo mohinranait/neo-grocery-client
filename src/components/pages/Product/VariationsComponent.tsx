@@ -17,13 +17,18 @@ import { Button } from "@/components/ui/button";
 import { useAppSelector } from "@/hooks/useRedux";
 import { TAttributeType } from "@/types/attribute.type";
 import { UploadIcon } from "lucide-react";
+import { TAttributeConfigType } from "@/types/attributeConfig.type";
 // import AttributeLine from "./AttributeLine";
 
 const AttributeComponent = () => {
   // Redux state
   const { attributes } = useAppSelector((state) => state.attribute);
+  const { attributeConfigs } = useAppSelector((state) => state.attributeConfig);
   const { product } = useAppSelector((state) => state.product);
   const [existsAttributes, setexistsAttributes] = useState<TAttributeType[]>(
+    []
+  );
+  const [existsConfigs, setExistsConfigs] = useState<TAttributeConfigType[]>(
     []
   );
 
@@ -42,12 +47,23 @@ const AttributeComponent = () => {
   };
 
   useEffect(() => {
+    const configsIds: string[] = [];
     const prodAttributes = [...(product?.attributes || [])];
     const existsAttributes = attributes?.filter((attr) =>
       prodAttributes?.map((pAttr) => pAttr?.attribute).includes(attr?._id)
     );
-    console.log({ existsAttributes });
+
+    prodAttributes?.forEach((item) => {
+      item.attributeConfig?.forEach((d) => configsIds.push(d));
+    });
+
+    const existsAttributess = attributeConfigs?.filter(
+      (attr) => attr?._id && configsIds?.includes(attr?._id)
+    );
+
+    console.log({ existsAttributess });
     setexistsAttributes(existsAttributes);
+    setExistsConfigs(existsAttributess);
   }, [product]);
 
   //   useEffect(() => {
@@ -105,25 +121,32 @@ const AttributeComponent = () => {
             <div className="flex items-center justify-between w-full pr-6">
               <div className="flex items-center gap-2">
                 <span className="font-semibold">#48</span>
-                {existsAttributes?.map((attr) => (
-                  <Select
-                    key={attr?._id}
-                    onValueChange={(e) => setSelectAttribute(e)}
-                  >
-                    <SelectTrigger className="w-[120px] h-8">
-                      <SelectValue placeholder={attr?.name || "Select"} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Colors" className="cursor-pointer">
-                        Colors
-                      </SelectItem>
-
-                      <SelectItem value={`red`} className="cursor-pointer">
-                        Red
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                ))}
+                {existsAttributes?.map((attr) => {
+                  const matchConfigs = existsConfigs?.filter(
+                    (config) => config?.attribute === attr?._id
+                  );
+                  return (
+                    <Select
+                      key={attr?._id}
+                      onValueChange={(e) => setSelectAttribute(e)}
+                    >
+                      <SelectTrigger className="w-[120px] h-8">
+                        <SelectValue placeholder={attr?.name || "Select"} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {matchConfigs?.map((con) => (
+                          <SelectItem
+                            key={con?._id}
+                            value={con?._id as string}
+                            className="cursor-pointer"
+                          >
+                            {con?.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  );
+                })}
               </div>
               <div>
                 <span className="text-red-600 text-sm">Remove</span>
