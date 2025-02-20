@@ -1,5 +1,5 @@
 export type TProductType = 'Single Product'| "Variable Product"| "Group Product"| "Affiliate"
-export type TProductTypeLists = "General"| "Inventory"| "Shipping"| "Link Product"| "Attributes"
+export type TProductTypeLists = "General"| "Inventory"| "Shipping"| "Link Product"| "Attributes" | 'Variations'
 
 
 
@@ -27,6 +27,23 @@ export type OfferDate= {
 type ExtraFeature= {
   label: string;
   value: string;
+}
+
+export type TVariation = {
+  attributeConfigs: string[]; 
+  offerPirce: number;
+  productPrice: number;
+  description: string;
+  image: string;
+  sku:string;
+  shipping: {
+    weight: number;
+    dimentions: {
+      length: number;
+      width: number;
+      height: number;
+    }
+  }
 }
 
 export type TProduct = {
@@ -60,6 +77,7 @@ export type TProduct = {
   // Extra type
   variant:TProductType;
   manageStock: boolean;
+  variations: TVariation[];
   shipping:{
     weight: string ;
     length: string ;
