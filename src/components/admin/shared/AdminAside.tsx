@@ -17,6 +17,7 @@ type Props = {
 const AdminAside: FC<Props> = ({ isToggle }) => {
   return (
     <>
+      {/* Sidebar for admin dashbaord */}
       <Sidebar collapsed={isToggle} toggled={true} className="bg-white">
         <div className="pl-5 h-[60px] flex items-center ">
           {isToggle ? (

@@ -30,6 +30,8 @@ type ExtraFeature= {
 }
 
 export type TVariation = {
+  variantId:string;
+  attributes:string[];
   attributeConfigs: string[]; 
   offerPirce: number;
   productPrice: number;
