@@ -14,36 +14,50 @@ import {
 } from "@/components/ui/accordion";
 
 import { Button } from "@/components/ui/button";
-import { useAppSelector } from "@/hooks/useRedux";
+import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { TAttributeType } from "@/types/attribute.type";
 import { UploadIcon } from "lucide-react";
 import { TAttributeConfigType } from "@/types/attributeConfig.type";
+import { setProduct } from "@/redux/features/productSlice";
 // import AttributeLine from "./AttributeLine";
 
 const AttributeComponent = () => {
   // Redux state
+  const dispatch = useAppDispatch();
   const { attributes } = useAppSelector((state) => state.attribute);
   const { attributeConfigs } = useAppSelector((state) => state.attributeConfig);
   const { product } = useAppSelector((state) => state.product);
+
+  // Local state
   const [existsAttributes, setexistsAttributes] = useState<TAttributeType[]>(
     []
   );
   const [existsConfigs, setExistsConfigs] = useState<TAttributeConfigType[]>(
     []
   );
-
-  // Local state
   const [selectAttribute, setSelectAttribute] = useState<string | null>(null);
   const [selectedAttributes, setSelectedAttributes] = useState<
     TAttributeType[]
   >([]);
 
-  const handleSelectAttribute = () => {
-    const find = attributes?.find((attr) => attr?._id === selectAttribute);
-    if (find) {
-      setSelectedAttributes((prev) => [...prev, find]);
-      setSelectAttribute(null);
-    }
+  const handleAddVariant = () => {
+    const configsIds: string[] = [];
+    const prodAttributes = [...(product?.attributes || [])];
+    const existsAttributes = attributes?.filter((attr) =>
+      prodAttributes?.map((pAttr) => pAttr?.attribute).includes(attr?._id)
+    );
+
+    prodAttributes?.forEach((item) => {
+      item.attributeConfig?.forEach((d) => configsIds.push(d));
+    });
+
+    const existsAttributess = attributeConfigs?.filter(
+      (attr) => attr?._id && configsIds?.includes(attr?._id)
+    );
+
+    // setexistsAttributes(existsAttributes);
+    // setExistsConfigs(existsAttributess);
+    // dispatch(setProduct({...product, variations:[...product?.variations, {}] }))
   };
 
   useEffect(() => {
@@ -61,22 +75,9 @@ const AttributeComponent = () => {
       (attr) => attr?._id && configsIds?.includes(attr?._id)
     );
 
-    console.log({ existsAttributess });
     setexistsAttributes(existsAttributes);
     setExistsConfigs(existsAttributess);
   }, [product]);
-
-  //   useEffect(() => {
-  //     const configs = [...(product?.attributes || [])];
-
-  //     const attr = attributes?.filter((attr) =>
-  //       configs?.map((d) => d?.attribute)?.includes(attr?._id)
-  //     );
-
-  //     if (attr?.length > 0) {
-  //       setSelectedAttributes(attr);
-  //     }
-  //   }, [product]);
 
   return (
     <div className="p-4 flex  flex-col gap-3">
@@ -100,11 +101,7 @@ const AttributeComponent = () => {
             ))}
           </SelectContent>
         </Select>
-        <Button
-          type="button"
-          onClick={handleSelectAttribute}
-          className="h-8 px-3"
-        >
+        <Button type="button" onClick={handleAddVariant} className="h-8 px-3">
           Add
         </Button>
       </div>
@@ -174,7 +171,7 @@ const AttributeComponent = () => {
                       type="text"
                       min={0}
                       className="flex h-8 w-full bg-white rounded-md border border-input bg-transparent pr-3 pl-2 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
-                      // placeholder="Regular Price"
+                      placeholder="SKU code"
                       value={"asd"}
                     />
                   </div>
@@ -271,17 +268,6 @@ const AttributeComponent = () => {
                 </div>
               </div>
             </div>
-          </AccordionContent>
-        </AccordionItem>
-        <AccordionItem
-          value={`item-2`}
-          className="bg-slate-100 overflow-auto px-3 border-b-0"
-        >
-          <AccordionTrigger className="hover:no-underline">
-            title 2
-          </AccordionTrigger>
-          <AccordionContent className=" flex flex-col gap-5 min-h-[200px] ">
-            <div className="flex flex-grow ">content 2</div>
           </AccordionContent>
         </AccordionItem>
       </Accordion>
