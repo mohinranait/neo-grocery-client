@@ -1,5 +1,4 @@
-import { TAttributeType } from "./attribute.type";
-import { TAttributeConfigType } from "./attributeConfig.type";
+
 
 export type TProductType = 'Single Product'| "Variable Product"| "Group Product"| "Affiliate"
 export type TProductTypeLists = "General"| "Inventory"| "Shipping"| "Link Product"| "Attributes" | 'Variations'
@@ -33,20 +32,19 @@ type ExtraFeature= {
 }
 
 export type TVariation = {
-
-  attributes?:TAttributeType[];
-  attributeConfig?:TAttributeConfigType[];
- 
+  variantId:string;
+  attributes:string[];
+  attributeConfigs: {attrIndex:number, value:string}[]; 
   offerPirce: number;
   productPrice: number;
   description: string;
   image: string;
   sku:string;
   shipping:{
-    weight: string ;
-    length: string ;
-    width: string ;
-    height: string ;
+    weight: number ;
+    length: number ;
+    width: number ;
+    height: number ;
   },
 }
 
