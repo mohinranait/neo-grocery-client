@@ -60,8 +60,11 @@ const tabs: { type: TProductType; tabs: TProductTypeLists[] }[] = [
 ];
 
 const ProductVarient = () => {
+  //  Redux State
   const { product } = useAppSelector((state) => state.product);
   const dispatch = useAppDispatch();
+
+  // Local State
   const [variantTabs, setVariantTabs] = useState<TVariantTabType[]>([]);
   const [activeTab, setActiveTab] = useState<TVariantTabType | null>(null);
 
@@ -125,13 +128,25 @@ const ProductVarient = () => {
   // Initial active tabs for single product
   useEffect(() => {
     getAllVariantTabs(variants[0]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    // Update tabs when product variant is changed
+    if (product?.variant) {
+      getAllVariantTabs(product?.variant);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <div className=" bg-white rounded-md">
       <div className="flex items-center gap-2 border-b p-4 py-2">
         <p>Product data</p>
-        <Select onValueChange={(e) => handleSelectVariant(e as TProductType)}>
+        <Select
+          value={product?.variant}
+          onValueChange={(e) => handleSelectVariant(e as TProductType)}
+        >
           <SelectTrigger className="w-[160px] h-8">
             <SelectValue placeholder={variants[0]} />
           </SelectTrigger>

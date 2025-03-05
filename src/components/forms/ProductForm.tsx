@@ -158,9 +158,11 @@ const ProductForm = () => {
           setSlug(data?.payload?.slug);
           setContent(data?.payload?.details);
         }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {}
       setLoading(false);
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editId]);
 
   if (loading) return <div>Data Fetching</div>;

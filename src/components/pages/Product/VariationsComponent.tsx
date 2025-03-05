@@ -287,6 +287,11 @@ const AttributeComponent = () => {
                       return (
                         <Select
                           key={attr?._id}
+                          value={
+                            variant?.attributeConfigs?.find(
+                              (config) => config?.attrIndex === attrIndex
+                            )?.value
+                          }
                           onValueChange={(e) =>
                             handleAddVariables(e, i, attrIndex)
                           }
@@ -301,7 +306,7 @@ const AttributeComponent = () => {
                                 value={con?._id as string}
                                 className="cursor-pointer"
                               >
-                                {con?.name}, {attrIndex}
+                                {con?.name}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -501,18 +506,6 @@ const AttributeComponent = () => {
               </AccordionContent>
             </AccordionItem>
           ))}
-
-        <AccordionItem
-          value={`item-2`}
-          className="bg-slate-100 overflow-auto px-3 border-b-0"
-        >
-          <AccordionTrigger className="hover:no-underline">
-            title 2
-          </AccordionTrigger>
-          <AccordionContent className=" flex flex-col gap-5 min-h-[200px] ">
-            <div className="flex flex-grow ">content 2</div>
-          </AccordionContent>
-        </AccordionItem>
       </Accordion>
     </div>
   );
