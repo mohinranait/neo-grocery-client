@@ -37,6 +37,7 @@ import toast from "react-hot-toast";
 import { useRouter, useSearchParams } from "next/navigation";
 import { generateSlug } from "@/utils/helpers";
 import RichTextEditor from "../RichTextEditor/RichTextEditor";
+import { FRONTEND_URL } from "@/accessEnv";
 
 const ProductForm = () => {
   // Redux state
@@ -68,7 +69,7 @@ const ProductForm = () => {
     if (!product?.price?.productPrice) return toast.error("Price is required");
 
     // Price Validation
-    if (!product?.price?.sellPrice) {
+    if (!product?.price?.sellPrice && product?.price?.sellPrice != 0) {
       if (product?.price?.sellPrice < product?.price?.productPrice) {
         return toast.error("Sell Price is less than Product Price");
       }
@@ -200,19 +201,21 @@ const ProductForm = () => {
               />
               <div className="flex gap-1 mt-3 items-center">
                 <p>Permalink: </p>
-
                 {!isOpenSlug ? (
                   <Link
-                    href={"/"}
+                    target="_blank"
+                    href={`${FRONTEND_URL}/product/${
+                      product?.slug ? product?.slug : slug
+                    }`}
                     className="text-sm text-blue-600 hover:underline"
                   >
-                    www.localhost:3000/
+                    {FRONTEND_URL}/product/
                     {product?.slug ? product?.slug : slug}
                   </Link>
                 ) : (
                   <div className="flex gap-1 items-center">
                     <span className="text-sm text-blue-600 hover:underline">
-                      www.localhost:3000/
+                      {FRONTEND_URL}/product/
                     </span>
                     <input
                       id="slug"
@@ -231,7 +234,6 @@ const ProductForm = () => {
                     />
                   </div>
                 )}
-
                 {isOpenSlug ? (
                   <span
                     onClick={() => setIsOpenSlug(false)}
