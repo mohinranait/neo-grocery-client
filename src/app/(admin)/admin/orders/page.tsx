@@ -1,7 +1,9 @@
 import React from "react";
 
+import OrderTables from "@/components/pages/Order/OrderTables";
+
 const OrderPage = () => {
-  return <div>OrderPage</div>;
+  return <OrderTables statusName={"all"} />;
 };
 
 export default OrderPage;
