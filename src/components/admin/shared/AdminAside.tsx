@@ -19,7 +19,7 @@ const AdminAside: FC<Props> = ({ isToggle }) => {
     <>
       {/* Sidebar for admin dashbaord */}
       <Sidebar collapsed={isToggle} toggled={true} className="bg-white">
-        <div className="pl-5 h-[60px] flex items-center ">
+        <div className="pl-5 h-[60px] flex bg-white items-center ">
           {isToggle ? (
             <span className="text-xl font-bold">Neo</span>
           ) : (
@@ -33,7 +33,7 @@ const AdminAside: FC<Props> = ({ isToggle }) => {
         </div>
         <Menu
           closeOnClick={true}
-          className={`overflow-y-auto h-[calc(100vh-60px)]  scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-gray-100 `}
+          className={`overflow-y-auto h-[calc(100vh-60px)]  scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-gray-100 bg-white`}
         >
           <MenuItem
             icon={<LayoutDashboard />}
