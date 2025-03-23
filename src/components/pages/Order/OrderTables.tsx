@@ -30,6 +30,7 @@ import { format, isWithinInterval, parseISO } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useAppSelector } from "@/hooks/useRedux";
 import { TOrder } from "@/types/order.type";
+import Link from "next/link";
 
 type Props = {
   statusName:
@@ -301,12 +302,16 @@ const OrderTables = ({ statusName }: Props) => {
                       {<OrderStatus status={order?.status} />}
                     </TableCell>
                     <TableCell className="flex justify-end gap-2">
-                      <Button className="w-8 h-8" size={"icon"}>
-                        <Edit size={20} />
-                      </Button>
-                      <Button className="w-8 h-8" size={"icon"}>
-                        <Eye size={22} />
-                      </Button>
+                      <Link href={`/admin/order/edit/${order?._id}`}>
+                        <Button className="w-8 h-8" size={"icon"}>
+                          <Edit size={20} />
+                        </Button>
+                      </Link>
+                      <Link href={`/admin/order/${order?._id}`}>
+                        <Button className="w-8 h-8" size={"icon"}>
+                          <Eye size={22} />
+                        </Button>
+                      </Link>
                     </TableCell>
                   </TableRow>
                 );

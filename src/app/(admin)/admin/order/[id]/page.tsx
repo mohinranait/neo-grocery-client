@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import { Home, Undo2, User } from "lucide-react";
 import React from "react";
@@ -12,8 +13,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const OrderDetailsPage = () => {
+  const router = useRouter();
   const items = [
     {
       id: 1,
@@ -65,7 +68,12 @@ const OrderDetailsPage = () => {
     <div>
       <div className="flex justify-between items-center gap-3 mb-3">
         <div className="flex gap-2 items-start">
-          <button className="p-1 border-gray-400 border rounded bg-gray-100 ">
+          <button
+            onClick={() => {
+              router.back();
+            }}
+            className="p-1 border-gray-400 border rounded bg-gray-100 "
+          >
             <Undo2 />
           </button>
           <div>

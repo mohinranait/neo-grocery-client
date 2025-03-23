@@ -7,6 +7,7 @@ import  mediaReducer  from "./features/mediaSlice";
 import  attributeReducer  from "./features/attributeSlice";
 import  attributeConfigReducer  from "./features/attributeConfigSlice";
 import  orderReducer  from "./features/orderSlice";
+import  userReducer  from "./features/userSlice";
 
 export  const store = configureStore({
     reducer:{
@@ -18,6 +19,7 @@ export  const store = configureStore({
         attribute: attributeReducer,
         attributeConfig: attributeConfigReducer,
         order: orderReducer,
+        users: userReducer,
     }
 })
 

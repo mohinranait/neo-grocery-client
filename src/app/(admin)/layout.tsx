@@ -4,6 +4,7 @@ import { getAllAttributeConfigs } from "@/actions/attributeConfigApi";
 import { userLogout } from "@/actions/authApi";
 import { getAllOrders } from "@/actions/orderApi";
 import { getAllProducts } from "@/actions/productApi";
+import { getAllUserFromDB } from "@/actions/userApi";
 import AdminAuthLayout from "@/components/admin/AdminAuthLayout";
 import useAxios from "@/hooks/useAxios";
 import { useAppDispatch } from "@/hooks/useRedux";
@@ -16,6 +17,7 @@ import {
 } from "@/redux/features/authSlice";
 import { setAllOrders } from "@/redux/features/orderSlice";
 import { setProducts } from "@/redux/features/productSlice";
+import { setUser } from "@/redux/features/userSlice";
 import React, { Suspense, useEffect } from "react";
 import toast from "react-hot-toast";
 
@@ -89,10 +91,21 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
         // Call API for load all orders
         const data = await getAllOrders();
         if (data?.success) {
-          console.log({ d: data?.payload });
-          console.log(JSON.stringify(data?.payload));
-
           dispatch(setAllOrders(data?.payload));
+        }
+      } catch (error: unknown) {
+        toast.error(`${error}`);
+      }
+    })();
+  }, [dispatch]);
+
+  useEffect(() => {
+    (async function () {
+      try {
+        // Call API for load all users
+        const data = await getAllUserFromDB();
+        if (data?.success) {
+          dispatch(setUser({ data: data?.payload, type: "Array" }));
         }
       } catch (error: unknown) {
         toast.error(`${error}`);

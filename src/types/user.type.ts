@@ -1,4 +1,5 @@
 export type TUserType = {
+    _id?: string;
     name: {
         firstName: string;
         lastName: string;
@@ -15,4 +16,6 @@ export type TUserType = {
     status: "Active" | "Pending" | "Banned";
     age?: number;
     gender: "Male" | "Female" | "Other";
+    createdAt?: Date ;
+    updatedAt?: Date;
 }
