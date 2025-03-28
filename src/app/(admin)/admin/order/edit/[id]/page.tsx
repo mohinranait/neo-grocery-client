@@ -99,56 +99,7 @@ const UpdateORderPage = () => {
               </div>
             </div>
             <div className="grid grid-cols-5 bg-gray-100 p-2 rounded gap-2 ">
-              <div className="bg-white flex  rounded p-4 flex-col gap-2 items-center">
-                <div className="flex items-center justify-center w-9 h-9 bg-gray-200 rounded-full">
-                  <p className="text-lg font-semibold text-gray-500">1</p>
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm text-center font-medium text-gray-500">
-                    Pending
-                  </p>
-                </div>
-              </div>
-              <div className="bg-white flex  rounded p-4 flex-col gap-2 items-center">
-                <div className="flex items-center justify-center w-9 h-9 bg-gray-200 rounded-full">
-                  <p className="text-lg font-semibold text-gray-500">2</p>
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm text-center font-medium text-gray-500">
-                    Processing
-                  </p>
-                </div>
-              </div>
-              <div className="bg-white flex rounded p-4 flex-col gap-2 items-center">
-                <div className="flex items-center justify-center w-9 h-9 bg-gray-200 rounded-full">
-                  <p className="text-lg font-semibold text-gray-500">3</p>
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm text-center font-medium text-gray-500">
-                    Shipped
-                  </p>
-                </div>
-              </div>
-              <div className="bg-white flex rounded p-4 flex-col gap-2 items-center">
-                <div className="flex items-center justify-center w-9 h-9 bg-gray-200 rounded-full">
-                  <p className="text-lg font-semibold text-gray-500">4</p>
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm text-center font-medium text-gray-500">
-                    Delivery
-                  </p>
-                </div>
-              </div>
-              <div className="bg-white flex rounded p-4 flex-col gap-2 items-center">
-                <div className="flex items-center justify-center w-9 h-9 bg-gray-200 rounded-full">
-                  <p className="text-lg font-semibold text-gray-500">5</p>
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm text-center font-medium text-gray-500">
-                    Cancel
-                  </p>
-                </div>
-              </div>
+              asdf
             </div>
           </div>
           <div className="p-4 bg-white rounded-md shadow">
@@ -264,6 +215,10 @@ const UpdateORderPage = () => {
               <div className="flex justify-between items-center">
                 <p className="text-sm font-semibold text-black">Total</p>
                 <p className="text-sm font-semibold text-black">$100</p>
+              </div>
+              <div className="flex justify-between items-center">
+                <p className="text-sm font-semibold text-black">Due</p>
+                <p className="text-sm font-semibold text-black">$0</p>
               </div>
             </div>
           </div>
