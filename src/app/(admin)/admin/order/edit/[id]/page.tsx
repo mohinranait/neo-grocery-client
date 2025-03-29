@@ -99,9 +99,59 @@ const UpdateORderPage = () => {
               </div>
             </div>
             <div className="grid grid-cols-5 bg-gray-100 p-2 rounded gap-2 ">
-              asdf
+              <div className="bg-white flex  rounded p-4 flex-col gap-2 items-center">
+                <div className="flex items-center justify-center w-9 h-9 bg-gray-200 rounded-full">
+                  <p className="text-lg font-semibold text-gray-500">1</p>
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm text-center font-medium text-gray-500">
+                    Pending
+                  </p>
+                </div>
+              </div>
+              <div className="bg-white flex  rounded p-4 flex-col gap-2 items-center">
+                <div className="flex items-center justify-center w-9 h-9 bg-gray-200 rounded-full">
+                  <p className="text-lg font-semibold text-gray-500">2</p>
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm text-center font-medium text-gray-500">
+                    Processing
+                  </p>
+                </div>
+              </div>
+              <div className="bg-white flex rounded p-4 flex-col gap-2 items-center">
+                <div className="flex items-center justify-center w-9 h-9 bg-gray-200 rounded-full">
+                  <p className="text-lg font-semibold text-gray-500">3</p>
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm text-center font-medium text-gray-500">
+                    Shipped
+                  </p>
+                </div>
+              </div>
+              <div className="bg-white flex rounded p-4 flex-col gap-2 items-center">
+                <div className="flex items-center justify-center w-9 h-9 bg-gray-200 rounded-full">
+                  <p className="text-lg font-semibold text-gray-500">4</p>
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm text-center font-medium text-gray-500">
+                    Delivery
+                  </p>
+                </div>
+              </div>
+              <div className="bg-white flex rounded p-4 flex-col gap-2 items-center">
+                <div className="flex items-center justify-center w-9 h-9 bg-gray-200 rounded-full">
+                  <p className="text-lg font-semibold text-gray-500">5</p>
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm text-center font-medium text-gray-500">
+                    Cancel
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
+
           <div className="p-4 bg-white rounded-md shadow">
             <div className="flex pb-3 justify-between items-center">
               <div>
@@ -185,6 +235,54 @@ const UpdateORderPage = () => {
           </div>
         </div>
         <div className="col-span-1 space-y-3">
+          <form className="p-4 bg-white rounded-md shadow">
+            <div className="flex pb-3 justify-between items-center">
+              <div>
+                <p className="text-base font-semibold text-black">
+                  Manage Order
+                </p>
+                <p className="text-sm font-medium text-gray-500">
+                  Manage order status
+                </p>
+              </div>
+            </div>
+            <div className=" bg-gray-100 p-2 space-y-2 rounded gap-2 ">
+              <div className="flex items-cener">
+                <label
+                  htmlFor="OrderStatus"
+                  className="min-w-[110px] inline-block text-gray-600 text-sm"
+                >
+                  Order Status
+                </label>
+                <select
+                  name=""
+                  id=""
+                  className="py-2 px-2 w-full rounded text-sm"
+                >
+                  <option value="">Success</option>
+                  <option value="">Pending</option>
+                </select>
+              </div>
+              <div className="flex items-cener">
+                <label
+                  htmlFor="OrderStatus"
+                  className="min-w-[110px] inline-block text-gray-600 text-sm"
+                >
+                  Payment Status
+                </label>
+                <select
+                  name="paymentStatus"
+                  id=""
+                  onChange={(e) => {}}
+                  className="py-2 px-2 w-full rounded text-sm"
+                >
+                  <option value="">Paid</option>
+                  <option value="">Unpaid</option>
+                </select>
+              </div>
+            </div>
+          </form>
+
           <div className="p-4 bg-white  rounded-md shadow">
             <div className="flex pb-3 justify-between items-center">
               <div>

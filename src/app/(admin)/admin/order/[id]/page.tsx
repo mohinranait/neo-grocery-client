@@ -14,9 +14,38 @@ import {
 } from "@/components/ui/table";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useAppSelector } from "@/hooks/useRedux";
 
-const OrderDetailsPage = () => {
+const orderStatusArr = [
+  {
+    _id: "1",
+    label: "Pending",
+  },
+  {
+    _id: "2",
+    label: "Processing",
+  },
+  {
+    _id: "3",
+    label: "Shipped",
+  },
+  {
+    _id: "4",
+    label: "Delivered",
+  },
+  {
+    _id: "5",
+    label: "Cancelled",
+  },
+];
+const OrderDetailsPage = ({ params }: { params: { id: string } }) => {
+  const { orders } = useAppSelector((state) => state.order);
+  const id = params?.id;
+  console.log({ id });
+  const order = orders?.find((order) => order?._id === id);
+
   const router = useRouter();
+
   const items = [
     {
       id: 1,
@@ -63,6 +92,23 @@ const OrderDetailsPage = () => {
       image: "/images/image.png",
     },
   ];
+  console.log(order?.items);
+
+  const OrderCards = orderStatusArr?.map((card, i) => (
+    <div
+      key={i}
+      className="bg-white flex  rounded p-4 flex-col gap-2 items-center"
+    >
+      <div className="flex items-center justify-center w-9 h-9 bg-gray-200 rounded-full">
+        <p className="text-lg font-semibold text-gray-500">{i + 1}</p>
+      </div>
+      <div className="flex-1">
+        <p className="text-sm text-center font-medium text-gray-500">
+          {card?.label}
+        </p>
+      </div>
+    </div>
+  ));
 
   return (
     <div>
@@ -77,7 +123,7 @@ const OrderDetailsPage = () => {
             <Undo2 />
           </button>
           <div>
-            <p className="text-2xl font-semibold text-black">#S-454as</p>
+            <p className="text-2xl font-semibold text-black">#{order?.uid}</p>
             <p className="text-sm text-gray-500 font-medium">
               Order history / Order Details - Apr 2, 2025{" "}
             </p>
@@ -113,56 +159,7 @@ const OrderDetailsPage = () => {
               </div>
             </div>
             <div className="grid grid-cols-5 bg-gray-100 p-2 rounded gap-2 ">
-              <div className="bg-white flex  rounded p-4 flex-col gap-2 items-center">
-                <div className="flex items-center justify-center w-9 h-9 bg-gray-200 rounded-full">
-                  <p className="text-lg font-semibold text-gray-500">1</p>
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm text-center font-medium text-gray-500">
-                    Pending
-                  </p>
-                </div>
-              </div>
-              <div className="bg-white flex  rounded p-4 flex-col gap-2 items-center">
-                <div className="flex items-center justify-center w-9 h-9 bg-gray-200 rounded-full">
-                  <p className="text-lg font-semibold text-gray-500">2</p>
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm text-center font-medium text-gray-500">
-                    Processing
-                  </p>
-                </div>
-              </div>
-              <div className="bg-white flex rounded p-4 flex-col gap-2 items-center">
-                <div className="flex items-center justify-center w-9 h-9 bg-gray-200 rounded-full">
-                  <p className="text-lg font-semibold text-gray-500">3</p>
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm text-center font-medium text-gray-500">
-                    Shipped
-                  </p>
-                </div>
-              </div>
-              <div className="bg-white flex rounded p-4 flex-col gap-2 items-center">
-                <div className="flex items-center justify-center w-9 h-9 bg-gray-200 rounded-full">
-                  <p className="text-lg font-semibold text-gray-500">4</p>
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm text-center font-medium text-gray-500">
-                    Delivery
-                  </p>
-                </div>
-              </div>
-              <div className="bg-white flex rounded p-4 flex-col gap-2 items-center">
-                <div className="flex items-center justify-center w-9 h-9 bg-gray-200 rounded-full">
-                  <p className="text-lg font-semibold text-gray-500">5</p>
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm text-center font-medium text-gray-500">
-                    Cancel
-                  </p>
-                </div>
-              </div>
+              {OrderCards}
             </div>
           </div>
           <div className="p-4 bg-white rounded-md shadow">
@@ -200,7 +197,7 @@ const OrderDetailsPage = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody className="bg-white ">
-                  {items.map((item, i) => (
+                  {order?.items?.map((item, i) => (
                     <TableRow key={i} className="">
                       <TableCell
                         className={`pl-0 pr-2 font-medium py-0 border-r border-gray-200`}
@@ -209,7 +206,11 @@ const OrderDetailsPage = () => {
                           <div>
                             <div className="w-[50px] h-[50px]">
                               <Image
-                                src={item?.image}
+                                src={
+                                  item?.image
+                                    ? item?.image
+                                    : "/images/image.png"
+                                }
                                 width={50}
                                 height={50}
                                 alt="Image"
@@ -217,20 +218,29 @@ const OrderDetailsPage = () => {
                               />
                             </div>
                           </div>
-                          {item.name}
+                          <div>
+                            <p className="text-gray-700">{item.name}</p>
+                            <p className="text-xs text-gray-500">
+                              {" "}
+                              {item?.attributes &&
+                                Object.keys(item?.attributes)?.map(
+                                  (key) => `${key}:`
+                                )}
+                            </p>
+                          </div>
                         </div>
                       </TableCell>
                       <TableCell className=" py-0 border-r border-gray-200">
                         {item?.quantity}
                       </TableCell>
                       <TableCell className="py-0 border-r border-gray-200 text-right">
-                        {item?.price}
+                        ${item?.price}
                       </TableCell>
                       <TableCell className="py-0 border-r border-gray-200 text-right">
-                        {item?.tax}
+                        {/* {item?.tax} */}a
                       </TableCell>
                       <TableCell className="py-0 text-right">
-                        {item?.amount}
+                        ${item?.price * item?.quantity}
                       </TableCell>
                     </TableRow>
                   ))}
