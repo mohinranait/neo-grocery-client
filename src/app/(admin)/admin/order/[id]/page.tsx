@@ -8,50 +8,14 @@ import { useAppSelector } from "@/hooks/useRedux";
 import Link from "next/link";
 import { format } from "date-fns";
 import OrderItemTable from "@/components/tables/OrderItemTable";
+import OrderStatusSection from "@/components/pages/Order/OrderStatusSection";
+import { TOrderStatus } from "@/types/order.type";
 
-const orderStatusArr = [
-  {
-    _id: "1",
-    label: "Pending",
-  },
-  {
-    _id: "2",
-    label: "Processing",
-  },
-  {
-    _id: "3",
-    label: "Shipped",
-  },
-  {
-    _id: "4",
-    label: "Delivered",
-  },
-  {
-    _id: "5",
-    label: "Cancelled",
-  },
-];
 const OrderDetailsPage = ({ params }: { params: { id: string } }) => {
   const { orders } = useAppSelector((state) => state.order);
   const id = params?.id;
   const order = orders?.find((order) => order?._id === id);
   const router = useRouter();
-
-  const OrderCards = orderStatusArr?.map((card, i) => (
-    <div
-      key={i}
-      className="bg-white flex  rounded p-4 flex-col gap-2 items-center"
-    >
-      <div className="flex items-center justify-center w-9 h-9 bg-gray-200 rounded-full">
-        <p className="text-lg font-semibold text-gray-500">{i + 1}</p>
-      </div>
-      <div className="flex-1">
-        <p className="text-sm text-center font-medium text-gray-500">
-          {card?.label}
-        </p>
-      </div>
-    </div>
-  ));
 
   return (
     <div>
@@ -107,7 +71,7 @@ const OrderDetailsPage = ({ params }: { params: { id: string } }) => {
               </div>
             </div>
             <div className="grid grid-cols-5 bg-gray-100 p-2 rounded gap-2 ">
-              {OrderCards}
+              {<OrderStatusSection status={order?.status as TOrderStatus} />}
             </div>
           </div>
           {order && <OrderItemTable order={order} />}

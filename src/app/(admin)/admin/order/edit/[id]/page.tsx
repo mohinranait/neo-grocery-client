@@ -9,6 +9,7 @@ import { updateOrderById } from "@/actions/orderApi";
 import toast from "react-hot-toast";
 import OrderItemTable from "@/components/tables/OrderItemTable";
 import { useAppSelector } from "@/hooks/useRedux";
+import OrderStatusSection from "@/components/pages/Order/OrderStatusSection";
 
 const UpdateORderPage = ({ params }: { params: { id: string } }) => {
   const id = params?.id;
@@ -71,70 +72,11 @@ const UpdateORderPage = ({ params }: { params: { id: string } }) => {
               </div>
             </div>
             <div className="grid grid-cols-5 bg-gray-100 p-2 rounded gap-2 ">
-              <div className="bg-white flex  rounded p-4 flex-col gap-2 items-center">
-                <div className="flex items-center justify-center w-9 h-9 bg-gray-200 rounded-full">
-                  <p className="text-lg font-semibold text-gray-500">1</p>
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm text-center font-medium text-gray-500">
-                    Pending
-                  </p>
-                </div>
-              </div>
-              <div className="bg-white flex  rounded p-4 flex-col gap-2 items-center">
-                <div className="flex items-center justify-center w-9 h-9 bg-gray-200 rounded-full">
-                  <p className="text-lg font-semibold text-gray-500">2</p>
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm text-center font-medium text-gray-500">
-                    Processing
-                  </p>
-                </div>
-              </div>
-              <div className="bg-white flex rounded p-4 flex-col gap-2 items-center">
-                <div className="flex items-center justify-center w-9 h-9 bg-gray-200 rounded-full">
-                  <p className="text-lg font-semibold text-gray-500">3</p>
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm text-center font-medium text-gray-500">
-                    Shipped
-                  </p>
-                </div>
-              </div>
-              <div className="bg-white flex rounded p-4 flex-col gap-2 items-center">
-                <div className="flex items-center justify-center w-9 h-9 bg-gray-200 rounded-full">
-                  <p className="text-lg font-semibold text-gray-500">4</p>
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm text-center font-medium text-gray-500">
-                    Delivery
-                  </p>
-                </div>
-              </div>
-              <div className="bg-white flex rounded p-4 flex-col gap-2 items-center">
-                <div className="flex items-center justify-center w-9 h-9 bg-gray-200 rounded-full">
-                  <p className="text-lg font-semibold text-gray-500">5</p>
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm text-center font-medium text-gray-500">
-                    Cancel
-                  </p>
-                </div>
-              </div>
+              {<OrderStatusSection status={order?.status as TOrderStatus} />}
             </div>
           </div>
 
-          <div className="p-4 bg-white rounded-md shadow">
-            <div className="flex pb-3 justify-between items-center">
-              <div>
-                <p className="text-base font-semibold text-black">Products</p>
-                <p className="text-sm font-medium text-gray-500">
-                  Your order items
-                </p>
-              </div>
-            </div>
-            <div>{order && <OrderItemTable order={order} />}</div>
-          </div>
+          {order && <OrderItemTable order={order} />}
         </div>
         <div className="col-span-1 space-y-3">
           <form className="p-4 bg-white rounded-md shadow">

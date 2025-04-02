@@ -1,14 +1,71 @@
 "use client";
 import { PlusIcon } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import React from "react";
 
 const OrderLayout = ({ children }: { children: React.ReactNode }) => {
+  const path = usePathname();
+  console.log({ path });
+
+  const pendingitems = 4;
+  const pageLinks = [
+    {
+      link: "/admin/orders",
+      label: "All",
+    },
+    {
+      link: "/admin/orders/pending",
+      label: `Pending (${pendingitems})`,
+    },
+    {
+      link: "/admin/orders/processing",
+      label: `Processing (${pendingitems})`,
+    },
+    {
+      link: "/admin/orders/delivered",
+      label: "Complated",
+    },
+    {
+      link: "/admin/orders/cancelled",
+      label: "Cancel",
+    },
+  ];
+
+  const pagelabelGenerate = (label: string) => {
+    let title = "Orders";
+    switch (label) {
+      case "pending":
+        title = "Orders Pending";
+        break;
+
+      case "processing":
+        title = "Orders Processing";
+        break;
+
+      case "delivered":
+        title = "Orders Completed";
+        break;
+
+      case "cancelled":
+        title = "Orders Cancel";
+        break;
+
+      default:
+        title = "Orders";
+        break;
+    }
+
+    return title;
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center">
         <div>
-          <p className="text-xl font-medium">Orders</p>
+          <p className="text-xl font-medium">
+            {pagelabelGenerate(path?.split("/").pop() || "")}
+          </p>
           <p className="text-sm text-slate-500">Manage all orders</p>
         </div>
         <Link
@@ -23,33 +80,17 @@ const OrderLayout = ({ children }: { children: React.ReactNode }) => {
       </div>
       <div className=" flex mt-2 justify-between items-center">
         <div className="space-x-3">
-          <Link href={"/admin/orders"} className="text-sm py-1 relative ">
-            All
-          </Link>
-          <Link
-            href={"/admin/orders/pending"}
-            className="text-sm py-1 relative "
-          >
-            Pending (4)
-          </Link>
-          <Link
-            href={"/admin/orders/processing"}
-            className="text-sm py-1 relative "
-          >
-            Processing (4)
-          </Link>
-          <Link
-            href={"/admin/orders/delivered"}
-            className="text-sm py-1 relative "
-          >
-            Complated
-          </Link>
-          <Link
-            href={"/admin/orders/cancelled"}
-            className="text-sm py-1 relative "
-          >
-            Cancel
-          </Link>
+          {pageLinks?.map((link) => (
+            <Link
+              key={link.label}
+              href={`${link?.link}`}
+              className={`text-sm py-1 relative ${
+                link?.link === path ? "text-gray-950" : "text-gray-500"
+              } `}
+            >
+              {link?.label}
+            </Link>
+          ))}
         </div>
       </div>
       <div>{children}</div>
