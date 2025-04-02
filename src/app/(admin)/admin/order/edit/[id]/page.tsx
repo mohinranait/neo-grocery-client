@@ -1,68 +1,38 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Home, Undo2, User } from "lucide-react";
-import React from "react";
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
+import React, { useState } from "react";
 
-const UpdateORderPage = () => {
+import { useRouter } from "next/navigation";
+import { TFormType, TOrderStatus, TPaymentStatus } from "@/types/order.type";
+import { updateOrderById } from "@/actions/orderApi";
+import toast from "react-hot-toast";
+import OrderItemTable from "@/components/tables/OrderItemTable";
+import { useAppSelector } from "@/hooks/useRedux";
+
+const UpdateORderPage = ({ params }: { params: { id: string } }) => {
+  const id = params?.id;
+  const { orders } = useAppSelector((state) => state.order);
+  const order = orders?.find((order) => order?._id === id);
+
   const router = useRouter();
-  const items = [
-    {
-      id: 1,
-      name: "iPhone 15 Pro",
-      category: "Electronics - Small",
-      status: "Ready",
-      quantity: 3,
-      price: "$20.00",
-      tax: "$3.00",
-      amount: "$57.00",
-      image: "/images/image.png",
-    },
-    {
-      id: 2,
-      name: "ASUS ZenBook",
-      category: "Electronics - Large",
-      status: "Packaging",
-      quantity: 1,
-      price: "$2,499.99",
-      tax: "$187.50",
-      amount: "$2,687.49",
-      image: "/images/image.png",
-    },
-    {
-      id: 3,
-      name: "Modern Toaster",
-      category: "Kitchen - Small",
-      status: "Packaging",
-      quantity: 2,
-      price: "$129.99",
-      tax: "$9.74",
-      amount: "$269.72",
-      image: "/images/image.png",
-    },
-    {
-      id: 4,
-      name: "Kindle Paperwhite",
-      category: "Electronics - Large",
-      status: "Ready",
-      quantity: 2,
-      price: "$139.99",
-      tax: "$21.00",
-      amount: "$300.98",
-      image: "/images/image.png",
-    },
-  ];
+  const [form, setForm] = useState<TFormType>({
+    status: "Pending",
+    paymentStatus: "Pending",
+  });
+
+  // Update order by ID
+  const handleUpdateOrder = async () => {
+    try {
+      const data = await updateOrderById({ formData: form, id });
+      console.log({ data });
+      if (data.success) {
+        toast.success("Order Updated");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div>
@@ -84,7 +54,9 @@ const UpdateORderPage = () => {
           </div>
         </div>
         <div className="flex gap-3 justify-end">
-          <Button size={"sm"}>Update Order</Button>
+          <Button type="button" onClick={handleUpdateOrder} size={"sm"}>
+            Update Order
+          </Button>
         </div>
       </div>
       <div className="grid grid-cols-1 gap-3  lg:grid-cols-3">
@@ -161,77 +133,7 @@ const UpdateORderPage = () => {
                 </p>
               </div>
             </div>
-            <div>
-              <Table
-                className="bg-gray-200 px-[2px] border-separate  "
-                style={{ borderSpacing: "0 6px", border: "none" }}
-              >
-                <TableCaption>A list of your recent invoices.</TableCaption>
-                <TableHeader className="bg-white ">
-                  <TableRow>
-                    <TableHead className="min-w-[250px] border-r border-gray-200">
-                      Items
-                    </TableHead>
-                    <TableHead className="border-r border-gray-200">
-                      Quantity
-                    </TableHead>
-                    <TableHead className="border-r border-gray-200">
-                      Price
-                    </TableHead>
-                    <TableHead className="border-r border-gray-200">
-                      Tax
-                    </TableHead>
-                    <TableHead className="text-right border-r border-gray-200">
-                      Amount
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody className="bg-white ">
-                  {items.map((item, i) => (
-                    <TableRow key={i} className="">
-                      <TableCell
-                        className={`pl-0 pr-2 font-medium py-0 border-r border-gray-200`}
-                      >
-                        <div className="flex items-center gap-2">
-                          <div>
-                            <div className="w-[50px] h-[50px]">
-                              <Image
-                                src={item?.image}
-                                width={50}
-                                height={50}
-                                alt="Image"
-                                className="w-[50px] h-[50px]"
-                              />
-                            </div>
-                          </div>
-                          {item.name}
-                        </div>
-                      </TableCell>
-                      <TableCell className=" py-0 border-r border-gray-200">
-                        {item?.quantity}
-                      </TableCell>
-                      <TableCell className="py-0 border-r border-gray-200 text-right">
-                        {item?.price}
-                      </TableCell>
-                      <TableCell className="py-0 border-r border-gray-200 text-right">
-                        {item?.tax}
-                      </TableCell>
-                      <TableCell className="py-0 text-right">
-                        {item?.amount}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-                <TableFooter className="bg-white">
-                  <TableRow>
-                    <TableCell colSpan={4} className="border-r border-gray-200">
-                      Total
-                    </TableCell>
-                    <TableCell className="text-right">$2,500.00</TableCell>
-                  </TableRow>
-                </TableFooter>
-              </Table>
-            </div>
+            <div>{order && <OrderItemTable order={order} />}</div>
           </div>
         </div>
         <div className="col-span-1 space-y-3">
@@ -257,10 +159,19 @@ const UpdateORderPage = () => {
                 <select
                   name=""
                   id=""
+                  onChange={(e) =>
+                    setForm((prev) => ({
+                      ...prev!,
+                      status: e.target.value as TOrderStatus,
+                    }))
+                  }
                   className="py-2 px-2 w-full rounded text-sm"
                 >
-                  <option value="">Success</option>
-                  <option value="">Pending</option>
+                  <option value="Pending">Pending</option>
+                  <option value="Processing">Processing</option>
+                  <option value="Shipped">Shipped</option>
+                  <option value="Delivered">Delivered</option>
+                  <option value="Cancelled">Cancelled</option>
                 </select>
               </div>
               <div className="flex items-cener">
@@ -273,11 +184,18 @@ const UpdateORderPage = () => {
                 <select
                   name="paymentStatus"
                   id=""
-                  onChange={(e) => {}}
+                  onChange={(e) =>
+                    setForm((prev) => ({
+                      ...prev!,
+                      paymentStatus: e.target.value as TPaymentStatus,
+                    }))
+                  }
                   className="py-2 px-2 w-full rounded text-sm"
                 >
-                  <option value="">Paid</option>
-                  <option value="">Unpaid</option>
+                  <option value="Pending">Pending</option>
+                  <option value="Paid">Paid</option>
+                  <option value="Failed">Failed</option>
+                  <option value="Refunded">Refunded</option>
                 </select>
               </div>
             </div>

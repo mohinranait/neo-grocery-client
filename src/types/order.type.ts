@@ -16,14 +16,24 @@ type TShippingAddress = {
     name?: string; 
     image?: string; 
   };
+
+  export type TPaymentStatus =  "Pending" | "Paid" | "Failed" | "Refunded";
+  export type TOrderStatus = "Pending"| "Processing"| "Shipped"| "Delivered"| "Cancelled" 
   
+
+  export type TFormType = {
+    paymentStatus: TPaymentStatus;
+    status: TOrderStatus;
+  };
+
+
   export type TOrder = {
     _id: string;
     shippingAddress: TShippingAddress;
     items: TOrderItem[];
     totalAmount: number;
-    status: "Pending"| "Processing"| "Shipped"| "Delivered"| "Cancelled" 
-    paymentStatus: "Pending" | "Paid" | "Failed" | "Refunded"; 
+    status: TOrderStatus;
+    paymentStatus:  TPaymentStatus;
     paymentMethod: "COD"| "Card"| "Bank Transfer"
     uid: string;
     email: string;

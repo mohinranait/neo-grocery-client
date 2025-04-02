@@ -2,19 +2,12 @@
 import { Button } from "@/components/ui/button";
 import { Home, Undo2, User } from "lucide-react";
 import React from "react";
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import Image from "next/image";
+
 import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/hooks/useRedux";
+import Link from "next/link";
+import { format } from "date-fns";
+import OrderItemTable from "@/components/tables/OrderItemTable";
 
 const orderStatusArr = [
   {
@@ -41,58 +34,8 @@ const orderStatusArr = [
 const OrderDetailsPage = ({ params }: { params: { id: string } }) => {
   const { orders } = useAppSelector((state) => state.order);
   const id = params?.id;
-  console.log({ id });
   const order = orders?.find((order) => order?._id === id);
-
   const router = useRouter();
-
-  const items = [
-    {
-      id: 1,
-      name: "iPhone 15 Pro",
-      category: "Electronics - Small",
-      status: "Ready",
-      quantity: 3,
-      price: "$20.00",
-      tax: "$3.00",
-      amount: "$57.00",
-      image: "/images/image.png",
-    },
-    {
-      id: 2,
-      name: "ASUS ZenBook",
-      category: "Electronics - Large",
-      status: "Packaging",
-      quantity: 1,
-      price: "$2,499.99",
-      tax: "$187.50",
-      amount: "$2,687.49",
-      image: "/images/image.png",
-    },
-    {
-      id: 3,
-      name: "Modern Toaster",
-      category: "Kitchen - Small",
-      status: "Packaging",
-      quantity: 2,
-      price: "$129.99",
-      tax: "$9.74",
-      amount: "$269.72",
-      image: "/images/image.png",
-    },
-    {
-      id: 4,
-      name: "Kindle Paperwhite",
-      category: "Electronics - Large",
-      status: "Ready",
-      quantity: 2,
-      price: "$139.99",
-      tax: "$21.00",
-      amount: "$300.98",
-      image: "/images/image.png",
-    },
-  ];
-  console.log(order?.items);
 
   const OrderCards = orderStatusArr?.map((card, i) => (
     <div
@@ -125,7 +68,8 @@ const OrderDetailsPage = ({ params }: { params: { id: string } }) => {
           <div>
             <p className="text-2xl font-semibold text-black">#{order?.uid}</p>
             <p className="text-sm text-gray-500 font-medium">
-              Order history / Order Details - Apr 2, 2025{" "}
+              Order history / Order Details -{" "}
+              {order && format(new Date(order.createdAt), "MMM dd, yyyy")}
             </p>
           </div>
         </div>
@@ -144,7 +88,11 @@ const OrderDetailsPage = ({ params }: { params: { id: string } }) => {
           >
             Track Order
           </Button>
-          <Button size={"sm"}>Edit Order</Button>
+          <Button size={"sm"}>
+            <Link href={`/admin/order/edit/${id}`} target="_blank">
+              Edit Order
+            </Link>
+          </Button>
         </div>
       </div>
       <div className="grid grid-cols-1 gap-3  lg:grid-cols-3">
@@ -162,100 +110,7 @@ const OrderDetailsPage = ({ params }: { params: { id: string } }) => {
               {OrderCards}
             </div>
           </div>
-          <div className="p-4 bg-white rounded-md shadow">
-            <div className="flex pb-3 justify-between items-center">
-              <div>
-                <p className="text-base font-semibold text-black">Products</p>
-                <p className="text-sm font-medium text-gray-500">
-                  Your order items
-                </p>
-              </div>
-            </div>
-            <div>
-              <Table
-                className="bg-gray-200 px-[2px] border-separate  "
-                style={{ borderSpacing: "0 6px", border: "none" }}
-              >
-                <TableCaption>A list of your recent invoices.</TableCaption>
-                <TableHeader className="bg-white ">
-                  <TableRow>
-                    <TableHead className="min-w-[250px] border-r border-gray-200">
-                      Items
-                    </TableHead>
-                    <TableHead className="border-r border-gray-200">
-                      Quantity
-                    </TableHead>
-                    <TableHead className="border-r border-gray-200">
-                      Price
-                    </TableHead>
-                    <TableHead className="border-r border-gray-200">
-                      Tax
-                    </TableHead>
-                    <TableHead className="text-right border-r border-gray-200">
-                      Amount
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody className="bg-white ">
-                  {order?.items?.map((item, i) => (
-                    <TableRow key={i} className="">
-                      <TableCell
-                        className={`pl-0 pr-2 font-medium py-0 border-r border-gray-200`}
-                      >
-                        <div className="flex items-center gap-2">
-                          <div>
-                            <div className="w-[50px] h-[50px]">
-                              <Image
-                                src={
-                                  item?.image
-                                    ? item?.image
-                                    : "/images/image.png"
-                                }
-                                width={50}
-                                height={50}
-                                alt="Image"
-                                className="w-[50px] h-[50px]"
-                              />
-                            </div>
-                          </div>
-                          <div>
-                            <p className="text-gray-700">{item.name}</p>
-                            <p className="text-xs text-gray-500">
-                              {" "}
-                              {item?.attributes &&
-                                Object.keys(item?.attributes)?.map(
-                                  (key) => `${key}:`
-                                )}
-                            </p>
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell className=" py-0 border-r border-gray-200">
-                        {item?.quantity}
-                      </TableCell>
-                      <TableCell className="py-0 border-r border-gray-200 text-right">
-                        ${item?.price}
-                      </TableCell>
-                      <TableCell className="py-0 border-r border-gray-200 text-right">
-                        {/* {item?.tax} */}a
-                      </TableCell>
-                      <TableCell className="py-0 text-right">
-                        ${item?.price * item?.quantity}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-                <TableFooter className="bg-white">
-                  <TableRow>
-                    <TableCell colSpan={4} className="border-r border-gray-200">
-                      Total
-                    </TableCell>
-                    <TableCell className="text-right">$2,500.00</TableCell>
-                  </TableRow>
-                </TableFooter>
-              </Table>
-            </div>
-          </div>
+          {order && <OrderItemTable order={order} />}
         </div>
         <div className="col-span-1 space-y-3">
           <div className="p-4 bg-white  rounded-md shadow">
