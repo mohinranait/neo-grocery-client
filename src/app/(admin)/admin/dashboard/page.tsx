@@ -78,7 +78,7 @@ const AdminDashboard = () => {
         <div className="grid grid-cols-6 gap-4">
           <div className="col-span-4 bg-white rounded ">
             <div className="px-3 pt-3 pb-2 flex items-center justify-between">
-              <p className="text-base text-gray-600 font-semibold">
+              <p className="text-sm text-gray-600 font-semibold">
                 Order and Revenue
               </p>
               <div className="flex justify-end items-center">
@@ -110,7 +110,7 @@ const AdminDashboard = () => {
           </div>
           <div className="col-span-2 bg-white rounded ">
             <div className="px-3 pt-3 pb-2 flex items-center justify-between">
-              <p className="text-base text-gray-600 font-semibold">Orders</p>
+              <p className="text-sm text-gray-600 font-semibold">Orders</p>
             </div>
             <div>
               <PieChartComponent />

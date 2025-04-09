@@ -46,10 +46,13 @@ const LoginForm = () => {
             toast.error("You can't login this panel");
           }
         } else {
-          toast.error("Somthing wrong");
+          toast.error(data?.message || "Something went wrong");
         }
-      } catch (error) {
-        toast.error("Somthing wrong");
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (error: any) {
+        const errorMessage =
+          error?.response?.data?.message || "Something went wrong";
+        toast.error(errorMessage);
 
         console.log(error);
       }

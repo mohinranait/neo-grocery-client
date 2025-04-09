@@ -26,6 +26,14 @@ export const updateProfile = async ({id,query,formData}:{id:string;query:string;
 }
 
 /**
+ * Update profile By ID
+*/
+export const changePassword = async (formData:{password:string;userId:string}) => {
+    const {data} = await instance.patch(`/change-password`,{...formData});
+    return data;
+}
+
+/**
  * Get All User method 
 */
 export const getAllUserFromDB = async () => {

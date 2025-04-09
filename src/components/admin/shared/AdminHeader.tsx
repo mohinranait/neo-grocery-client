@@ -1,4 +1,4 @@
-import { Bell, Fullscreen, Mail, Menu } from "lucide-react";
+import { Bell, Mail, Menu } from "lucide-react";
 
 import React, { FC } from "react";
 import ProfileDropdown from "../headers/ProfileDropdown";
@@ -20,12 +20,6 @@ const AdminHeader: FC<Props> = ({ setIsToggle, setIsMobileMenu }) => {
         onClick={() => setIsMobileMenu(true)}
       />
       <ul className="flex gap-2 items-center">
-        {/* Full Screen icon */}
-        <li>
-          <div className="w-10 h-10 relative flex items-center justify-center rounded-full bg-slate-100">
-            <Fullscreen size={20} className="cursor-pointer" />
-          </div>
-        </li>
         {/* Notification Icon */}
         <li>
           <div className="w-10 cursor-pointer h-10 relative flex items-center justify-center rounded-full bg-slate-100">

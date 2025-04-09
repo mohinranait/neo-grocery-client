@@ -18,11 +18,11 @@ const data = [
   { name: "May", orders: 900, revenue: 1400 },
   { name: "Jun", orders: 100, revenue: 310 },
   { name: "Jul", orders: 1700, revenue: 3100 },
-  { name: "Aug", orders: 700, revenue: 310 },
+  { name: "Aug", orders: 700, revenue: 2510 },
   { name: "Sep", orders: 100, revenue: 3100 },
-  { name: "Oct", orders: 170, revenue: 300 },
-  { name: "Nov", orders: 170, revenue: 3100 },
-  { name: "Des", orders: 100, revenue: 300 },
+  { name: "Oct", orders: 2000, revenue: 2000 },
+  { name: "Nov", orders: 2500, revenue: 3100 },
+  { name: "Des", orders: 3100, revenue: 2200 },
 ];
 
 export default function OrderRevenueChart() {
@@ -44,8 +44,11 @@ export default function OrderRevenueChart() {
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis />
+          <XAxis
+            dataKey="name"
+            tick={{ fontSize: 12, fill: "#555", fontWeight: "bold" }}
+          />
+          <YAxis tick={{ fontSize: 12, fill: "#555", fontWeight: "bold" }} />
           <Tooltip />
           <Area
             type="monotone"
