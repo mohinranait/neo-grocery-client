@@ -4,6 +4,7 @@ type TShippingAddress = {
     address: string;
     city: string;
     postalCode: string;
+    type: "Home" | "Office" | "Other";
   };
   
   type TOrderItem = {
@@ -15,6 +16,8 @@ type TShippingAddress = {
     attributes?: Record<string, string>;
     name?: string; 
     image?: string; 
+    shippingCharge: number;
+    tax: number; 
   };
 
   export type TPaymentStatus =  "Pending" | "Paid" | "Failed" | "Refunded";
@@ -29,7 +32,9 @@ type TShippingAddress = {
 
   export type TOrder = {
     _id: string;
+    userId: string;
     shippingAddress: TShippingAddress;
+    shippingAddressId: TShippingAddress;
     items: TOrderItem[];
     totalAmount: number;
     status: TOrderStatus;

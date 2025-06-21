@@ -3,6 +3,7 @@
 import React, { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useAppSelector } from "./useRedux";
+import PageLoader from "@/components/Loading/PageLoader";
 
 const withAuth = <P extends object>(
   WrappedComponent: React.ComponentType<P>
@@ -20,7 +21,11 @@ const withAuth = <P extends object>(
     }, [isLoading, user, pathname, router]);
 
     if (isLoading || !user) {
-      return <div>With Auth loading</div>;
+      return (
+        <div className="bg-white min-h-screen">
+          <PageLoader />
+        </div>
+      );
     }
 
     return <WrappedComponent {...props} />;

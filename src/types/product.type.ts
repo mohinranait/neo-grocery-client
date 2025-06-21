@@ -92,5 +92,7 @@ export type TProduct = {
   attributes?: {
     attribute?:string;
     attributeConfig?:string[];
-  }[]
+  }[],
+  shippingCharge: number;
+  tax: number;
 }

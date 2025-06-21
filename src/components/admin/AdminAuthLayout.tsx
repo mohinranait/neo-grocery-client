@@ -80,7 +80,7 @@ const AdminAuthLayout = ({ component }: { component: React.ReactNode }) => {
       <div
         className={`md:hidden transition-all duration-500 fixed  ${
           isMobileMenu ? "translate-x-0" : "-translate-x-full overflow-hidden"
-        }  z-10  bottom-0 h-screen top-0  bg-black left-0`}
+        }  z-[9999]  bottom-0 h-screen top-0  bg-black left-0`}
       >
         <span
           onClick={() => setIsMobileMenu(false)}
@@ -100,7 +100,7 @@ const AdminAuthLayout = ({ component }: { component: React.ReactNode }) => {
         />
         {/* Children for render all page here */}
         <div
-          className={`min-h-screen w-full pt-3 px-3 ${
+          className={`min-h-screen  z-0 w-full pt-3 px-3 ${
             !pathName.includes("admin/product") && "mx-auto 2xl:max-w-[1600px]"
           } `}
         >

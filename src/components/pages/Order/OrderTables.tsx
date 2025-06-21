@@ -59,7 +59,7 @@ const OrderTables = ({ statusName }: Props) => {
   // Paginations
   const [paginations, setPaginations] = useState<TOrder[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [parPage, setParPage] = useState(2);
+  const [parPage, setParPage] = useState(10);
   const totalPages = Math.ceil(allOrders?.length / parPage);
 
   // Pagination
@@ -150,19 +150,21 @@ const OrderTables = ({ statusName }: Props) => {
   return (
     <div className="w-full mt-4 rounded-lg border-0 bg-card text-card-foreground  shadow">
       <div className="p-6 ">
-        <div className=" flex items-center gap-4">
-          <div className="relative">
-            <Search
-              size={17}
-              className="absolute text-gray-600 left-2 top-2/4 -translate-y-2/4"
-            />
-            <input
-              type="text"
-              placeholder="Search orders"
-              onChange={(e) => setSearch(e.target.value)}
-              value={search}
-              className="flex h-9   pl-7 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors   placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0   disabled:opacity-50 md:text-sm"
-            />
+        <div className=" flex flex-wrap items-center gap-4">
+          <div>
+            <div className="relative">
+              <Search
+                size={17}
+                className="absolute z-0 text-gray-600 left-2 top-2/4 -translate-y-2/4"
+              />
+              <input
+                type="text"
+                placeholder="Search orders"
+                onChange={(e) => setSearch(e.target.value)}
+                value={search}
+                className="flex h-9   pl-7 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors   placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0   disabled:opacity-50 md:text-sm"
+              />
+            </div>
           </div>
           <Popover>
             <PopoverTrigger asChild>
@@ -262,7 +264,7 @@ const OrderTables = ({ statusName }: Props) => {
             <TableHeader>
               <TableRow>
                 <TableHead>Order ID</TableHead>
-                <TableHead>Date</TableHead>
+                <TableHead>Order Date</TableHead>
                 <TableHead>Customer</TableHead>
                 <TableHead>Payment</TableHead>
                 <TableHead>Total</TableHead>
@@ -276,15 +278,33 @@ const OrderTables = ({ statusName }: Props) => {
                 return (
                   <TableRow key={index}>
                     <TableCell>
-                      <p className="text-gray-500">{order?.uid}</p>
+                      <p className="text-gray-500">#ORD-{order?.uid}</p>
                     </TableCell>
                     <TableCell>
-                      <p className="text-gray-500">
-                        {format(order?.createdAt, "MMM dd, yyyy")}
-                      </p>
+                      <div className="text-gray-500">
+                        <p>{format(order?.createdAt, "MMM dd, yyyy")}</p>
+                        <p className="text-xs">
+                          {format(order?.createdAt, "hh:mm:ss aa")}
+                        </p>
+                      </div>
                     </TableCell>
                     <TableCell>
-                      <p className="text-gray-500">Torikul</p>
+                      <div>
+                        <p className="text-gray-500">
+                          {" "}
+                          {order?.userId ? (
+                            <>
+                              {order?.shippingAddressId?.firstName}{" "}
+                              {order?.shippingAddressId?.lastName}
+                            </>
+                          ) : (
+                            `${order?.shippingAddress?.firstName} ${order?.shippingAddress?.lastName}`
+                          )}
+                        </p>
+                        <p className="text-[10px] text-gray-500">
+                          {order?.userId ? "User" : "Guest"}{" "}
+                        </p>
+                      </div>
                     </TableCell>
 
                     <TableCell>

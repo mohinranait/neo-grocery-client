@@ -8,6 +8,7 @@ import {
   Users,
 } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import React, { FC } from "react";
 import { Sidebar, Menu, MenuItem, SubMenu } from "react-pro-sidebar";
 type Props = {
@@ -15,11 +16,55 @@ type Props = {
   setIsToggle: React.Dispatch<React.SetStateAction<boolean>>;
 };
 const AdminAside: FC<Props> = ({ isToggle }) => {
+  const pathname = usePathname();
+  const menus = [
+    {
+      name: "Dashboard",
+      icon: <LayoutDashboard size={20} />,
+      link: "/admin/dashboard",
+    },
+    {
+      name: "E-commarce",
+      icon: <ShoppingBasket size={20} />,
+      children: [
+        { name: "Orders", link: "/admin/orders" },
+        { name: "Customers", link: "/admin/customers" },
+        { name: "Setting", link: "#" },
+      ],
+    },
+    {
+      name: "Products",
+      icon: <CreditCard size={20} />,
+      children: [
+        { name: "All Products", link: "/admin/all-products" },
+        { name: "New Product", link: "/admin/product" },
+        { name: "Attribute", link: "/admin/attribute" },
+        { name: "Categorys", link: "/admin/categorys" },
+        { name: "Brands", link: "/admin/brands" },
+      ],
+    },
+    {
+      name: "Meida",
+      icon: <ImageIcon size={20} />,
+      link: "/admin/media",
+    },
+    {
+      name: "Users",
+      icon: <Users size={20} />,
+      link: "/admin/user",
+    },
+    {
+      name: "Calendar",
+      icon: <Calendar size={20} />,
+      link: "#",
+    },
+  ];
+
   return (
     <>
       {/* Sidebar for admin dashbaord */}
       <Sidebar collapsed={isToggle} toggled={true} className="bg-white">
-        <div className="pl-5 h-[60px] flex bg-white items-center ">
+        <div className="pl-5 h-[60px] z-10 flex bg-white items-center ">
           {isToggle ? (
             <span className="text-xl font-bold">Neo</span>
           ) : (
@@ -35,46 +80,52 @@ const AdminAside: FC<Props> = ({ isToggle }) => {
           closeOnClick={true}
           className={`overflow-y-auto h-[calc(100vh-60px)]  scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-gray-100 bg-white`}
         >
-          <MenuItem
-            icon={<LayoutDashboard />}
-            component={<Link href="/admin/dashboard" />}
-          >
-            Dashboard
-          </MenuItem>
-          <SubMenu icon={<ShoppingBasket />} label="E-commarce">
-            <MenuItem component={<Link href={"/admin/orders"} />}>
-              Orders
-            </MenuItem>
-            <MenuItem component={<Link href={"/admin/customers"} />}>
-              Customers
-            </MenuItem>
-            <MenuItem>Setting</MenuItem>
-          </SubMenu>
-          <SubMenu icon={<CreditCard />} label="Products">
-            <MenuItem component={<Link href={"/admin/all-products"} />}>
-              All Products
-            </MenuItem>
-            <MenuItem component={<Link href={"/admin/product"} />}>
-              New Product
-            </MenuItem>
-            <MenuItem component={<Link href={"/admin/attribute"} />}>
-              Attribute
-            </MenuItem>
-            <MenuItem component={<Link href={"/admin/categorys"} />}>
-              Categorys
-            </MenuItem>
-            <MenuItem component={<Link href={"/admin/brands"} />}>
-              Brands
-            </MenuItem>
-          </SubMenu>
-          <MenuItem icon={<ImageIcon />} href="/admin/media">
-            Meida
-          </MenuItem>
-          <MenuItem icon={<Users />} component={<Link href={"/admin/user"} />}>
-            Users
-          </MenuItem>
+          {menus.map((menu, index) => {
+            if (menu.children) {
+              const isActiveParent = menu.children.some(
+                (child) => pathname === child.link
+              );
 
-          <MenuItem icon={<Calendar />}> Calendar </MenuItem>
+              return (
+                <SubMenu
+                  key={index}
+                  icon={menu.icon}
+                  label={menu.name}
+                  defaultOpen={isActiveParent}
+                  className={` bg-white z-10 ${
+                    isActiveParent ? "text-primary" : "text-gray-600"
+                  }`}
+                >
+                  {menu.children.map((child, index) => {
+                    const isActive = pathname === child.link;
+                    return (
+                      <MenuItem
+                        key={index}
+                        component={<Link href={child.link} />}
+                        className={` bg-white text-base ${
+                          isActive ? "text-primary" : "text-gray-600"
+                        }`}
+                      >
+                        {child.name}
+                      </MenuItem>
+                    );
+                  })}
+                </SubMenu>
+              );
+            } else {
+              const isActive = pathname === menu.link;
+              return (
+                <MenuItem
+                  key={index}
+                  icon={menu.icon}
+                  component={<Link href={menu.link} />}
+                  className={isActive ? "text-primary " : "text-gray-600"}
+                >
+                  {menu.name}
+                </MenuItem>
+              );
+            }
+          })}
         </Menu>
       </Sidebar>
     </>

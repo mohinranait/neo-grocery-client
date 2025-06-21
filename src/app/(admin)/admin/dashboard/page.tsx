@@ -1,5 +1,6 @@
 import OrderRevenueChart from "@/components/charts/OrderRevenueChart";
 import PieChartComponent from "@/components/charts/PieChartComponent";
+import OrderTables from "@/components/pages/Order/OrderTables";
 import {
   ArrowUp,
   CircleDollarSign,
@@ -11,9 +12,9 @@ import React from "react";
 
 const AdminDashboard = () => {
   return (
-    <div style={{ height: "300vh" }}>
+    <div>
       <div className="space-y-4">
-        <div className="grid grid-cols-4 gap-4 ">
+        <div className="grid sm:grid-cols-2  lg:grid-cols-4 gap-4 ">
           <div className="bg-white rounded  border-slate-100 flex justify-between p-4">
             <div className="h-[80px]">
               <p className="font-medium text-gray-500">Sales</p>
@@ -75,9 +76,9 @@ const AdminDashboard = () => {
             </div>
           </div>
         </div>
-        <div className="grid grid-cols-6 gap-4">
-          <div className="col-span-4 bg-white rounded ">
-            <div className="px-3 pt-3 pb-2 flex items-center justify-between">
+        <div className="grid lg:grid-cols-6 gap-4">
+          <div className="lg:col-span-4 bg-white rounded ">
+            <div className="px-6 pt-4 pb-2 flex items-center justify-between">
               <p className="text-sm text-gray-600 font-semibold">
                 Order and Revenue
               </p>
@@ -108,12 +109,24 @@ const AdminDashboard = () => {
               <OrderRevenueChart />
             </div>
           </div>
-          <div className="col-span-2 bg-white rounded ">
+          <div className="lg:col-span-2 bg-white rounded ">
             <div className="px-3 pt-3 pb-2 flex items-center justify-between">
               <p className="text-sm text-gray-600 font-semibold">Orders</p>
             </div>
             <div>
               <PieChartComponent />
+            </div>
+          </div>
+        </div>
+        <div className=" ">
+          <div className=" bg-white rounded ">
+            <div className="px-6 pt-4  flex items-center justify-between">
+              <p className="text-sm text-gray-600 font-semibold">
+                Order and Revenue
+              </p>
+            </div>
+            <div className="-mt-6">
+              <OrderTables statusName="Pending" />
             </div>
           </div>
         </div>

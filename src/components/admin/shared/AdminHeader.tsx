@@ -8,7 +8,7 @@ type Props = {
 };
 const AdminHeader: FC<Props> = ({ setIsToggle, setIsMobileMenu }) => {
   return (
-    <header className="h-[60px]  bg-white px-3 top-0 sticky w-full flex justify-between items-center">
+    <header className="h-[60px] z-[999] bg-white px-3 top-0 sticky w-full flex justify-between items-center">
       {/* Desktop menu icon */}
       <Menu
         className="cursor-pointer hidden md:block"

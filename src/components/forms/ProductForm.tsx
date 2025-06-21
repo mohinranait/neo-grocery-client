@@ -59,6 +59,7 @@ const ProductForm = () => {
   const [keywords, setKeywords] = useState<string[]>([]);
   const [content, setContent] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const [freeShipping, setFreeShipping] = useState<"no" | "yes">("no");
 
   // Submit product form for SAVE Product in DB
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -327,6 +328,173 @@ const ProductForm = () => {
           <div className="w-[300px] flex flex-col gap-4 ">
             <div className=" g-white rounded border border-l-slate-100 bg-card text-card-foreground">
               <div className="py-2 px-4 border-b border-l-slate-200">
+                <p className="text-base font-semibold">Shipping & Tax</p>
+              </div>
+              <div className="px-4  py-4 space-y-4">
+                <div className="flex gap-3">
+                  <Label
+                    htmlFor="option-two"
+                    className="text-nowrap cursor-pointer"
+                  >
+                    Free Shipping
+                  </Label>
+                  <RadioGroup
+                    className="flex flex-col gap-2"
+                    defaultValue={"yes"}
+                    value={freeShipping}
+                    onValueChange={(e: "no" | "yes") => {
+                      setFreeShipping(e);
+                      dispatch(
+                        setProduct({
+                          ...product,
+                          shippingCharge: e === "no" ? 60 : 0,
+                        })
+                      );
+                    }}
+                  >
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem
+                        value="no"
+                        // checked={product?.status === "Active"}
+                        id="free-no"
+                      />
+                      <Label htmlFor="free-no" className="cursor-pointer">
+                        No
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem
+                        value="yes"
+                        // checked={product?.status === "Inactive"}
+                        id="free-yes"
+                      />
+                      <Label htmlFor="free-yes" className="cursor-pointer">
+                        Yes
+                      </Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+                {freeShipping === "no" && (
+                  <div className="flex justify-between items-center">
+                    <Label
+                      htmlFor="option-two"
+                      className="text-nowrap cursor-pointer"
+                    >
+                      Shipping Charge (৳)
+                    </Label>
+                    <input
+                      type="number"
+                      className="flex h-8 w-[100px] rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                      value={product?.shippingCharge || 60}
+                      onChange={(e) => {
+                        dispatch(
+                          setProduct({
+                            ...product,
+                            shippingCharge: e?.target?.value
+                              ? +e?.target?.value
+                              : 60,
+                          })
+                        );
+                      }}
+                    />
+                  </div>
+                )}
+
+                <div className="flex justify-between items-center">
+                  <Label
+                    htmlFor="option-two"
+                    className="text-nowrap cursor-pointer"
+                  >
+                    Tax (৳)
+                  </Label>
+                  <input
+                    type="number"
+                    className="flex h-8 w-[100px] rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                    placeholder="Tax"
+                    value={product?.tax || ""}
+                    onChange={(e) =>
+                      dispatch(
+                        setProduct({
+                          ...product,
+                          tax: e?.target?.value ? +e?.target?.value : 0,
+                        })
+                      )
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+
+            <ManageCategory />
+            <ManageBrand />
+            <div className=" bg-white rounded border border-l-slate-100 bg-card text-card-foreground ">
+              <div className="py-2 px-4 border-b border-l-slate-200">
+                <p className="text-base font-semibold">Product Image</p>
+              </div>
+              <div className="px-4 py-4 space-y-4">
+                <div className="grid gap-2">
+                  <label
+                    htmlFor="thumbnail"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Thumbnail
+                  </label>
+                  <div className="flex gap-4">
+                    <SelectImageFromModal singleFile={setFile}>
+                      <div
+                        onClick={() => {
+                          dispatch(setIsModal(true));
+                          dispatch(addVariant("Single"));
+                        }}
+                        style={{
+                          backgroundImage: `url('${file?.fileUrl}')`,
+                          backgroundPosition: "center",
+                          backgroundSize: "cover",
+                        }}
+                        className=" h-[120px] w-full cursor-pointer hover:bg-slate-200 flex items-center justify-center border-slate-200 rounded border border-dashed "
+                      >
+                        <UploadCloudIcon />
+                      </div>
+                    </SelectImageFromModal>
+                  </div>
+                </div>
+                <div className="grid gap-2">
+                  <label
+                    htmlFor="thumbnail"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Image Gallary
+                  </label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {gallarys?.length > 0 &&
+                      gallarys?.map((file, i) => (
+                        <div
+                          key={i}
+                          style={{
+                            backgroundImage: `url('${file?.fileUrl}')`,
+                            backgroundPosition: "center",
+                            backgroundSize: "cover",
+                          }}
+                          className="w-[80px] h-[80px] cursor-pointer hover:bg-slate-200 flex items-center justify-center border-slate-200 rounded border border-dashed "
+                        ></div>
+                      ))}
+                    <SelectImageFromModal multiFiles={setGallarys}>
+                      <div
+                        onClick={() => {
+                          dispatch(setIsModal(true));
+                          dispatch(addVariant("Multiple"));
+                        }}
+                        className="  h-[80px]  cursor-pointer hover:bg-slate-200 flex items-center justify-center border-slate-200 rounded border border-dashed "
+                      >
+                        <UploadCloudIcon />
+                      </div>
+                    </SelectImageFromModal>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className=" g-white rounded border border-l-slate-100 bg-card text-card-foreground">
+              <div className="py-2 px-4 border-b border-l-slate-200">
                 <p className="text-base font-semibold">Visibility</p>
               </div>
               <div className="px-4 py-4 space-y-4">
@@ -402,74 +570,6 @@ const ProductForm = () => {
                       />
                     </PopoverContent>
                   </Popover>
-                </div>
-              </div>
-            </div>
-            <ManageCategory />
-            <ManageBrand />
-            <div className=" bg-white rounded border border-l-slate-100 bg-card text-card-foreground ">
-              <div className="py-2 px-4 border-b border-l-slate-200">
-                <p className="text-base font-semibold">Product Image</p>
-              </div>
-              <div className="px-4 py-4 space-y-4">
-                <div className="grid gap-2">
-                  <label
-                    htmlFor="thumbnail"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    Thumbnail
-                  </label>
-                  <div className="flex gap-4">
-                    <SelectImageFromModal singleFile={setFile}>
-                      <div
-                        onClick={() => {
-                          dispatch(setIsModal(true));
-                          dispatch(addVariant("Single"));
-                        }}
-                        style={{
-                          backgroundImage: `url('${file?.fileUrl}')`,
-                          backgroundPosition: "center",
-                          backgroundSize: "cover",
-                        }}
-                        className=" h-[120px] w-full cursor-pointer hover:bg-slate-200 flex items-center justify-center border-slate-200 rounded border border-dashed "
-                      >
-                        <UploadCloudIcon />
-                      </div>
-                    </SelectImageFromModal>
-                  </div>
-                </div>
-                <div className="grid gap-2">
-                  <label
-                    htmlFor="thumbnail"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    Image Gallary
-                  </label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {gallarys?.length > 0 &&
-                      gallarys?.map((file, i) => (
-                        <div
-                          key={i}
-                          style={{
-                            backgroundImage: `url('${file?.fileUrl}')`,
-                            backgroundPosition: "center",
-                            backgroundSize: "cover",
-                          }}
-                          className="w-[80px] h-[80px] cursor-pointer hover:bg-slate-200 flex items-center justify-center border-slate-200 rounded border border-dashed "
-                        ></div>
-                      ))}
-                    <SelectImageFromModal multiFiles={setGallarys}>
-                      <div
-                        onClick={() => {
-                          dispatch(setIsModal(true));
-                          dispatch(addVariant("Multiple"));
-                        }}
-                        className="  h-[80px]  cursor-pointer hover:bg-slate-200 flex items-center justify-center border-slate-200 rounded border border-dashed "
-                      >
-                        <UploadCloudIcon />
-                      </div>
-                    </SelectImageFromModal>
-                  </div>
                 </div>
               </div>
             </div>

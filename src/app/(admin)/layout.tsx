@@ -91,7 +91,7 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
         // Call API for load all orders
         const data = await getAllOrders();
         if (data?.success) {
-          dispatch(setAllOrders(data?.payload));
+          dispatch(setAllOrders(data?.payload?.orders));
         }
       } catch (error: unknown) {
         toast.error(`${error}`);

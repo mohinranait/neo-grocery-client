@@ -4,7 +4,7 @@ import * as Yup from "yup";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useFormik } from "formik";
-import { Eye, EyeOff, Lock, Mail } from "lucide-react";
+import { Eye, EyeOff, LoaderCircle, Lock, Mail } from "lucide-react";
 import { userLogin, userLogout } from "@/actions/authApi";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
@@ -20,6 +20,7 @@ const SignupSchema = Yup.object().shape({
 });
 
 const LoginForm = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
   const [isShowPass, setIsShowPass] = useState<boolean>(false);
   const dispatch = useAppDispatch();
@@ -32,6 +33,7 @@ const LoginForm = () => {
     validationSchema: SignupSchema,
     onSubmit: async (values) => {
       try {
+        setIsLoading(true);
         const data = await userLogin(values);
         if (data?.success) {
           if (
@@ -41,6 +43,7 @@ const LoginForm = () => {
             dispatch(setAuthUser(data.payload));
             router.push("/admin/dashboard");
             toast.success("Login successfull");
+            setIsLoading(false);
           } else {
             await userLogout();
             toast.error("You can't login this panel");
@@ -53,8 +56,7 @@ const LoginForm = () => {
         const errorMessage =
           error?.response?.data?.message || "Something went wrong";
         toast.error(errorMessage);
-
-        console.log(error);
+        setIsLoading(false);
       }
     },
   });
@@ -130,7 +132,10 @@ const LoginForm = () => {
         ) : null}
       </div>
       <div className="flex justify-between">
-        <Button className="px-6">Login</Button>
+        <Button disabled={isLoading} className="px-6">
+          {isLoading ? <LoaderCircle className="animate-spin " /> : null}
+          Login
+        </Button>
         <Link
           href={"/forgot"}
           className="text-nowrap text-gray-700 hover:underline"

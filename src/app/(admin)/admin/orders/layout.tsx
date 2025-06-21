@@ -84,7 +84,7 @@ const OrderLayout = ({ children }: { children: React.ReactNode }) => {
             <Link
               key={link.label}
               href={`${link?.link}`}
-              className={`text-sm py-1 relative ${
+              className={`text-sm py-1  ${
                 link?.link === path ? "text-gray-950" : "text-gray-500"
               } `}
             >

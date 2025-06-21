@@ -70,6 +70,22 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  @keyframes bouncing-wave-animation {
+    0%, 40%, 100% {
+      transform: translateY(0);
+    }
+    20% {
+      transform: translateY(-0.4em);
+    }
+  }
+
+  .animate-reflect {
+    -webkit-box-reflect: below -0.4em linear-gradient(transparent, #00000045);
+  }
+}
+
 :root {
   --bar-color: #3c86fa;
   --stripe-color: #5897f9;

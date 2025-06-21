@@ -15,6 +15,16 @@ const OrderDetailsPage = ({ params }: { params: { id: string } }) => {
   const { orders } = useAppSelector((state) => state.order);
   const id = params?.id;
   const order = orders?.find((order) => order?._id === id);
+  const totalTax =
+    order?.items?.reduce((acc, item) => acc + (item?.tax || 0), 0) || 0;
+  const totalShipping =
+    order?.items?.reduce((acc, item) => acc + (item?.shippingCharge || 0), 0) ||
+    0;
+  const subTotal =
+    order?.totalAmount &&
+    order?.totalAmount - ((totalShipping || 0) + (totalTax || 0));
+  console.log("order", order);
+
   const router = useRouter();
 
   return (
@@ -30,10 +40,13 @@ const OrderDetailsPage = ({ params }: { params: { id: string } }) => {
             <Undo2 />
           </button>
           <div>
-            <p className="text-2xl font-semibold text-black">#{order?.uid}</p>
+            <p className="text-2xl font-semibold text-black uppercase">
+              #ORD-{order?.uid}
+            </p>
             <p className="text-sm text-gray-500 font-medium">
-              Order history / Order Details -{" "}
-              {order && format(new Date(order.createdAt), "MMM dd, yyyy")}
+              Order Date -{" "}
+              {order &&
+                format(new Date(order.createdAt), "MMM dd, yyyy hh:mm a")}
             </p>
           </div>
         </div>
@@ -89,24 +102,34 @@ const OrderDetailsPage = ({ params }: { params: { id: string } }) => {
             <div className="bg-gray-100 p-4 space-y-2 rounded-md">
               <div className="flex justify-between items-center">
                 <p className="text-sm font-medium text-gray-500">Subtotal</p>
-                <p className="text-sm font-semibold text-black">$10</p>
+                <p className="text-sm font-semibold text-black">
+                  ${subTotal?.toFixed(2)}
+                </p>
               </div>
-              <div className="flex justify-between items-center">
-                <p className="text-sm font-medium text-gray-500">Discount</p>
-                <p className="text-sm font-semibold text-black">5%</p>
-              </div>
-              <div className="flex justify-between items-center">
-                <p className="text-sm font-medium text-gray-500">Tax</p>
-                <p className="text-sm font-semibold text-black">$80</p>
-              </div>
-              <div className="flex justify-between items-center">
-                <p className="text-sm font-medium text-gray-500">Shipping</p>
-                <p className="text-sm font-semibold text-black">$10</p>
-              </div>
+              {totalTax > 0 && (
+                <div className="flex justify-between items-center">
+                  <p className="text-sm font-medium text-gray-500">Tax</p>
+                  <p className="text-sm font-semibold text-black">
+                    ${totalTax?.toFixed(2)}
+                  </p>
+                </div>
+              )}
+
+              {totalShipping > 0 && (
+                <div className="flex justify-between items-center">
+                  <p className="text-sm font-medium text-gray-500">Shipping</p>
+                  <p className="text-sm font-semibold text-black">
+                    ${totalShipping?.toFixed(2)}
+                  </p>
+                </div>
+              )}
+
               <span className="h-[1px] w-full bg-gray-300 inline-block"></span>
               <div className="flex justify-between items-center">
                 <p className="text-sm font-semibold text-black">Total</p>
-                <p className="text-sm font-semibold text-black">$100</p>
+                <p className="text-sm font-semibold text-black">
+                  ${order?.totalAmount?.toFixed(2)}
+                </p>
               </div>
             </div>
           </div>
@@ -128,12 +151,36 @@ const OrderDetailsPage = ({ params }: { params: { id: string } }) => {
                   <p className="text-sm font-semibold text-black">
                     Shipping Address
                   </p>
-                  <ul className="list-disc mt-1 space-y-1 list-inside text-sm text-gray-500">
-                    <li>Mahir Shikder</li>
-                    <li>01246787445</li>
-                    <li>Barguna, Barishal, Dhaka</li>
-                    <li>Zip: 44545</li>
-                  </ul>
+                  {order?.userId ? (
+                    <ul className="list-disc mt-1 space-y-1 list-inside text-sm text-gray-500">
+                      <li>
+                        {order?.shippingAddressId?.firstName}{" "}
+                        {order?.shippingAddressId?.lastName}
+                      </li>
+                      <li>{order?.phone}</li>
+                      <li>
+                        {order?.shippingAddressId?.address},{" "}
+                        {order?.shippingAddressId?.city},{" "}
+                        {order?.shippingAddressId?.postalCode}
+                      </li>
+                      <li>Pickup From: {order?.shippingAddressId?.type}</li>
+                    </ul>
+                  ) : (
+                    <ul className="list-disc mt-1 space-y-1 list-inside text-sm text-gray-500">
+                      <li>
+                        {" "}
+                        {order?.shippingAddress?.firstName}{" "}
+                        {order?.shippingAddress?.lastName}
+                      </li>
+                      <li>{order?.phone}</li>
+                      <li>
+                        {order?.shippingAddress?.address},
+                        {order?.shippingAddress?.city},{" "}
+                        {order?.shippingAddress?.postalCode}
+                      </li>
+                      <li>Pickup From: {order?.shippingAddress?.type}</li>
+                    </ul>
+                  )}
                 </div>
               </div>
               <div className="flex p-3 rounded bg-white items-start gap-2">
