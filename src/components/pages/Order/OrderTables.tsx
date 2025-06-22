@@ -1,5 +1,5 @@
 "use client";
-import { CalendarIcon, Edit, Eye, Search } from "lucide-react";
+import { CalendarIcon, Check, Clock, Edit, Eye, Search } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import {
   Table,
@@ -31,6 +31,9 @@ import { cn } from "@/lib/utils";
 import { useAppSelector } from "@/hooks/useRedux";
 import { TOrder } from "@/types/order.type";
 import Link from "next/link";
+import OrderStatus from "./OrderStatus";
+import { Badge } from "@/components/ui/badge";
+import { getPaymentStatusConfig } from "@/app/(admin)/admin/order/[id]/page";
 
 type Props = {
   statusName:
@@ -308,10 +311,28 @@ const OrderTables = ({ statusName }: Props) => {
                     </TableCell>
 
                     <TableCell>
-                      <span className="text-gray-500">Pending</span>
+                      <Badge
+                        variant="secondary"
+                        className={`${
+                          getPaymentStatusConfig(order?.paymentStatus as string)
+                            .color
+                        } font-semibold  `}
+                      >
+                        {order?.paymentStatus === "Pending" ? (
+                          <>
+                            <Clock size={14} /> Un-Paid
+                          </>
+                        ) : (
+                          <>
+                            <Check size={16} /> Paid
+                          </>
+                        )}
+                      </Badge>
                     </TableCell>
                     <TableCell>
-                      <p className="text-gray-500">${order?.totalAmount} </p>
+                      <p className="text-gray-500">
+                        ${order?.totalAmount?.toFixed(2)}{" "}
+                      </p>
                     </TableCell>
                     <TableCell>
                       <p className="text-gray-500">
@@ -322,7 +343,7 @@ const OrderTables = ({ statusName }: Props) => {
                       {<OrderStatus status={order?.status} />}
                     </TableCell>
                     <TableCell className="flex justify-end gap-2">
-                      <Link href={`/admin/order/edit/${order?._id}`}>
+                      <Link href={`/admin/order/${order?._id}?mode=edit`}>
                         <Button className="w-8 h-8" size={"icon"}>
                           <Edit size={20} />
                         </Button>
@@ -380,53 +401,53 @@ const OrderTables = ({ statusName }: Props) => {
   );
 };
 
-const OrderStatus = ({
-  status,
-}: {
-  status: "Pending" | "Processing" | "Shipped" | "Delivered" | "Cancelled";
-}) => {
-  const statusColors = {
-    Pending: {
-      text: "text-yellow-500",
-      bg: "bg-yellow-50",
-      border: "border-yellow-500",
-      circle: "bg-yellow-500",
-    },
-    Processing: {
-      text: "text-blue-500",
-      bg: "bg-blue-50",
-      border: "border-blue-500",
-      circle: "bg-blue-500",
-    },
-    Shipped: {
-      text: "text-indigo-500",
-      bg: "bg-indigo-50",
-      border: "border-indigo-500",
-      circle: "bg-indigo-500",
-    },
-    Delivered: {
-      text: "text-green-500",
-      bg: "bg-green-50",
-      border: "border-green-500",
-      circle: "bg-green-500",
-    },
-    Cancelled: {
-      text: "text-red-500",
-      bg: "bg-red-50",
-      border: "border-red-500",
-      circle: "bg-red-500",
-    },
-  };
+// const OrderStatus = ({
+//   status,
+// }: {
+//   status: "Pending" | "Processing" | "Shipped" | "Delivered" | "Cancelled";
+// }) => {
+//   const statusColors = {
+//     Pending: {
+//       text: "text-yellow-500",
+//       bg: "bg-yellow-50",
+//       border: "border-yellow-500",
+//       circle: "bg-yellow-500",
+//     },
+//     Processing: {
+//       text: "text-blue-500",
+//       bg: "bg-blue-50",
+//       border: "border-blue-500",
+//       circle: "bg-blue-500",
+//     },
+//     Shipped: {
+//       text: "text-indigo-500",
+//       bg: "bg-indigo-50",
+//       border: "border-indigo-500",
+//       circle: "bg-indigo-500",
+//     },
+//     Delivered: {
+//       text: "text-green-500",
+//       bg: "bg-green-50",
+//       border: "border-green-500",
+//       circle: "bg-green-500",
+//     },
+//     Cancelled: {
+//       text: "text-red-500",
+//       bg: "bg-red-50",
+//       border: "border-red-500",
+//       circle: "bg-red-500",
+//     },
+//   };
 
-  const color = statusColors[status];
+//   const color = statusColors[status];
 
-  return (
-    <span
-      className={`text-xs px-[6px] py-[2px] rounded-3xl inline-flex gap-1 items-center border ${color.border} ${color.bg} ${color.text}`}
-    >
-      <span className={`w-2 h-2 rounded-full ${color.circle}`}></span> {status}
-    </span>
-  );
-};
+//   return (
+//     <span
+//       className={`text-xs px-[6px] py-[2px] rounded-3xl inline-flex gap-1 items-center border ${color.border} ${color.bg} ${color.text}`}
+//     >
+//       <span className={`w-2 h-2 rounded-full ${color.circle}`}></span> {status}
+//     </span>
+//   );
+// };
 
 export default OrderTables;

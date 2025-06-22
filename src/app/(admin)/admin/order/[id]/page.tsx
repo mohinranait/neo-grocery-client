@@ -1,20 +1,67 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Home, Undo2, User } from "lucide-react";
+import {
+  Check,
+  CheckCircle,
+  Clock,
+  CreditCard,
+  Home,
+  Undo2,
+  User,
+  XCircle,
+} from "lucide-react";
 import React from "react";
 
-import { useRouter } from "next/navigation";
-import { useAppSelector } from "@/hooks/useRedux";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import Link from "next/link";
 import { format } from "date-fns";
 import OrderItemTable from "@/components/tables/OrderItemTable";
 import OrderStatusSection from "@/components/pages/Order/OrderStatusSection";
 import { TOrderStatus } from "@/types/order.type";
+import OrderStatus from "@/components/pages/Order/OrderStatus";
+import { Badge } from "@/components/ui/badge";
+
+import OrderUpdateForm from "@/components/pages/Order/order-update-form";
+export const getPaymentStatusConfig = (status: string) => {
+  switch (status) {
+    case "Pending":
+      return {
+        color: "bg-amber-100 text-amber-800 border-amber-200",
+        icon: Clock,
+      };
+    case "Paid":
+      return {
+        color: "bg-green-100 text-green-800 border-green-200",
+        icon: CheckCircle,
+      };
+    case "Failed":
+      return {
+        color: "bg-red-100 text-red-800 border-red-200",
+        icon: XCircle,
+      };
+    case "Refunded":
+      return {
+        color: "bg-orange-100 text-orange-800 border-orange-200",
+        icon: CreditCard,
+      };
+    default:
+      return {
+        color: "bg-gray-100 text-gray-800 border-gray-200",
+        icon: Clock,
+      };
+  }
+};
 
 const OrderDetailsPage = ({ params }: { params: { id: string } }) => {
   const { orders } = useAppSelector((state) => state.order);
+  const dispatch = useAppDispatch();
   const id = params?.id;
+  const searchParams = useSearchParams();
+  const pageMode = searchParams.get("mode");
+
   const order = orders?.find((order) => order?._id === id);
+  // const [order, setOrder] = useState(findOrder);
   const totalTax =
     order?.items?.reduce((acc, item) => acc + (item?.tax || 0), 0) || 0;
   const totalShipping =
@@ -65,11 +112,60 @@ const OrderDetailsPage = ({ params }: { params: { id: string } }) => {
           >
             Track Order
           </Button>
-          <Button size={"sm"}>
-            <Link href={`/admin/order/edit/${id}`} target="_blank">
+          <Link href={`/admin/order/${id}?mode=edit`}>
+            <Button type="button" size={"sm"}>
               Edit Order
-            </Link>
-          </Button>
+            </Button>
+          </Link>
+        </div>
+      </div>
+      <div className="flex gap-3 mb-3 bg-white rounded-md shadow">
+        <div className="p-4  ">
+          <p className="text-gray-600 text-sm ">Order Status</p>
+          <p className="text-center">
+            <OrderStatus status={order?.status as TOrderStatus} />
+          </p>
+        </div>
+        <div className="p-4  ">
+          <p className="text-gray-600 text-sm "> Payment Status</p>
+          <p className="text-center">
+            {" "}
+            <Badge
+              variant="secondary"
+              className={`${
+                getPaymentStatusConfig(order?.paymentStatus as string).color
+              } font-semibold  `}
+            >
+              {order?.paymentStatus === "Pending" ? (
+                <>
+                  <Clock size={16} /> Un-Paid
+                </>
+              ) : (
+                <>
+                  <Check size={16} /> Paid
+                </>
+              )}
+            </Badge>
+          </p>
+        </div>
+        <div className="p-4  ">
+          <p className="text-gray-600 text-sm "> Total Amount</p>
+          <p className="text-center text-green-600 font-semibold">
+            ${order?.totalAmount?.toFixed(2)}
+          </p>
+        </div>
+        <div className="p-4  ">
+          <p className="text-gray-600 text-sm "> Payment Method</p>
+          <p className="text-center">{order?.paymentMethod}</p>
+        </div>
+
+        <div className="p-4  ">
+          <p className="text-gray-600 text-sm ">PickUp Point</p>
+          <p className="text-center">
+            {order?.userId
+              ? order?.shippingAddressId?.type
+              : order?.shippingAddress?.type}
+          </p>
         </div>
       </div>
       <div className="grid grid-cols-1 gap-3  lg:grid-cols-3">
@@ -90,6 +186,9 @@ const OrderDetailsPage = ({ params }: { params: { id: string } }) => {
           {order && <OrderItemTable order={order} />}
         </div>
         <div className="col-span-1 space-y-3">
+          {pageMode === "edit" && (
+            <OrderUpdateForm orderId={order?._id as string} order={order} />
+          )}
           <div className="p-4 bg-white  rounded-md shadow">
             <div className="flex pb-3 justify-between items-center">
               <div>

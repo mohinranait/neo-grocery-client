@@ -18,10 +18,16 @@ type Props = {
   order: TOrder;
 };
 const OrderItemTable = ({ order }: Props) => {
-  const totaoPrice = order.items?.reduce(
+  const subTotal = order.items?.reduce(
     (acc, cur) => acc + cur.price * cur.quantity,
     0
   );
+  const totalTax = order.items?.reduce((acc, item) => acc + (item.tax || 0), 0);
+  const totalShipping = order.items?.reduce(
+    (acc, item) => acc + (item.shippingCharge || 0),
+    0
+  );
+  const totaoPrice = subTotal + (totalTax || 0) + (totalShipping || 0);
   return (
     <>
       <div className="  bg-white rounded-md shadow">
@@ -51,29 +57,38 @@ const OrderItemTable = ({ order }: Props) => {
             <p className="text-gray-600">
               {" "}
               <span className="text-gray-900 font-semibold">Date:</span>{" "}
-              {format(new Date(), "MMM dd, yyyy")}{" "}
+              {format(order?.createdAt, "MMM dd, yyyy")}{" "}
             </p>
             <div className="grid grid-cols-2 pb-4 gap-2">
               <div className="">
+                <p className="text-lg font-bold text-gray-800">From</p>
+                <p className="text-gray-600">Neo Grocer Shop</p>
                 <p className="text-gray-600">
-                  {order?.shippingAddress?.address}
+                  Bangla Bazar, Turag, Dhaka 10000
                 </p>
                 <p className="text-gray-600">
-                  {order?.shippingAddress?.city},
-                  {order?.shippingAddress?.postalCode}
-                </p>
-                <p className="text-gray-600">
-                  <span className="text-gray-900 font-semibold">Phone:</span>
-                  {order?.phone}
+                  <span className="text-gray-900 font-semibold">Contact:</span>
+                  01728068200
                 </p>
               </div>
               <div className="">
-                <p className="text-gray-600 text-right">
-                  {order?.shippingAddress?.address}
+                <p className="text-lg font-bold text-gray-800 text-right">
+                  Bill To
                 </p>
                 <p className="text-gray-600 text-right">
-                  {order?.shippingAddress?.city},
-                  {order?.shippingAddress?.postalCode}
+                  {order?.userId
+                    ? order?.shippingAddressId?.address
+                    : order?.shippingAddress?.address}
+                </p>
+                <p className="text-gray-600 text-right">
+                  {order?.userId
+                    ? order?.shippingAddressId?.city
+                    : order?.shippingAddress?.city}
+                  ,{"  "}
+                  {order?.userId
+                    ? order?.shippingAddressId?.postalCode
+                    : order?.shippingAddress?.postalCode}
+                  ,{"  "}
                 </p>
                 <p className="text-gray-600 text-right">
                   <span className="text-gray-900 font-semibold">Phone:</span>
@@ -84,8 +99,8 @@ const OrderItemTable = ({ order }: Props) => {
           </div>
 
           <Table
-            className="bg-gray-200 px-[2px] border-separate  "
-            style={{ borderSpacing: "0 6px", border: "none" }}
+            className="bg-gray-200  border-separate  "
+            style={{ border: "none" }}
           >
             <TableHeader className="bg-white ">
               <TableRow>
@@ -143,7 +158,7 @@ const OrderItemTable = ({ order }: Props) => {
                     ${item?.price}
                   </TableCell>
                   <TableCell className="py-0 border-r border-gray-200 text-right">
-                    {/* {item?.tax} */}a
+                    ${item?.tax?.toFixed(2)}
                   </TableCell>
                   <TableCell className="py-0 text-right">
                     ${item?.price * item?.quantity}
@@ -153,10 +168,48 @@ const OrderItemTable = ({ order }: Props) => {
             </TableBody>
             <TableFooter className="bg-white">
               <TableRow>
-                <TableCell colSpan={4} className="border-r border-gray-200">
+                <TableCell
+                  colSpan={4}
+                  className="border-r py-1 border-gray-200"
+                >
+                  Sub Total
+                </TableCell>
+                <TableCell className="text-right py-1">
+                  ${subTotal?.toFixed(2)}
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell
+                  colSpan={4}
+                  className="border-r py-1 border-gray-200"
+                >
+                  Tax
+                </TableCell>
+                <TableCell className="text-right py-1">
+                  ${totalTax?.toFixed(2)}
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell
+                  colSpan={4}
+                  className="border-r py-1 border-gray-200"
+                >
+                  Shipping
+                </TableCell>
+                <TableCell className="text-right py-1">
+                  ${totalShipping?.toFixed(2)}
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell
+                  colSpan={4}
+                  className="border-r py-1 border-gray-200 font-bold"
+                >
                   Total
                 </TableCell>
-                <TableCell className="text-right">${totaoPrice}</TableCell>
+                <TableCell className="text-right py-1 font-bold text-main">
+                  ${order?.totalAmount?.toFixed(2)}
+                </TableCell>
               </TableRow>
             </TableFooter>
           </Table>
@@ -166,7 +219,7 @@ const OrderItemTable = ({ order }: Props) => {
               <span className="text-gray-900 font-semibold">
                 Payment Method:
               </span>
-              Cash
+              {order?.paymentMethod}
             </p>
             <p className="text-gray-600 ">
               <span className="text-gray-900 font-semibold">Note:</span>

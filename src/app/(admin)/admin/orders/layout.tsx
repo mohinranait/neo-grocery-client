@@ -1,4 +1,5 @@
 "use client";
+import { useAppSelector } from "@/hooks/useRedux";
 import { PlusIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -6,9 +7,12 @@ import React from "react";
 
 const OrderLayout = ({ children }: { children: React.ReactNode }) => {
   const path = usePathname();
-  console.log({ path });
+  const { orders } = useAppSelector((state) => state.order);
+  const pendingOrders = orders?.filter((order) => order.status === "Pending");
+  const processingOrders = orders?.filter(
+    (order) => order.status === "Processing"
+  );
 
-  const pendingitems = 4;
   const pageLinks = [
     {
       link: "/admin/orders",
@@ -16,11 +20,11 @@ const OrderLayout = ({ children }: { children: React.ReactNode }) => {
     },
     {
       link: "/admin/orders/pending",
-      label: `Pending (${pendingitems})`,
+      label: `Pending (${pendingOrders?.length})`,
     },
     {
       link: "/admin/orders/processing",
-      label: `Processing (${pendingitems})`,
+      label: `Processing (${processingOrders?.length})`,
     },
     {
       link: "/admin/orders/delivered",
