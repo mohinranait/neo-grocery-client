@@ -12,11 +12,14 @@ import React, { useEffect, useState } from "react";
 import ReactSelect, { MultiValue } from "react-select";
 type Props = {
   attribute: TAttributeType;
+  onDelete: (id: string) => void;
 };
-const AttributeLine = ({ attribute }: Props) => {
+const AttributeLine = ({ attribute, onDelete }: Props) => {
   const { product } = useAppSelector((state) => state.product);
   const { attributeConfigs } = useAppSelector((state) => state.attributeConfig);
   const dispatch = useAppDispatch();
+
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [configs, setConfigs] = useState<
     { label: string; value: string | undefined }[]
@@ -30,11 +33,13 @@ const AttributeLine = ({ attribute }: Props) => {
   };
 
   const handleSaveAttribute = () => {
-    console.log({
-      attribute: attribute?._id,
-      attributeConfig: configs?.map((d) => d?.value),
-    });
-
+    setErrors({});
+    if (configs?.length === 0) {
+      const isErrors: Record<string, string> = {};
+      isErrors[attribute?.name] = `Select attribute ${attribute?.name}`;
+      setErrors(isErrors);
+      return;
+    }
     const attr = [...(product?.attributes || [])];
 
     const index = attr?.findIndex((i) => i?.attribute === attribute?._id);
@@ -84,8 +89,8 @@ const AttributeLine = ({ attribute }: Props) => {
         {attribute?.name}
       </AccordionTrigger>
       <AccordionContent className=" flex flex-col gap-5 min-h-[200px] ">
-        <div className="flex flex-grow ">
-          <div className="w-[250px]">
+        <div className="flex flex-col gap-3 ">
+          <div className="w-full space-y-1">
             <p className="text-slate-600">
               Name: <span className="text-slate-900">{attribute?.name}</span>{" "}
             </p>
@@ -117,6 +122,9 @@ const AttributeLine = ({ attribute }: Props) => {
                   }))}
               />
             </div>
+            {errors[attribute?.name] && (
+              <p className="text-red-500 text-sm">{errors[attribute?.name]}</p>
+            )}
           </div>
         </div>
         <div className="flex justify-between">
@@ -129,6 +137,7 @@ const AttributeLine = ({ attribute }: Props) => {
           </Button>
           <Button
             type="button"
+            onClick={() => onDelete(attribute?._id as string)}
             className="bg-red-100 text-red-500 h-[30px] hover:bg-red-100 "
           >
             Delete

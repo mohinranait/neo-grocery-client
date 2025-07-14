@@ -275,7 +275,7 @@ const ProductForm = () => {
               </div>
               <div className="px-4 py-2 space-y-3">
                 <div>
-                  <label htmlFor="">Meta Title</label>
+                  <label htmlFor="regularPrice">Meta Title</label>
                   <input
                     id="regularPrice"
                     type="text"
@@ -293,10 +293,10 @@ const ProductForm = () => {
                   />
                 </div>
                 <div>
-                  <label htmlFor="">Meta Description</label>
+                  <label htmlFor="meta_desc">Meta Description</label>
                   <textarea
                     name=""
-                    id=""
+                    id="meta_desc"
                     rows={3}
                     className="flex  w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
                     placeholder="Meta description"
@@ -333,7 +333,7 @@ const ProductForm = () => {
               <div className="px-4  py-4 space-y-4">
                 <div className="flex gap-3">
                   <Label
-                    htmlFor="option-two"
+                    htmlFor="fshiopping-two"
                     className="text-nowrap cursor-pointer"
                   >
                     Free Shipping
@@ -377,12 +377,13 @@ const ProductForm = () => {
                 {freeShipping === "no" && (
                   <div className="flex justify-between items-center">
                     <Label
-                      htmlFor="option-two"
+                      htmlFor="scharge"
                       className="text-nowrap cursor-pointer"
                     >
                       Shipping Charge (৳)
                     </Label>
                     <input
+                      id="scharge"
                       type="number"
                       className="flex h-8 w-[100px] rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
                       value={product?.shippingCharge || 60}
@@ -401,13 +402,11 @@ const ProductForm = () => {
                 )}
 
                 <div className="flex justify-between items-center">
-                  <Label
-                    htmlFor="option-two"
-                    className="text-nowrap cursor-pointer"
-                  >
+                  <Label htmlFor="tax" className="text-nowrap cursor-pointer">
                     Tax (৳)
                   </Label>
                   <input
+                    id="tax"
                     type="number"
                     className="flex h-8 w-[100px] rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
                     placeholder="Tax"
@@ -417,6 +416,30 @@ const ProductForm = () => {
                         setProduct({
                           ...product,
                           tax: e?.target?.value ? +e?.target?.value : 0,
+                        })
+                      )
+                    }
+                  />
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <Label
+                    htmlFor="return-day"
+                    className="text-nowrap cursor-pointer"
+                  >
+                    Return Day
+                  </Label>
+                  <input
+                    id="return-day"
+                    type="number"
+                    className="flex h-8 w-[100px] rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                    placeholder="Return Day"
+                    value={product?.returnTime || 5}
+                    onChange={(e) =>
+                      dispatch(
+                        setProduct({
+                          ...product,
+                          tax: e?.target?.value ? +e?.target?.value : 5,
                         })
                       )
                     }

@@ -20,7 +20,7 @@ const AttributeComponent = () => {
   const { product } = useAppSelector((state) => state.product);
 
   // Local state
-  const [selectAttribute, setSelectAttribute] = useState<string | null>(null);
+  const [selectAttribute, setSelectAttribute] = useState<string>("");
   const [selectedAttributes, setSelectedAttributes] = useState<
     TAttributeType[]
   >([]);
@@ -29,7 +29,7 @@ const AttributeComponent = () => {
     const find = attributes?.find((attr) => attr?._id === selectAttribute);
     if (find) {
       setSelectedAttributes((prev) => [...prev, find]);
-      setSelectAttribute(null);
+      setSelectAttribute("");
     }
   };
 
@@ -45,18 +45,24 @@ const AttributeComponent = () => {
     }
   }, [product]);
 
+  const availableAttributes = [...attributes]?.filter((attribute) => {
+    return !selectedAttributes?.some(
+      (selected) => selected?._id === attribute?._id
+    );
+  });
+
   return (
     <div className="p-4 flex  flex-col gap-3">
       <div className="flex gap-2">
-        <Select onValueChange={(e) => setSelectAttribute(e)}>
+        <Select
+          value={selectAttribute}
+          onValueChange={(e) => setSelectAttribute(e)}
+        >
           <SelectTrigger className="w-[200px] h-8">
             <SelectValue placeholder="Product Attribute" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="Product Attribute" className="cursor-pointer">
-              Product Attribute
-            </SelectItem>
-            {attributes?.map((attr, index) => (
+            {availableAttributes?.map((attr, index) => (
               <SelectItem
                 key={index}
                 value={`${attr?._id}`}
@@ -81,7 +87,15 @@ const AttributeComponent = () => {
         collapsible
       >
         {selectedAttributes?.map((attribute, index) => (
-          <AttributeLine key={index} attribute={attribute} />
+          <AttributeLine
+            key={index}
+            attribute={attribute}
+            onDelete={(id: string) => {
+              setSelectedAttributes((prev) =>
+                prev.filter((atr) => atr._id !== id)
+              );
+            }}
+          />
         ))}
       </Accordion>
     </div>

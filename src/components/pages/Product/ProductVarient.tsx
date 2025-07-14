@@ -47,7 +47,7 @@ const tabs: { type: TProductType; tabs: TProductTypeLists[] }[] = [
   },
   {
     type: "Variable Product",
-    tabs: ["General", "Shipping", "Attributes", "Variations"],
+    tabs: ["Shipping", "Attributes", "Variations"],
   },
   {
     type: "Group Product",

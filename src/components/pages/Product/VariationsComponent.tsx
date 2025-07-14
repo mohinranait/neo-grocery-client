@@ -1,4 +1,6 @@
-import React, { use, useEffect, useState } from "react";
+"use client";
+
+import { useEffect, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -15,16 +17,14 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
-import { TAttributeType } from "@/types/attribute.type";
-import { UploadIcon } from "lucide-react";
-import { TAttributeConfigType } from "@/types/attributeConfig.type";
+import type { TAttributeType } from "@/types/attribute.type";
+import { UploadIcon, RefreshCw, Trash, Trash2 } from "lucide-react";
+import type { TAttributeConfigType } from "@/types/attributeConfig.type";
 import { setProduct } from "@/redux/features/productSlice";
-import { TProduct, TVariation } from "@/types/product.type";
+import type { TProduct, TVariation } from "@/types/product.type";
 import SelectImageFromModal from "@/components/shared/SelectImageFromModal";
-import { TMediaType } from "@/types/media.type";
+import type { TMediaType } from "@/types/media.type";
 import { addVariant, setIsModal } from "@/redux/features/mediaSlice";
-
-// import AttributeLine from "./AttributeLine";
 
 const AttributeComponent = () => {
   // Redux state
@@ -34,7 +34,7 @@ const AttributeComponent = () => {
   const { product } = useAppSelector((state) => state.product);
 
   // Local state
-  const [existsAttributes, setexistsAttributes] = useState<TAttributeType[]>(
+  const [existsAttributes, setExistsAttributes] = useState<TAttributeType[]>(
     []
   );
   const [existsConfigs, setExistsConfigs] = useState<TAttributeConfigType[]>(
@@ -42,17 +42,107 @@ const AttributeComponent = () => {
   );
   const [files, setFiles] = useState<TMediaType | null>(null);
   const [varIndex, setVarIndex] = useState<number | null>(null);
-  // Local state
-  const [selectAttribute, setSelectAttribute] = useState<string | null>(null);
-  const [selectedAttributes, setSelectedAttributes] = useState<
-    TAttributeType[]
-  >([]);
+  const [isGenerating, setIsGenerating] = useState(false);
 
-  const handleAddVariabtion = (type: "default" | "custom" = "default") => {
-    // const find = attributes?.find((attr) => attr?._id === selectAttribute);
+  // Calculate all possible variations using Cartesian product
+  const calculateAllVariations = (): TVariation[] => {
+    if (!existsAttributes.length || !existsConfigs.length) return [];
+
+    // Group configs by attribute
+    const attributeGroups: { [key: string]: TAttributeConfigType[] } = {};
+    existsAttributes.forEach((attr, index) => {
+      attributeGroups[index] = existsConfigs.filter(
+        (config) => config?.attribute === attr?._id
+      );
+    });
+
+    // Generate Cartesian product
+    const generateCombinations = (
+      groups: TAttributeConfigType[][]
+    ): TAttributeConfigType[][] => {
+      if (groups.length === 0) return [[]];
+      if (groups.length === 1) return groups[0].map((item) => [item]);
+
+      const result: TAttributeConfigType[][] = [];
+      const firstGroup = groups[0];
+      const restCombinations = generateCombinations(groups.slice(1));
+
+      firstGroup.forEach((item) => {
+        restCombinations.forEach((combination) => {
+          result.push([item, ...combination]);
+        });
+      });
+
+      return result;
+    };
+
+    const groupsArray = Object.values(attributeGroups);
+    const combinations = generateCombinations(groupsArray);
+
+    // Convert combinations to variations
+    const variations: TVariation[] = combinations.map((combination, index) => {
+      const variantId = `VAR-${Date.now()}${index}`.slice(-6);
+
+      // Create attribute configs for this variation
+      const attributeConfigs = combination.map((config, attrIndex) => ({
+        attrIndex,
+        value: config._id as string,
+      }));
+
+      // Generate SKU based on combination
+      const skuParts = combination.map(
+        (config) => config.name?.toUpperCase().slice(0, 3) || "XXX"
+      );
+      const generatedSku = `${
+        product?.name?.toUpperCase().slice(0, 3) || "PRD"
+      }-${skuParts.join("-")}`;
+
+      return {
+        variantId,
+        attributes: existsAttributes
+          .map((attr) => attr._id)
+          .filter(Boolean) as string[],
+        attributeConfigs,
+        offerPirce: 0,
+        productPrice: 0,
+        description: `Variation: ${combination.map((c) => c.name).join(", ")}`,
+        image: "",
+        sku: generatedSku,
+        shipping: {
+          weight: 0,
+          length: 0,
+          width: 0,
+          height: 0,
+        },
+      };
+    });
+
+    return variations;
+  };
+
+  // Auto-generate variations when attributes change
+  const handleAutoGenerateVariations = () => {
+    setIsGenerating(true);
+
+    setTimeout(() => {
+      const newVariations = calculateAllVariations();
+      const singleProduct: TProduct = { ...product };
+
+      dispatch(
+        setProduct({
+          ...singleProduct,
+          variations: newVariations,
+        })
+      );
+
+      setIsGenerating(false);
+    }, 500);
+  };
+
+  // Manual add single variation (keeping original functionality)
+  const handleAddVariation = (type: "default" | "custom" = "default") => {
     const singleProduct: TProduct = { ...product };
     const variantId = new Date().getTime().toString().slice(-2);
-    console.log({ variantId });
 
     if (type === "default") {
       const attrIds: string[] =
@@ -84,9 +174,18 @@ const AttributeComponent = () => {
           ],
         })
       );
-    } else {
-      // custom variabtion add here
     }
+  };
+
+  // Clear all variations
+  const handleClearVariations = () => {
+    const singleProduct: TProduct = { ...product };
+    dispatch(
+      setProduct({
+        ...singleProduct,
+        variations: [],
+      })
+    );
   };
 
   useEffect(() => {
@@ -104,9 +203,19 @@ const AttributeComponent = () => {
       (attr) => attr?._id && configsIds?.includes(attr?._id)
     );
 
-    setexistsAttributes(existsAttributes);
+    setExistsAttributes(existsAttributes);
     setExistsConfigs(existsAttributess);
-  }, [product]);
+  }, [product, attributes, attributeConfigs]);
+
+  // Auto-generate variations when attributes or configs change
+  useEffect(() => {
+    if (existsAttributes.length > 0 && existsConfigs.length > 0) {
+      // Only auto-generate if no variations exist
+      if (!product?.variations?.length) {
+        handleAutoGenerateVariations();
+      }
+    }
+  }, [existsAttributes, existsConfigs]);
 
   // Add variant attribute value here
   const handleAddVariables = (
@@ -114,15 +223,8 @@ const AttributeComponent = () => {
     variantIndex: number,
     attributeIndex: number
   ) => {
-    // id = Attribute value id
-    // variantIndex = variant index
-    // attributeIndex = attribute index
-
-    // This is existing product
     const singleProduct = { ...product };
-    // Existing product variations
     const variations = [...singleProduct?.variations];
-    // Existing product attribute configs
     let attributeConfigs = [...variations[variantIndex]?.attributeConfigs];
     const findIndex = attributeConfigs.findIndex(
       (attr) => attr?.attrIndex === attributeIndex
@@ -178,13 +280,10 @@ const AttributeComponent = () => {
     parentKey: keyof TVariation | "shipping",
     childKey?: keyof TVariation["shipping"]
   ) => {
-    console.log({ value, index, parentKey, childKey });
-
     const singleProduct = { ...product };
     const variations = [...singleProduct.variations];
 
     if (parentKey === "shipping" && childKey) {
-      // Update nested shipping properties
       variations[index] = {
         ...variations[index],
         shipping: {
@@ -193,7 +292,6 @@ const AttributeComponent = () => {
         },
       };
     } else {
-      // Update top-level properties
       variations[index] = {
         ...variations[index],
         [parentKey]: value,
@@ -234,36 +332,86 @@ const AttributeComponent = () => {
     }
   }, [files]);
 
+  // Get variation display name
+  const getVariationDisplayName = (variant: TVariation) => {
+    const configNames = variant.attributeConfigs
+      .map((config) => {
+        const foundConfig = existsConfigs.find((c) => c._id === config.value);
+        return foundConfig?.name || "Unknown";
+      })
+      .join(" + ");
+
+    return configNames || `Variant #${variant.variantId}`;
+  };
+
   return (
-    <div className="p-4 flex  flex-col gap-3">
-      <div className="flex gap-2">
-        <Select onValueChange={(e) => setSelectAttribute(e)}>
-          <SelectTrigger className="w-[200px] h-8">
-            <SelectValue placeholder="Add Variations" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="Product Attribute" className="cursor-pointer">
-              Product Attribute
-            </SelectItem>
-            {existsAttributes?.map((attr, index) => (
-              <SelectItem
-                key={index}
-                value={`${attr?._id}`}
-                className="cursor-pointer"
-              >
-                {attr?.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+    <div className="p-4 flex flex-col gap-3">
+      {/* Control Buttons */}
+      <div className="flex gap-2 items-center">
         <Button
           type="button"
-          onClick={() => handleAddVariabtion("default")}
+          disabled={existsAttributes?.length === 0 || isGenerating}
+          onClick={handleAutoGenerateVariations}
           className="h-8 px-3"
         >
-          Add
+          {isGenerating ? (
+            <>
+              <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+              Generating...
+            </>
+          ) : (
+            "Auto Generate All"
+          )}
+        </Button>
+
+        <Button
+          type="button"
+          variant="outline"
+          disabled={existsAttributes?.length === 0}
+          onClick={() => handleAddVariation("default")}
+          className="h-8 px-3"
+        >
+          Add Manual
+        </Button>
+
+        <Button
+          type="button"
+          variant="destructive"
+          disabled={!product?.variations?.length}
+          onClick={handleClearVariations}
+          className="h-8 px-3"
+        >
+          Clear All
         </Button>
       </div>
+
+      {/* Info Messages */}
+      {existsAttributes?.length === 0 && (
+        <div className="p-3 rounded bg-red-100 text-red-500">
+          Please select at least one attribute before adding product variations.
+        </div>
+      )}
+
+      {existsAttributes?.length > 0 && existsConfigs?.length > 0 && (
+        <div className="p-3 rounded bg-blue-100 text-blue-600">
+          <div className="font-medium">Available Combinations:</div>
+          <div className="text-sm mt-1">
+            {existsAttributes
+              .map((attr) => {
+                const configs = existsConfigs.filter(
+                  (c) => c.attribute === attr._id
+                );
+                return `${attr.name}: ${configs.map((c) => c.name).join(", ")}`;
+              })
+              .join(" | ")}
+          </div>
+          <div className="text-sm font-medium mt-1">
+            Total Possible Variations: {calculateAllVariations().length}
+          </div>
+        </div>
+      )}
+
+      {/* Variations List */}
       <Accordion
         type="single"
         className="w-full flex flex-col gap-3"
@@ -276,11 +424,14 @@ const AttributeComponent = () => {
               value={`item-${i}`}
               className="bg-slate-100 overflow-auto px-3 border-b-0"
             >
-              <AccordionTrigger className="hover:no-underline ">
+              <AccordionTrigger className="hover:no-underline">
                 <div className="flex items-center justify-between w-full pr-6">
                   <div className="flex items-center gap-2">
                     <span className="font-semibold">#{variant?.variantId}</span>
-                    {existsAttributes?.map((attr, attrIndex) => {
+                    <span className="text-sm text-gray-600">
+                      ({getVariationDisplayName(variant)})
+                    </span>
+                    {/* {existsAttributes?.map((attr, attrIndex) => {
                       const matchConfigs = existsConfigs?.filter(
                         (config) => config?.attribute === attr?._id
                       );
@@ -312,21 +463,24 @@ const AttributeComponent = () => {
                           </SelectContent>
                         </Select>
                       );
-                    })}
+                    })} */}
                   </div>
                   <div>
                     <button
                       type="button"
-                      onClick={() => handleRemoveVariation(i)}
-                      className="text-red-600 text-sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemoveVariation(i);
+                      }}
+                      className="text-red-600 text-sm hover:text-red-800"
                     >
-                      Remove
+                      <Trash2 size={14} />
                     </button>
                   </div>
                 </div>
               </AccordionTrigger>
-              <AccordionContent className="  py-3 w-full gap-5 min-h-[200px] ">
-                <div className="  w-full ">
+              <AccordionContent className="py-3 w-full gap-5 min-h-[200px]">
+                <div className="w-full">
                   <div className="space-y-3 px-1">
                     <div className="grid grid-cols-2 gap-3">
                       <div className="flex items-center gap-3">
@@ -431,7 +585,7 @@ const AttributeComponent = () => {
                       <div className="">
                         <div>
                           <label htmlFor="" className="text-sm text-gray-600">
-                            Dimentions (L,W,H) (cm)
+                            Dimensions (L,W,H) (cm)
                           </label>
                           <div className="grid grid-cols-3 gap-2">
                             <input

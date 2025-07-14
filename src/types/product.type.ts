@@ -95,4 +95,5 @@ export type TProduct = {
   }[],
   shippingCharge: number;
   tax: number;
+  returnTime:number;
 }
