@@ -1,11 +1,11 @@
 import { TProduct } from "@/types/product.type";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC } from "react";
 import { TableCell, TableRow } from "../ui/table";
 import Image from "next/image";
 import { defaultImage } from "@/utils/exportImages";
 import { Switch } from "../ui/switch";
 import { updateProduct } from "@/actions/productApi";
-import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
+import { useAppDispatch } from "@/hooks/useRedux";
 import { setProducts, setSelectedProduct } from "@/redux/features/productSlice";
 import {
   Tooltip,
@@ -35,6 +35,22 @@ const ProductRow: FC<Props> = ({ product, products, setIsOpen }) => {
     };
     dispatch(setProducts(arr));
     await updateProduct(id as string, data);
+  };
+
+  const calculateProductPrice = () => {
+    if (product?.variant === "Variable Product") {
+      const variations = product.variations;
+      const allPrice = variations?.map((vari) =>
+        vari.offerPirce ? Number(vari?.offerPirce) : Number(vari?.productPrice)
+      );
+      const max = Math.max(...allPrice) || 0;
+      const min = Math.min(...allPrice) || 0;
+      return `${Number(min) || 0}-${max || 0}`;
+    } else {
+      return price?.discountValue
+        ? price?.productPrice - price?.discountValue
+        : price?.productPrice;
+    }
   };
 
   return (
@@ -78,12 +94,7 @@ const ProductRow: FC<Props> = ({ product, products, setIsOpen }) => {
         <p>{skuCode || "--"} </p>
       </TableCell>
       <TableCell>
-        <p>
-          $
-          {price.sellPrice
-            ? price?.productPrice - price.sellPrice
-            : price.productPrice}{" "}
-        </p>
+        <p>${calculateProductPrice()} </p>
       </TableCell>
       <TableCell>
         <TooltipProvider>

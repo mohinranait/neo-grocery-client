@@ -1,11 +1,25 @@
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import { setProduct } from "@/redux/features/productSlice";
+import { Pointer } from "lucide-react";
 import React from "react";
 
 const InventoryComponent = () => {
   const { product } = useAppSelector((state) => state.product);
   const dispatch = useAppDispatch();
+
+  function generateSimpleSKU() {
+    const randomNumber = Math.floor(1000 + Math.random() * 9000);
+    dispatch(
+      setProduct({
+        ...product,
+        skuCode: `SKU-${randomNumber}`,
+      })
+    );
+  }
+
   return (
     <div className="p-4 flex flex-col gap-3">
       <div className="flex items-center">
@@ -14,11 +28,11 @@ const InventoryComponent = () => {
             SKU
           </label>
         </div>
-        <div>
-          <input
+        <div className="flex gap-2">
+          <Input
             id="sku"
             type="text"
-            className="flex h-8 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+            className="h-9"
             placeholder="Unique code"
             value={product?.skuCode ?? ""}
             onChange={(e) =>
@@ -30,6 +44,9 @@ const InventoryComponent = () => {
               )
             }
           />
+          <Button onClick={generateSimpleSKU} className="size-9" type="button">
+            <Pointer />
+          </Button>
         </div>
       </div>
       <div className="flex items-center">
@@ -72,10 +89,10 @@ const InventoryComponent = () => {
           </label>
         </div>
         <div>
-          <input
+          <Input
             id="stock_quantity"
             type="number"
-            className="flex h-8 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+            className=" "
             placeholder="Stock quantity"
             value={product?.isStock ?? ""}
             onChange={(e) =>
@@ -99,10 +116,10 @@ const InventoryComponent = () => {
           </label>
         </div>
         <div>
-          <input
+          <Input
             id="min_stock"
             type="number"
-            className="flex h-8 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+            className=""
             placeholder="Min stock for warning"
             value={product?.minStock ?? ""}
             onChange={(e) =>

@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import {
   Select,
   SelectContent,
@@ -17,14 +17,23 @@ import ShippingComponent from "./ShippingComponent";
 import LinkComponent from "./LinkComponent";
 import AttributeComponent from "./AttributeComponent";
 import dynamic from "next/dynamic";
+
+// Lazy load VariationsComponent for better performance
 const VariationsComponent = dynamic(
   () => import("@/components/pages/Product/VariationsComponent"),
   {
     ssr: false,
-    loading: () => <div>Loading</div>,
+    loading: () => (
+      <div className="flex items-center justify-center h-32">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    ),
   }
 );
 
+/**
+ * Tab configuration type for product variants
+ */
 type TVariantTabType = {
   id: string;
   label: string;
@@ -32,35 +41,47 @@ type TVariantTabType = {
   children: React.ReactNode;
 };
 
-// Product variants
-const variants: TProductType[] = [
+/**
+ * Available product variants
+ */
+const PRODUCT_VARIANTS: TProductType[] = [
   "Single Product",
   "Variable Product",
   "Group Product",
   "Affiliate",
 ];
 
-const tabs: { type: TProductType; tabs: TProductTypeLists[] }[] = [
-  {
-    type: "Single Product",
-    tabs: ["General", "Inventory", "Shipping", "Link Product", "Attributes"],
-  },
-  {
-    type: "Variable Product",
-    tabs: ["Shipping", "Attributes", "Variations"],
-  },
-  {
-    type: "Group Product",
-    tabs: ["General", "Inventory", "Shipping"],
-  },
-  {
-    type: "Affiliate",
-    tabs: ["Inventory", "Shipping", "Attributes"],
-  },
-];
+/**
+ * Tab configuration for each product type
+ */
+const PRODUCT_TABS_CONFIG: { type: TProductType; tabs: TProductTypeLists[] }[] =
+  [
+    {
+      type: "Single Product",
+      tabs: ["General", "Inventory", "Shipping", "Link Product", "Attributes"],
+    },
+    {
+      type: "Variable Product",
+      tabs: ["Shipping", "Attributes", "Variations"],
+    },
+    {
+      type: "Group Product",
+      tabs: ["General", "Inventory", "Shipping"],
+    },
+    {
+      type: "Affiliate",
+      tabs: ["Inventory", "Shipping", "Attributes"],
+    },
+  ];
 
-const ProductVarient = () => {
-  //  Redux State
+/**
+ * ProductVarient Component
+ * Manages product type selection and displays appropriate tabs
+ *
+ * @returns {JSX.Element} The product variant configuration component
+ */
+const ProductVarient: React.FC = () => {
+  // Redux State
   const { product } = useAppSelector((state) => state.product);
   const dispatch = useAppDispatch();
 
@@ -68,94 +89,131 @@ const ProductVarient = () => {
   const [variantTabs, setVariantTabs] = useState<TVariantTabType[]>([]);
   const [activeTab, setActiveTab] = useState<TVariantTabType | null>(null);
 
-  const items: TVariantTabType[] = [
-    {
-      id: "1",
-      label: "General",
-      icon: <Bone size={16} />,
-      children: <GeneralComponent />,
-    },
-    {
-      id: "2",
-      label: "Inventory",
-      icon: <Tag size={16} />,
-      children: <InventoryComponent />,
-    },
-    {
-      id: "3",
-      label: "Shipping",
-      icon: <Car size={16} />,
-      children: <ShippingComponent />,
-    },
-    {
-      id: "4",
-      label: "Link Product",
-      icon: <Link size={16} />,
-      children: <LinkComponent />,
-    },
-    {
-      id: "5",
-      label: "Attributes",
-      icon: <Bed size={16} />,
-      children: <AttributeComponent />,
-    },
-    {
-      id: "6",
-      label: "Variations",
-      icon: <Bed size={16} />,
-      children: <VariationsComponent />,
-    },
-  ];
+  /**
+   * Memoized tab items configuration
+   */
+  const tabItems: TVariantTabType[] = useMemo(
+    () => [
+      {
+        id: "general",
+        label: "General",
+        icon: <Bone size={16} aria-hidden="true" />,
+        children: <GeneralComponent />,
+      },
+      {
+        id: "inventory",
+        label: "Inventory",
+        icon: <Tag size={16} aria-hidden="true" />,
+        children: <InventoryComponent />,
+      },
+      {
+        id: "shipping",
+        label: "Shipping",
+        icon: <Car size={16} aria-hidden="true" />,
+        children: <ShippingComponent />,
+      },
+      {
+        id: "link-product",
+        label: "Link Product",
+        icon: <Link size={16} aria-hidden="true" />,
+        children: <LinkComponent />,
+      },
+      {
+        id: "attributes",
+        label: "Attributes",
+        icon: <Bed size={16} aria-hidden="true" />,
+        children: <AttributeComponent />,
+      },
+      {
+        id: "variations",
+        label: "Variations",
+        icon: <Bed size={16} aria-hidden="true" />,
+        children: <VariationsComponent />,
+      },
+    ],
+    []
+  );
 
-  // Tabs are filtered by product type.
-  const getAllVariantTabs = (value: string) => {
-    const findTab = tabs?.find((tab) => tab?.type === value);
-    if (findTab) {
-      const getTabs: TVariantTabType[] = items?.filter((item) =>
-        findTab?.tabs.includes(item?.label as TProductTypeLists)
+  /**
+   * Filters tabs based on product type and updates state
+   * @param {string} productType - The selected product type
+   */
+  const getAllVariantTabs = useCallback(
+    (productType: string) => {
+      const tabConfig = PRODUCT_TABS_CONFIG.find(
+        (tab) => tab.type === productType
       );
-      setActiveTab(getTabs[0]);
-      setVariantTabs(getTabs);
-    }
-  };
 
-  // get tabs from selected product type
-  const handleSelectVariant = (value: TProductType) => {
-    getAllVariantTabs(value);
-    dispatch(setProduct({ ...product, variant: value }));
-  };
+      if (tabConfig) {
+        const filteredTabs: TVariantTabType[] = tabItems.filter((item) =>
+          tabConfig.tabs.includes(item.label as TProductTypeLists)
+        );
 
-  // Initial active tabs for single product
-  useEffect(() => {
-    getAllVariantTabs(variants[0]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        setVariantTabs(filteredTabs);
+        setActiveTab(filteredTabs[0] || null);
+      }
+    },
+    [tabItems]
+  );
+
+  /**
+   * Handles product variant selection
+   * @param {TProductType} value - The selected product type
+   */
+  const handleSelectVariant = useCallback(
+    (value: TProductType) => {
+      getAllVariantTabs(value);
+      dispatch(setProduct({ ...product, variant: value }));
+    },
+    [getAllVariantTabs, dispatch, product]
+  );
+
+  /**
+   * Handles tab click
+   * @param {TVariantTabType} tab - The clicked tab
+   */
+  const handleTabClick = useCallback((tab: TVariantTabType) => {
+    setActiveTab(tab);
   }, []);
 
+  // Initialize tabs on component mount
   useEffect(() => {
-    // Update tabs when product variant is changed
-    if (product?.variant) {
-      getAllVariantTabs(product?.variant);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    getAllVariantTabs(PRODUCT_VARIANTS[0]);
+  }, [getAllVariantTabs]);
+
+  // Update tabs when product variant changes
+  useEffect(() => {
+    const selectedVariant = product?.variant || PRODUCT_VARIANTS[0];
+    getAllVariantTabs(selectedVariant);
+  }, [product?.variant, getAllVariantTabs]);
 
   return (
-    <div className=" bg-white rounded-md">
-      <div className="flex items-center gap-2 border-b p-4 py-2">
-        <p>Product data</p>
-        <Select
-          value={product?.variant}
-          onValueChange={(e) => handleSelectVariant(e as TProductType)}
+    <div className="bg-white rounded-md shadow-sm border border-gray-200">
+      {/* Header Section */}
+      <div className="flex items-center gap-3 border-b border-gray-200 p-4 py-3">
+        <label
+          htmlFor="product-variant-select"
+          className="text-sm font-medium text-gray-700"
         >
-          <SelectTrigger className="w-[160px] h-8">
-            <SelectValue placeholder={variants[0]} />
+          Product data
+        </label>
+        <Select
+          value={product?.variant || PRODUCT_VARIANTS[0]}
+          onValueChange={handleSelectVariant}
+        >
+          <SelectTrigger
+            id="product-variant-select"
+            className="w-[160px] h-8 text-sm"
+            aria-label="Select product variant"
+          >
+            <SelectValue placeholder={PRODUCT_VARIANTS[0]} />
           </SelectTrigger>
           <SelectContent>
-            {variants?.map((variant) => (
+            {PRODUCT_VARIANTS.map((variant) => (
               <SelectItem
                 key={variant}
                 value={variant}
-                className="cursor-pointer"
+                className="cursor-pointer text-sm"
               >
                 {variant}
               </SelectItem>
@@ -163,26 +221,56 @@ const ProductVarient = () => {
           </SelectContent>
         </Select>
       </div>
-      <div className="flex ">
-        <div>
-          <ul className="bg-slate-100 w-[200px]">
-            {variantTabs?.map((variant, idx) => (
-              <li
-                key={idx}
-                onClick={() => setActiveTab(variant)}
-                className={`py-2 px-2 pl-4 text-sm border-l-4 flex gap-2 hover:bg-slate-200 cursor-pointer ${
-                  variant?.label === activeTab?.label
-                    ? "bg-white"
-                    : "bg-slate-100"
-                } `}
+
+      {/* Content Section */}
+      <div className="flex min-h-[400px]">
+        {/* Sidebar Navigation */}
+        <div className="border-r border-gray-200">
+          <nav
+            className="bg-slate-50 w-[200px]"
+            role="tablist"
+            aria-label="Product configuration tabs"
+          >
+            {variantTabs.map((variant) => (
+              <button
+                type="button"
+                key={variant.id}
+                onClick={() => handleTabClick(variant)}
+                className={`
+                  w-full py-3 px-4 text-sm text-left border-l-4 flex items-center gap-2 
+                  hover:bg-slate-100 focus:outline-none  
+                  focus:ring-inset transition-colors duration-200
+                  ${
+                    variant.label === activeTab?.label
+                      ? "bg-white border-blue-500 text-blue-700 font-medium"
+                      : "bg-slate-50 border-transparent text-gray-700 hover:text-gray-900"
+                  }
+                `}
+                role="tab"
+                aria-selected={variant.label === activeTab?.label}
+                aria-controls={`panel-${variant.id}`}
+                id={`tab-${variant.id}`}
               >
-                {variant?.icon}
-                {variant?.label}
-              </li>
+                {variant.icon}
+                <span>{variant.label}</span>
+              </button>
             ))}
-          </ul>
+          </nav>
         </div>
-        <div className="w-full">{activeTab?.children}</div>
+
+        {/* Content Area */}
+        <div
+          className="flex-1 min-w-0"
+          role="tabpanel"
+          id={`panel-${activeTab?.id}`}
+          aria-labelledby={`tab-${activeTab?.id}`}
+        >
+          {activeTab?.children || (
+            <div className="flex items-center justify-center h-32 text-gray-500">
+              <p>No content available</p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

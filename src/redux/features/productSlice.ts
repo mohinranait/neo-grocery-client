@@ -8,12 +8,16 @@ type TInitialStateType = {
     product: TProduct,
     products: TProduct[],
     selectedProduct: TProduct | null
+    errors: Record<string, string>
 }
 
 const initialState:TInitialStateType  = {
-  product: {} as TProduct,
+  product: {
+    variant:'Single Product',
+  } as TProduct,
   products: [],
   selectedProduct: null,
+  errors: {}
 }
 
 export const productSlice = createSlice({
@@ -41,11 +45,14 @@ export const productSlice = createSlice({
       // Update selected product state
       state.selectedProduct = action?.payload;
     },
+    setProductErrors : (state, action:{payload: Record<string, string>}) => {
+      state.errors = action.payload;
+    }
    
   },
 })
 
 // Action creators are generated for each case reducer function
-export const {  setProduct,setProducts,updateProducts,updateSingleProduct,setSelectedProduct } = productSlice.actions
+export const {  setProduct,setProducts,updateProducts,updateSingleProduct,setSelectedProduct,setProductErrors } = productSlice.actions
 
 export default productSlice.reducer

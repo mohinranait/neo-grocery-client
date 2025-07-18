@@ -16,7 +16,8 @@ type FeatureImage = {
 }
 
 type Price = {
-  sellPrice: number;
+  discountValue: number;
+  discountType: 'percent'|'fixed';
   productPrice: number;
 }
 

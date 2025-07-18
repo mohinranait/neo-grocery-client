@@ -1,13 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import {
   Accordion,
   AccordionContent,
@@ -24,11 +18,17 @@ import { setProduct } from "@/redux/features/productSlice";
 import type { TProduct, TVariation } from "@/types/product.type";
 import SelectImageFromModal from "@/components/shared/SelectImageFromModal";
 import type { TMediaType } from "@/types/media.type";
-import { addVariant, setIsModal } from "@/redux/features/mediaSlice";
+import {
+  addUnicName,
+  addVariant,
+  setIsModal,
+} from "@/redux/features/mediaSlice";
+import { Input } from "@/components/ui/input";
 
 const AttributeComponent = () => {
   // Redux state
   const dispatch = useAppDispatch();
+  const imgUnicName = useAppSelector((state) => state.media.imgUnicName);
   const { attributes } = useAppSelector((state) => state.attribute);
   const { attributeConfigs } = useAppSelector((state) => state.attributeConfig);
   const { product } = useAppSelector((state) => state.product);
@@ -217,48 +217,6 @@ const AttributeComponent = () => {
     }
   }, [existsAttributes, existsConfigs]);
 
-  // Add variant attribute value here
-  const handleAddVariables = (
-    id: string,
-    variantIndex: number,
-    attributeIndex: number
-  ) => {
-    const singleProduct = { ...product };
-    const variations = [...singleProduct?.variations];
-    let attributeConfigs = [...variations[variantIndex]?.attributeConfigs];
-    const findIndex = attributeConfigs.findIndex(
-      (attr) => attr?.attrIndex === attributeIndex
-    );
-
-    if (findIndex !== -1) {
-      attributeConfigs[findIndex] = {
-        ...attributeConfigs[findIndex],
-        attrIndex: attributeIndex,
-        value: id,
-      };
-    } else {
-      attributeConfigs = [
-        ...attributeConfigs,
-        {
-          attrIndex: attributeIndex,
-          value: id,
-        },
-      ];
-    }
-
-    variations[variantIndex] = {
-      ...variations[variantIndex],
-      attributeConfigs,
-    };
-
-    dispatch(
-      setProduct({
-        ...singleProduct,
-        variations: [...variations],
-      })
-    );
-  };
-
   // handle remove variation
   const handleRemoveVariation = (index: number) => {
     const singleProduct = { ...product };
@@ -317,7 +275,7 @@ const AttributeComponent = () => {
 
     dispatch(
       setProduct({
-        ...singleProduct,
+        ...product,
         variations,
       })
     );
@@ -431,39 +389,6 @@ const AttributeComponent = () => {
                     <span className="text-sm text-gray-600">
                       ({getVariationDisplayName(variant)})
                     </span>
-                    {/* {existsAttributes?.map((attr, attrIndex) => {
-                      const matchConfigs = existsConfigs?.filter(
-                        (config) => config?.attribute === attr?._id
-                      );
-                      return (
-                        <Select
-                          key={attr?._id}
-                          value={
-                            variant?.attributeConfigs?.find(
-                              (config) => config?.attrIndex === attrIndex
-                            )?.value
-                          }
-                          onValueChange={(e) =>
-                            handleAddVariables(e, i, attrIndex)
-                          }
-                        >
-                          <SelectTrigger className="w-[120px] h-8">
-                            <SelectValue placeholder={attr?.name || "Select"} />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {matchConfigs?.map((con) => (
-                              <SelectItem
-                                key={con?._id}
-                                value={con?._id as string}
-                                className="cursor-pointer"
-                              >
-                                {con?.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      );
-                    })} */}
                   </div>
                   <div>
                     <button
@@ -484,11 +409,18 @@ const AttributeComponent = () => {
                   <div className="space-y-3 px-1">
                     <div className="grid grid-cols-2 gap-3">
                       <div className="flex items-center gap-3">
-                        <SelectImageFromModal singleFile={setFiles}>
+                        <SelectImageFromModal
+                          singleFile={(e) => {
+                            if (imgUnicName === "productVarImg") {
+                              setFiles(e);
+                            }
+                          }}
+                        >
                           <div
                             onClick={() => {
                               dispatch(setIsModal(true));
                               dispatch(addVariant("Single"));
+                              dispatch(addUnicName("productVarImg"));
                               setVarIndex(i);
                             }}
                             style={{
@@ -509,11 +441,11 @@ const AttributeComponent = () => {
                         <label htmlFor="" className="text-sm text-gray-600">
                           SKU (unique)
                         </label>
-                        <input
+                        <Input
                           id="SKU"
                           type="text"
                           min={0}
-                          className="flex h-8 w-full bg-white rounded-md border border-input bg-transparent pr-3 pl-2 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                          className="h-8"
                           value={variant?.sku}
                           onChange={(e) =>
                             handleUpdateVariant(e.target.value, i, "sku")
@@ -526,11 +458,11 @@ const AttributeComponent = () => {
                         <label htmlFor="" className="text-sm text-gray-600">
                           Regular Price
                         </label>
-                        <input
+                        <Input
                           id="productPrice"
                           type="text"
                           min={0}
-                          className="flex h-8 w-full bg-white rounded-md border border-input bg-transparent pr-3 pl-2 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                          className="h-8"
                           value={variant?.productPrice}
                           onChange={(e) =>
                             handleUpdateVariant(
@@ -545,11 +477,11 @@ const AttributeComponent = () => {
                         <label htmlFor="" className="text-sm text-gray-600">
                           Offer Price
                         </label>
-                        <input
+                        <Input
                           id="offerPrice"
                           type="text"
                           min={0}
-                          className="flex h-8 w-full bg-white rounded-md border border-input bg-transparent pr-3 pl-2 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                          className="h-8"
                           value={variant?.offerPirce}
                           onChange={(e) =>
                             handleUpdateVariant(
@@ -566,11 +498,11 @@ const AttributeComponent = () => {
                         <label htmlFor="" className="text-sm text-gray-600">
                           Weight (g)
                         </label>
-                        <input
+                        <Input
                           id="weight"
                           type="number"
                           min={0}
-                          className="flex h-8 w-full bg-white rounded-md border border-input bg-transparent pr-3 pl-2 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                          className="h-8"
                           value={variant?.shipping?.weight}
                           onChange={(e) =>
                             handleUpdateVariant(
@@ -588,12 +520,12 @@ const AttributeComponent = () => {
                             Dimensions (L,W,H) (cm)
                           </label>
                           <div className="grid grid-cols-3 gap-2">
-                            <input
+                            <Input
                               id="length"
                               type="number"
                               min={0}
                               placeholder="Length"
-                              className="flex h-8 w-full bg-white rounded-md border border-input bg-transparent pr-3 pl-2 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                              className="h-8"
                               value={variant?.shipping?.length}
                               onChange={(e) =>
                                 handleUpdateVariant(
@@ -604,12 +536,12 @@ const AttributeComponent = () => {
                                 )
                               }
                             />
-                            <input
+                            <Input
                               id="width"
                               type="number"
                               min={0}
                               placeholder="Width"
-                              className="flex h-8 w-full bg-white rounded-md border border-input bg-transparent pr-3 pl-2 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                              className="h-8"
                               value={variant?.shipping?.width}
                               onChange={(e) =>
                                 handleUpdateVariant(
@@ -620,12 +552,12 @@ const AttributeComponent = () => {
                                 )
                               }
                             />
-                            <input
+                            <Input
                               id="height"
                               type="number"
                               min={0}
                               placeholder="Height"
-                              className="flex h-8 w-full bg-white rounded-md border border-input bg-transparent pr-3 pl-2 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                              className="h-8"
                               value={variant?.shipping?.height}
                               onChange={(e) =>
                                 handleUpdateVariant(

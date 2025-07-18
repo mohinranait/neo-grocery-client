@@ -18,6 +18,7 @@ import ProductVarient from "../pages/Product/ProductVarient";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import {
   setProduct,
+  setProductErrors,
   updateProducts,
   updateSingleProduct,
 } from "@/redux/features/productSlice";
@@ -38,10 +39,13 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { generateSlug } from "@/utils/helpers";
 import RichTextEditor from "../RichTextEditor/RichTextEditor";
 import { FRONTEND_URL } from "@/accessEnv";
+import { productValidation } from "@/validations/product.validation";
+import { TProduct } from "@/types/product.type";
+import ThumbnailComponent from "./thumbnail-component";
 
 const ProductForm = () => {
   // Redux state
-  const { product } = useAppSelector((state) => state.product);
+  const { product, errors } = useAppSelector((state) => state.product);
   const { images } = useAppSelector((state) => state.media);
   const dispatch = useAppDispatch();
 
@@ -51,8 +55,6 @@ const ProductForm = () => {
   const editId = searchParams.get("edit");
 
   // Local State
-  // const [date, setDate] = React.useState<Date>();
-  const [file, setFile] = useState<TMediaType | null>(null);
   const [gallarys, setGallarys] = useState<TMediaType[]>([]);
   const [isOpenSlug, setIsOpenSlug] = useState<boolean>(false);
   const [slug, setSlug] = useState<string>("");
@@ -65,13 +67,15 @@ const ProductForm = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    // Required field validation
-    if (!product?.name) return toast.error("Product title is required");
-    if (!product?.price?.productPrice) return toast.error("Price is required");
+    const errorss = productValidation(product);
+    if (Object.keys(errorss)?.length > 0) {
+      dispatch(setProductErrors(errorss));
+      return;
+    }
 
     // Price Validation
-    if (!product?.price?.sellPrice && product?.price?.sellPrice != 0) {
-      if (product?.price?.sellPrice < product?.price?.productPrice) {
+    if (!product?.price?.discountValue && product?.price?.discountValue != 0) {
+      if (product?.price?.discountValue < product?.price?.productPrice) {
         return toast.error("Sell Price is less than Product Price");
       }
     }
@@ -95,9 +99,9 @@ const ProductForm = () => {
     }
     const formate = {
       ...product,
-      featureImage: {
-        image: file?.fileUrl || "",
-      },
+      // featureImage: {
+      //   image: file?.fileUrl || "",
+      // },
       publish_date: product?.publish_date ? product?.publish_date : new Date(),
       imageGallary: gallarys?.map((img) => img?.fileUrl),
       slug: product?.slug ? generateSlug(product?.slug) : generateSlug(slug),
@@ -139,19 +143,27 @@ const ProductForm = () => {
 
   // handle delete Product by ID
   useEffect(() => {
-    if (!editId) return;
+    dispatch(setProductErrors({}));
+    if (!editId) {
+      setContent("");
+      setGallarys([]);
+      setSlug("");
+      // setFile(null);
+      dispatch(setProduct({ variant: "Single Product" } as TProduct));
+      return;
+    }
     (async function () {
       setLoading(true);
       try {
         const data = await getSingleProductBySlug(editId);
         if (data?.success) {
           dispatch(setProduct(data?.payload));
-          const featureImg = images?.find(
-            (d) => d.fileUrl === data?.payload?.featureImage?.image
-          );
-          if (featureImg) {
-            setFile(featureImg);
-          }
+          // const featureImg = images?.find(
+          //   (d) => d.fileUrl === data?.payload?.featureImage?.image
+          // );
+          // if (featureImg) {
+          //   setFile(featureImg);
+          // }
 
           const gallarysImg = images?.filter((d) =>
             data?.payload?.imageGallary?.includes(d?.fileUrl)
@@ -168,6 +180,8 @@ const ProductForm = () => {
   }, [editId]);
 
   if (loading) return <div>Data Fetching</div>;
+
+  console.log(product.name);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -189,17 +203,22 @@ const ProductForm = () => {
         <div className="flex-grow  ">
           <div className="flex flex-col gap-4 2xl:max-w-[1400px] mx-auto">
             <div>
-              <input
-                type="text"
-                className="py-2 text-lg  px-3 rounded-md focus-visible:outline-primary w-full"
-                placeholder="Add title"
-                value={product.name}
-                onChange={(e) => {
-                  dispatch(setProduct({ ...product, name: e.target.value }));
-                  const sl = generateSlug(e.target.value);
-                  setSlug(sl);
-                }}
-              />
+              <div>
+                <input
+                  type="text"
+                  className="py-2 text-lg  px-3 rounded-md focus-visible:outline-primary w-full"
+                  placeholder="Add title"
+                  value={product.name || ""}
+                  onChange={(e) => {
+                    dispatch(setProduct({ ...product, name: e.target.value }));
+                    const sl = generateSlug(e.target.value);
+                    setSlug(sl);
+                  }}
+                />
+                {errors?.name && (
+                  <p className="text-red-500 text-sm">{errors?.name}</p>
+                )}
+              </div>
               <div className="flex gap-1 mt-3 items-center">
                 <p>Permalink: </p>
                 {!isOpenSlug ? (
@@ -263,10 +282,9 @@ const ProductForm = () => {
 
             <div className="p-2 bg-white rounded-md">
               <RichTextEditor
-                content={content}
+                content={content || ""}
                 onChange={(e) => setContent(e)}
               />
-              {content}
             </div>
             <ProductVarient />
             <div className=" bg-white rounded-md">
@@ -455,32 +473,7 @@ const ProductForm = () => {
                 <p className="text-base font-semibold">Product Image</p>
               </div>
               <div className="px-4 py-4 space-y-4">
-                <div className="grid gap-2">
-                  <label
-                    htmlFor="thumbnail"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    Thumbnail
-                  </label>
-                  <div className="flex gap-4">
-                    <SelectImageFromModal singleFile={setFile}>
-                      <div
-                        onClick={() => {
-                          dispatch(setIsModal(true));
-                          dispatch(addVariant("Single"));
-                        }}
-                        style={{
-                          backgroundImage: `url('${file?.fileUrl}')`,
-                          backgroundPosition: "center",
-                          backgroundSize: "cover",
-                        }}
-                        className=" h-[120px] w-full cursor-pointer hover:bg-slate-200 flex items-center justify-center border-slate-200 rounded border border-dashed "
-                      >
-                        <UploadCloudIcon />
-                      </div>
-                    </SelectImageFromModal>
-                  </div>
-                </div>
+                <ThumbnailComponent />
                 <div className="grid gap-2">
                   <label
                     htmlFor="thumbnail"

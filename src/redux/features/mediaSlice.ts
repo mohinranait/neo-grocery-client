@@ -10,6 +10,7 @@ type TInitialStateType = {
   images: TMediaType[];
   isModal: boolean;
   uploadVariant: TUVariant 
+  imgUnicName?: string;
 };
 
 const initialState: TInitialStateType = {
@@ -17,7 +18,8 @@ const initialState: TInitialStateType = {
     selectedFiles: [],
     images: [],
     isModal:false,
-    uploadVariant: 'Single'
+    uploadVariant: 'Single',
+    imgUnicName:'',
 };
 
 export const mediaSlice = createSlice({
@@ -27,6 +29,10 @@ export const mediaSlice = createSlice({
     addFile: (state, action: { payload: TMediaType }) => {
         // Add image in images array
         state.images = [...state?.images, action?.payload];
+    },
+    addUnicName: (state, action: { payload: string }) => {
+        // Image name for upload
+        state.imgUnicName = action.payload;
     },
     addVariant: (state, action:{payload:TUVariant}) => {
       // Add Variant for upload Signle image
@@ -60,5 +66,5 @@ export const mediaSlice = createSlice({
   },
 });
 
-export const { addFile, setSelectedImage,setFiles,setIsModal,setResetSelected,addVariant } = mediaSlice.actions;
+export const { addFile,addUnicName, setSelectedImage,setFiles,setIsModal,setResetSelected,addVariant } = mediaSlice.actions;
 export default mediaSlice.reducer;

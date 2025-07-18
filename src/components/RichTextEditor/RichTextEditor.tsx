@@ -16,6 +16,7 @@ import TableRow from "@tiptap/extension-table-row";
 import TableHeader from "@tiptap/extension-table-header";
 import TableCell from "@tiptap/extension-table-cell";
 import "./richTextEditor.css";
+import { useEffect } from "react";
 
 interface EditorElementProps {
   content: string;
@@ -77,7 +78,7 @@ export default function RichTextEditor({
       Image,
       ImageResize,
     ],
-    content: content,
+    content: content || "",
     editorProps: {
       attributes: {
         class: "min-h-[156px] border rounded-md bg-slate-50 py-2 px-3",
@@ -88,6 +89,12 @@ export default function RichTextEditor({
       onChange(editor.getHTML());
     },
   });
+
+  useEffect(() => {
+    if (editor && editor.getHTML() !== content) {
+      editor.commands.setContent(content || "", false);
+    }
+  }, [content, editor]);
 
   return (
     <div>

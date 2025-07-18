@@ -26,7 +26,7 @@ const ProciveComponent = () => {
       dispatch(setSelectedImage(singleImage as TMediaType));
     }
 
-    dispatch(setIsModal(false));
+    // dispatch(setIsModal(false));
   };
 
   // handle select image

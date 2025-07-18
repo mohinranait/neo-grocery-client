@@ -1,12 +1,12 @@
 "use client";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
-import { setResetSelected } from "@/redux/features/mediaSlice";
+import { setIsModal, setResetSelected } from "@/redux/features/mediaSlice";
 import { TMediaType } from "@/types/media.type";
 import React, { useEffect } from "react";
 
 type Props = {
   children: React.ReactNode;
-  singleFile?: React.Dispatch<React.SetStateAction<TMediaType | null>>;
+  singleFile?: (file: TMediaType) => void;
   multiFiles?: React.Dispatch<React.SetStateAction<TMediaType[]>>;
 };
 const SelectImageFromModal = ({ children, singleFile, multiFiles }: Props) => {
@@ -20,6 +20,7 @@ const SelectImageFromModal = ({ children, singleFile, multiFiles }: Props) => {
     if (uploadVariant === "Single" && singleFile && selectedFile) {
       singleFile(selectedFile);
       dispatch(setResetSelected());
+      dispatch(setIsModal(false));
     } else if (
       uploadVariant !== "Single" &&
       multiFiles &&
@@ -27,6 +28,7 @@ const SelectImageFromModal = ({ children, singleFile, multiFiles }: Props) => {
     ) {
       multiFiles(selectedFiles);
       dispatch(setResetSelected());
+      dispatch(setIsModal(false));
     }
   }, [
     selectedFile,
