@@ -67,6 +67,9 @@ const CategoryForm: FC<Props> = ({ selectedCategory, closeModal }) => {
                 ? null
                 : values?.parent,
             status: "Active",
+            catThumbnail: image?.fileUrl
+              ? image?.fileUrl
+              : values?.catThumbnail,
           });
           if (data.success) {
             dispatch(addCategory({ data: data?.payload, type: "Update" }));
@@ -86,10 +89,12 @@ const CategoryForm: FC<Props> = ({ selectedCategory, closeModal }) => {
                 ? null
                 : values?.parent,
             status: "Active",
+            catThumbnail: image?.fileUrl,
           });
           if (data.success) {
             dispatch(addCategory({ data: data?.payload, type: "AddNew" }));
             toast.success("Category is created");
+            setImage(null);
             if (closeModal) {
               closeModal(false);
             }

@@ -4,6 +4,7 @@ export type TCategoryType = {
     _id?: string;
     name: string; 
     slug: string; 
+    productCount?: string;
     parent?: string | null; 
     catBanner?: string | null; 
     catThumbnail?: string | null; 

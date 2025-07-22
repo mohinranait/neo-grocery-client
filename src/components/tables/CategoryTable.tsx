@@ -40,7 +40,7 @@ const CategoryTable = () => {
   const [name, setName] = useState<string>("");
   const [status, setStatus] = useState<"All" | "Active" | "Inactive">("All");
   const [currentPage, setCurrentPage] = useState(1);
-  const perPage = 3;
+  const perPage = 15;
 
   // Filtered categories based on name and status
   const filteredCategories = categories.filter((cat) => {
@@ -149,10 +149,10 @@ const CategoryTable = () => {
                       <TableCell>
                         <div className="flex gap-2">
                           <Image
-                            src={defaultImage}
-                            className="w-[50] h-[50px] rounded"
-                            width={50}
-                            height={50}
+                            src={cat?.catThumbnail || defaultImage}
+                            className="w-[40] h-[40px] rounded"
+                            width={40}
+                            height={40}
                             alt="cat image"
                           />
 
@@ -184,7 +184,7 @@ const CategoryTable = () => {
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell>10 Product</TableCell>
+                      <TableCell>{cat?.productCount || 0} Products</TableCell>
                       <TableCell>
                         <div className="flex">
                           {cat?.status === "Active" ? (
@@ -208,9 +208,9 @@ const CategoryTable = () => {
                             <div className="flex gap-2">
                               <Image
                                 src={defaultImage}
-                                className="w-[50] h-[50px] rounded"
-                                width={50}
-                                height={50}
+                                className="w-[40] h-[40px] rounded"
+                                width={40}
+                                height={40}
                                 alt="cat image"
                               />
 
@@ -242,7 +242,9 @@ const CategoryTable = () => {
                               </div>
                             </div>
                           </TableCell>
-                          <TableCell>10 Product</TableCell>
+                          <TableCell>
+                            {cat?.productCount || 0} Products
+                          </TableCell>
                           <TableCell>
                             <div className="flex">
                               {cat?.status === "Active" ? (
