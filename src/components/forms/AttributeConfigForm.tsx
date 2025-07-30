@@ -24,7 +24,7 @@ import {
 // Attribute config schema validation
 const attributeConfigSchema = Yup.object().shape({
   name: Yup.string()
-    .min(2, "Minimum length 2 characters")
+    .min(1, "Minimum length 2 characters")
     .max(60, "Maximum length 60 characters")
     .required("Name field is required"),
   status: Yup.string().notRequired().default("Active"),
