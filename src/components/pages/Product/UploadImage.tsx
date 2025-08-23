@@ -39,7 +39,7 @@ const UploadImage = () => {
       dispatch(
         setProduct({
           ...singleProduct,
-          imageGallary: gallarys?.map((img) => img?.fileUrl),
+          imageGallery: gallarys?.map((img) => img?.fileUrl),
         })
       );
     } else {
@@ -82,9 +82,9 @@ const UploadImage = () => {
           Image Gallary
         </label>
         <div className="grid grid-cols-3 gap-2">
-          {product?.imageGallary &&
-            product?.imageGallary?.length > 0 &&
-            product?.imageGallary?.map((file, i) => (
+          {product?.imageGallery &&
+            product?.imageGallery?.length > 0 &&
+            product?.imageGallery?.map((file, i) => (
               <div
                 key={i}
                 style={{

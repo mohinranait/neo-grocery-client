@@ -18,8 +18,8 @@ const MediaModal = () => {
   return (
     <React.Fragment>
       <Dialog open={isModal} onOpenChange={() => dispatch(setIsModal(false))}>
-        <DialogContent className="max-w-[1200px] 2xl:max-w-[1450px] ">
-          <DialogDescription className="min-h-[calc(100vh-100px)]  ">
+        <DialogContent className="max-w-[1200px] max-h-[80vh] overflow-y-auto 2xl:max-w-[1450px] ">
+          <DialogDescription className="  ">
             <MediaModalWrapper />;
           </DialogDescription>
         </DialogContent>

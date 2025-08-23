@@ -8,6 +8,7 @@ import { compareAsc, format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { TagsInput } from "react-tag-input-component";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Popover,
   PopoverContent,
@@ -62,7 +63,7 @@ const ProductForm = () => {
   const [content, setContent] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [freeShipping, setFreeShipping] = useState<"no" | "yes">("no");
-
+  console.log({ product, gallarys });
   // Submit product form for SAVE Product in DB
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -103,7 +104,7 @@ const ProductForm = () => {
       //   image: file?.fileUrl || "",
       // },
       publish_date: product?.publish_date ? product?.publish_date : new Date(),
-      imageGallary: gallarys?.map((img) => img?.fileUrl),
+      imageGallery: gallarys?.map((img) => img?.fileUrl),
       slug: product?.slug ? generateSlug(product?.slug) : generateSlug(slug),
       seo_keyword: keywords,
       details: content,
@@ -166,7 +167,7 @@ const ProductForm = () => {
           // }
 
           const gallarysImg = images?.filter((d) =>
-            data?.payload?.imageGallary?.includes(d?.fileUrl)
+            data?.payload?.imageGallery?.includes(d?.fileUrl)
           );
           setGallarys(gallarysImg);
           setSlug(data?.payload?.slug);
@@ -180,8 +181,6 @@ const ProductForm = () => {
   }, [editId]);
 
   if (loading) return <div>Data Fetching</div>;
-
-  console.log(product.name);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -277,6 +276,29 @@ const ProductForm = () => {
                     <Pen size={10} /> Edit
                   </span>
                 )}
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="short-desc">
+                Short Description for product view
+              </Label>
+              <Textarea
+                id="short-desc"
+                onChange={(e) => {
+                  dispatch(
+                    setProduct({ ...product, productShortDesc: e.target.value })
+                  );
+                }}
+                value={product?.productShortDesc || ""}
+                className="min-h-[60px] w-full"
+                placeholder="Short overview of this product"
+                maxLength={200}
+              />
+              <div>
+                <p className="text-xs text-gray-600">
+                  Maximum charecters limit 200
+                </p>
               </div>
             </div>
 

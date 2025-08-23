@@ -62,7 +62,7 @@ export type TProduct = {
   delivery: Delivery;
   minStock: number;
   featureImage: FeatureImage;
-  imageGallary?: string[];
+  imageGallery?: string[];
   name: string;
   product_type: "Physical" | "Digital";
   price: Price;
@@ -73,6 +73,7 @@ export type TProduct = {
   skuCode?: string;
   short_details?: string;
   status: "Active" | "Inactive";
+  productShortDesc?: string;
   productFeatures?: {
     extraFeatures?: ExtraFeature[];
   };
