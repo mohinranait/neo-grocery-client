@@ -91,7 +91,7 @@ const OrderUpdateForm = ({ orderId, order }: TOrderUpdateFormProps) => {
           <Select
             key={form?.status}
             value={form?.status}
-            onValueChange={(e) =>
+            onValueChange={(e: TOrderStatus) =>
               setForm((prev) => ({
                 ...prev!,
                 status: e as TOrderStatus,
@@ -107,6 +107,7 @@ const OrderUpdateForm = ({ orderId, order }: TOrderUpdateFormProps) => {
               <SelectItem value="Shipped">Shipped</SelectItem>
               <SelectItem value="Delivered">Delivered</SelectItem>
               <SelectItem value="Cancelled">Cancelled</SelectItem>
+              <SelectItem value="Returned">Returned</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -121,7 +122,7 @@ const OrderUpdateForm = ({ orderId, order }: TOrderUpdateFormProps) => {
           <Select
             key={form?.paymentStatus}
             value={form?.paymentStatus}
-            onValueChange={(e) =>
+            onValueChange={(e: TPaymentStatus) =>
               setForm((prev) => ({
                 ...prev!,
                 paymentStatus: e as TPaymentStatus,
@@ -134,6 +135,8 @@ const OrderUpdateForm = ({ orderId, order }: TOrderUpdateFormProps) => {
             <SelectContent>
               <SelectItem value="Pending">Un Paid</SelectItem>
               <SelectItem value="Paid">Paid</SelectItem>
+              <SelectItem value="Failed">Failed</SelectItem>
+              <SelectItem value="Refunded">Refunded</SelectItem>
             </SelectContent>
           </Select>
         </div>

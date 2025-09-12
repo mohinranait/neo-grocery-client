@@ -33,7 +33,7 @@ import { TOrder } from "@/types/order.type";
 import Link from "next/link";
 import OrderStatus from "./OrderStatus";
 import { Badge } from "@/components/ui/badge";
-import { getPaymentStatusConfig } from "@/app/(admin)/admin/order/[id]/page";
+import { getPaymentStatusConfig } from "@/lib/order-status-badge";
 
 type Props = {
   statusName:
