@@ -29,11 +29,11 @@ import { DateRange } from "react-day-picker";
 import { format, isWithinInterval, parseISO } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useAppSelector } from "@/hooks/useRedux";
-import { TOrder } from "@/types/order.type";
+import { TOrder, TOrderStatus, TPaymentStatus } from "@/types/order.type";
 import Link from "next/link";
 import OrderStatus from "./OrderStatus";
 import { Badge } from "@/components/ui/badge";
-import { getPaymentStatusConfig } from "@/lib/order-status-badge";
+import { getPaymentStatusConfig } from "@/components/shared/order-status-badge";
 
 type Props = {
   statusName:
@@ -53,7 +53,6 @@ const OrderTables = ({ statusName }: Props) => {
   const [allOrders, setAllOrders] = useState<TOrder[]>([]);
   const [search, setSearch] = useState<string>("");
   const [status, setStatus] = useState<string>("");
-  const [features, setFeatures] = useState<string>("");
   const [date, setDate] = React.useState<DateRange | undefined>({
     from: undefined,
     to: undefined,
@@ -206,7 +205,7 @@ const OrderTables = ({ statusName }: Props) => {
             </PopoverContent>
           </Popover>
           {statusName === "all" && (
-            <Select onValueChange={(e) => setStatus(e)}>
+            <Select onValueChange={(e: TOrderStatus) => setStatus(e)}>
               <SelectTrigger className="w-[140px] focus:outline-none focus:ring-0 h-9">
                 <SelectValue
                   className={cn("text-gray-500")}
@@ -238,26 +237,6 @@ const OrderTables = ({ statusName }: Props) => {
               </SelectContent>
             </Select>
           )}
-
-          <Select onValueChange={(e) => setFeatures(e)}>
-            <SelectTrigger className="w-[140px] focus:outline-none focus:ring-0 h-9">
-              <SelectValue placeholder="All Feature" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>Features</SelectLabel>
-                <SelectItem value="All Feature" className="cursor-pointer">
-                  All
-                </SelectItem>
-                <SelectItem value="Active" className="cursor-pointer">
-                  Active
-                </SelectItem>
-                <SelectItem value="Inactive" className="cursor-pointer">
-                  Pending
-                </SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
         </div>
       </div>
 
@@ -314,8 +293,9 @@ const OrderTables = ({ statusName }: Props) => {
                       <Badge
                         variant="secondary"
                         className={`${
-                          getPaymentStatusConfig(order?.paymentStatus as string)
-                            .color
+                          getPaymentStatusConfig(
+                            order?.paymentStatus as TPaymentStatus
+                          ).color
                         } font-semibold  `}
                       >
                         {order?.paymentStatus === "Pending" ? (

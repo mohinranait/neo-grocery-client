@@ -3,7 +3,6 @@ import { UploadCloudIcon } from "lucide-react";
 import React, { FC, useEffect, useState } from "react";
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import { TBrandType } from "@/types/brand.type";
 import { createNewBrand, updateBrand } from "@/actions/brandApi";
 import { addBrand, setSelectedBrand } from "@/redux/features/brandSlice";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
@@ -112,7 +111,7 @@ const BrandForm: FC<Props> = ({ closeModal }) => {
     } else {
       setFile(null);
     }
-  }, [selectedBrand]);
+  }, [selectedBrand, images]);
 
   return (
     <form onSubmit={formik.handleSubmit} className=" grid gap-5">

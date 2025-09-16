@@ -19,11 +19,13 @@ import {
 import Image from "next/image";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import DeleteModal from "../modals/DeleteModal";
-import { deleteBrand } from "@/actions/brandApi";
+import { deleteBrand, updateBrand } from "@/actions/brandApi";
 import { addBrand, setSelectedBrand } from "@/redux/features/brandSlice";
 import toast from "react-hot-toast";
 import BrandUpdateModal from "../modals/BrandUpdateModal";
 import { defaultImage } from "@/utils/exportImages";
+import { Switch } from "../ui/switch";
+import { TBrandType } from "@/types/brand.type";
 
 const BrandTable = () => {
   const dispatch = useAppDispatch();
@@ -83,6 +85,31 @@ const BrandTable = () => {
       setIsOpen(false);
       dispatch(setSelectedBrand(null));
       setDeleteLoading(false);
+    }
+  };
+
+  const handleChangeStatus = async (value: boolean, brand: TBrandType) => {
+    if (!brand?._id) {
+      return;
+    }
+    try {
+      const res = await updateBrand(brand?._id, {
+        ...brand,
+        status: value ? "Active" : "Inactive",
+      });
+      console.log({ res });
+      if (res.success) {
+        const updatedBrands = brands.map((item) =>
+          item?._id === res?.payload?._id
+            ? { ...item, status: res?.payload?.status }
+            : item
+        );
+        // Update UI
+        dispatch(addBrand({ data: updatedBrands, type: "Array" }));
+        toast.success(res?.message);
+      }
+    } catch (error) {
+      console.log({ error });
     }
   };
 
@@ -166,18 +193,13 @@ const BrandTable = () => {
                     </div>
                   </div>
                 </TableCell>
-                <TableCell>10 Product</TableCell>
+                <TableCell>{brand?.totalProduct} Product</TableCell>
                 <TableCell>
                   <div className="flex">
-                    {brand?.status === "Active" ? (
-                      <span className="inline-flex px-2 py-[2px] rounded bg-green-500 text-xs font-semibold text-white">
-                        Active
-                      </span>
-                    ) : (
-                      <span className="inline-flex px-2 py-[2px] rounded bg-red-500 text-xs font-semibold text-white">
-                        Inactive
-                      </span>
-                    )}
+                    <Switch
+                      checked={brand?.status === "Active"}
+                      onCheckedChange={(e) => handleChangeStatus(e, brand)}
+                    />
                   </div>
                 </TableCell>
               </TableRow>

@@ -7,13 +7,13 @@ import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import OrderStatus from "./OrderStatus";
-import { TOrderStatus } from "@/types/order.type";
+import { TOrderStatus, TPaymentStatus } from "@/types/order.type";
 import { Badge } from "@/components/ui/badge";
 
 import OrderStatusSection from "./OrderStatusSection";
 import OrderItemTable from "@/components/tables/OrderItemTable";
 import OrderUpdateForm from "./order-update-form";
-import { getPaymentStatusConfig } from "@/lib/order-status-badge";
+import { getPaymentStatusConfig } from "@/components/shared/order-status-badge";
 type Props = {
   orderId: string;
 };
@@ -25,7 +25,6 @@ const OrderComponent = ({ orderId }: Props) => {
   const pageMode = searchParams.get("mode");
 
   const order = orders?.find((order) => order?._id === id);
-  // const [order, setOrder] = useState(findOrder);
   const totalTax =
     order?.items?.reduce((acc, item) => acc + (item?.tax || 0), 0) || 0;
   const totalShipping =
@@ -34,7 +33,6 @@ const OrderComponent = ({ orderId }: Props) => {
   const subTotal =
     order?.totalAmount &&
     order?.totalAmount - ((totalShipping || 0) + (totalTax || 0));
-  console.log("order", order);
 
   const router = useRouter();
 
@@ -97,7 +95,8 @@ const OrderComponent = ({ orderId }: Props) => {
             <Badge
               variant="secondary"
               className={`${
-                getPaymentStatusConfig(order?.paymentStatus as string).color
+                getPaymentStatusConfig(order?.paymentStatus as TPaymentStatus)
+                  .color
               } font-semibold  `}
             >
               {order?.paymentStatus === "Pending" ? (

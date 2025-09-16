@@ -1,6 +1,7 @@
+import { TPaymentStatus } from "@/types/order.type";
 import { CheckCircle, Clock, CreditCard, XCircle } from "lucide-react";
 
-export const getPaymentStatusConfig = (status: string) => {
+export const getPaymentStatusConfig = (status: TPaymentStatus) => {
   switch (status) {
     case "Pending":
       return {

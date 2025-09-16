@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { JSX, useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/select";
 import Image from "next/image";
 import { useAppSelector } from "@/hooks/useRedux";
-import { deleteCategory } from "@/actions/categoriesApi";
+import { deleteCategory, updateCategory } from "@/actions/categoriesApi";
 import DeleteModal from "../modals/DeleteModal";
 import { useDispatch } from "react-redux";
 import {
@@ -26,6 +26,12 @@ import {
 import toast from "react-hot-toast";
 import CategoryUpdateModal from "../modals/CategoryUpdateModal";
 import { defaultImage } from "@/utils/exportImages";
+import { Switch } from "../ui/switch";
+import { TCategoryType } from "@/types/category.type";
+
+type ExtendedCategory = TCategoryType & {
+  children: ExtendedCategory[];
+};
 
 const CategoryTable = () => {
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
@@ -42,18 +48,58 @@ const CategoryTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const perPage = 15;
 
-  // Filtered categories based on name and status
-  const filteredCategories = categories.filter((cat) => {
+  // Build tree from flat categories
+  const buildTree = (cats: TCategoryType[]): ExtendedCategory[] => {
+    const map: Map<string, ExtendedCategory> = new Map();
+    cats.forEach((cat) => {
+      if (!cat?._id) {
+        return;
+      }
+      map.set(cat._id, { ...cat, children: [] });
+    });
+    const roots: ExtendedCategory[] = [];
+    cats.forEach((cat) => {
+      if (!cat?._id) {
+        return;
+      }
+      if (cat.parent && map.has(cat.parent)) {
+        map.get(cat.parent)!.children.push(map.get(cat._id)!);
+      } else if (!cat.parent) {
+        roots.push(map.get(cat._id)!);
+      }
+    });
+    return roots;
+  };
+
+  // Match function for filtering
+  const isMatch = (cat: TCategoryType) => {
     const matchName = name
       ? cat.name.toLowerCase().includes(name.toLowerCase())
       : true;
     const matchStatus = status === "All" ? true : cat.status === status;
     return matchName && matchStatus;
-  });
+  };
 
-  // Pagination logic
-  const totalPages = Math.ceil(filteredCategories.length / perPage);
-  const paginatedCategories = filteredCategories.slice(
+  // Recursively filter the tree
+  const filterTree = (node: ExtendedCategory): ExtendedCategory | null => {
+    const children = node.children
+      .map((child) => filterTree(child))
+      .filter((c): c is ExtendedCategory => c !== null);
+    if (isMatch(node) || children.length > 0) {
+      return { ...node, children };
+    }
+    return null;
+  };
+
+  // Get all tree and filter it
+  const allTree = buildTree(categories);
+  const filteredRoots = allTree
+    .map((root) => filterTree(root))
+    .filter((r): r is ExtendedCategory => r !== null);
+
+  // Pagination on filtered roots
+  const totalPages = Math.ceil(filteredRoots.length / perPage);
+  const paginatedRoots = filteredRoots.slice(
     (currentPage - 1) * perPage,
     currentPage * perPage
   );
@@ -74,7 +120,7 @@ const CategoryTable = () => {
         const updatedCategories = categories.filter(
           (cat) => cat._id !== selectedCategory?._id
         );
-        // Updae UI
+        // Update UI
         dispatch(addCategory({ data: updatedCategories, type: "Array" }));
         toast.success("Category is deleted");
       }
@@ -85,6 +131,97 @@ const CategoryTable = () => {
       dispatch(setSelectedCategory(null));
       setDeleteLoading(false);
     }
+  };
+
+  const handleChangeStatus = async (
+    value: boolean,
+    category: TCategoryType
+  ) => {
+    if (!category?._id) {
+      return;
+    }
+    try {
+      const res = await updateCategory(category?._id, {
+        ...category,
+        status: value ? "Active" : "Inactive",
+      });
+      console.log({ res });
+      if (res.success) {
+        // Update UI
+        const updatedCategories = categories.map((item) =>
+          item?._id === res?.payload?._id
+            ? { ...item, status: res?.payload?.status }
+            : item
+        );
+        // Update UI
+        dispatch(addCategory({ data: updatedCategories, type: "Array" }));
+        toast.success(res?.message);
+      }
+    } catch (error) {
+      console.log({ error });
+    }
+  };
+
+  // Recursive function to render category rows with nesting
+  const renderCategoryRows = (
+    cat: ExtendedCategory,
+    level: number
+  ): JSX.Element[] => {
+    const row = (
+      <TableRow key={cat._id}>
+        <TableCell className="w-4" />
+        <TableCell className={`pl-${level * 4}`}>
+          <div className="flex gap-2">
+            <Image
+              src={cat?.catThumbnail || defaultImage}
+              className="w-[40px] h-[40px] rounded"
+              width={40}
+              height={40}
+              alt="cat image"
+            />
+            <div>
+              <p>{cat?.name}</p>
+              <div className="flex mt-[2px] gap-1 items-center">
+                <span
+                  onClick={() => {
+                    dispatch(setSelectedCategory(cat));
+                    setCategoryModal(true);
+                  }}
+                  className="text-xs text-slate-500 hover:underline cursor-pointer hover:text-primary"
+                >
+                  Edit
+                </span>
+                <span className="text-xs text-slate-500 hover:underline cursor-pointer hover:text-primary">
+                  View
+                </span>
+                <span
+                  onClick={() => {
+                    dispatch(setSelectedCategory(cat));
+                    setIsOpen(true);
+                  }}
+                  className="text-xs text-slate-500 hover:underline cursor-pointer hover:text-primary"
+                >
+                  Delete
+                </span>
+              </div>
+            </div>
+          </div>
+        </TableCell>
+        <TableCell>{cat?.productCount || 0} Products</TableCell>
+        <TableCell>
+          <Switch
+            checked={cat?.status === "Active"}
+            onCheckedChange={(e) => handleChangeStatus(e, cat)}
+          />
+        </TableCell>
+      </TableRow>
+    );
+
+    const childRows = cat.children.flatMap((child) =>
+      renderCategoryRows(child, level + 1)
+    );
+
+    return [row, ...childRows];
   };
 
   return (
@@ -122,146 +259,29 @@ const CategoryTable = () => {
           <Table className="w-full border border-slate-100">
             <TableHeader>
               <TableRow>
-                <TableHead className="h-10"></TableHead>
+                <TableHead className="h-10 w-4"></TableHead>
                 <TableHead className="h-10">Category</TableHead>
                 <TableHead className="h-10">Total</TableHead>
                 <TableHead className="h-10">Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {paginatedCategories?.length === 0 && (
-                <tr>
-                  <td
+              {paginatedRoots.length === 0 ? (
+                <TableRow>
+                  <TableCell
                     colSpan={4}
                     className="bg-slate-200 m-3 rounded p-3 text-center"
                   >
                     Data not found
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                <>
+                  {paginatedRoots.flatMap((root) =>
+                    renderCategoryRows(root, 0)
+                  )}
+                </>
               )}
-
-              {paginatedCategories
-                ?.filter((f) => f.parent == null)
-                ?.map((cat, index) => (
-                  <React.Fragment key={index}>
-                    <TableRow>
-                      <TableCell></TableCell>
-                      <TableCell>
-                        <div className="flex gap-2">
-                          <Image
-                            src={cat?.catThumbnail || defaultImage}
-                            className="w-[40] h-[40px] rounded"
-                            width={40}
-                            height={40}
-                            alt="cat image"
-                          />
-
-                          <div>
-                            <p>{cat?.name}</p>
-                            <div className="flex mt-[2px] gap-1 items-center">
-                              <span
-                                onClick={() => {
-                                  dispatch(setSelectedCategory(cat));
-                                  setCategoryModal(true);
-                                }}
-                                className="text-xs text-slate-500 hover:underline cursor-pointer hover:text-primary"
-                              >
-                                Edit
-                              </span>
-                              <span className="text-xs text-slate-500 hover:underline cursor-pointer hover:text-primary">
-                                View
-                              </span>
-                              <span
-                                onClick={() => {
-                                  dispatch(setSelectedCategory(cat));
-                                  setIsOpen(true);
-                                }}
-                                className="text-xs text-slate-500 hover:underline cursor-pointer hover:text-primary"
-                              >
-                                Delete
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>{cat?.productCount || 0} Products</TableCell>
-                      <TableCell>
-                        <div className="flex">
-                          {cat?.status === "Active" ? (
-                            <span className="inline-flex px-2 py-[2px] rounded bg-green-500 text-xs font-semibold text-white">
-                              Active
-                            </span>
-                          ) : (
-                            <span className="inline-flex px-2 py-[2px] rounded bg-red-500 text-xs font-semibold text-white">
-                              Active
-                            </span>
-                          )}
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                    {paginatedCategories
-                      ?.filter((f) => f.parent == cat?._id)
-                      ?.map((sub, i) => (
-                        <TableRow key={i}>
-                          <TableCell>-</TableCell>
-                          <TableCell>
-                            <div className="flex gap-2">
-                              <Image
-                                src={defaultImage}
-                                className="w-[40] h-[40px] rounded"
-                                width={40}
-                                height={40}
-                                alt="cat image"
-                              />
-
-                              <div>
-                                <p>{sub?.name}</p>
-                                <div className="flex mt-[2px] gap-1 items-center">
-                                  <span
-                                    onClick={() => {
-                                      dispatch(setSelectedCategory(sub));
-                                      setCategoryModal(true);
-                                    }}
-                                    className="text-xs text-slate-500 hover:underline cursor-pointer hover:text-primary"
-                                  >
-                                    Edit
-                                  </span>
-                                  <span className="text-xs text-slate-500 hover:underline cursor-pointer hover:text-primary">
-                                    View
-                                  </span>
-                                  <span
-                                    onClick={() => {
-                                      dispatch(setSelectedCategory(sub));
-                                      setIsOpen(true);
-                                    }}
-                                    className="text-xs text-slate-500 hover:underline cursor-pointer hover:text-primary"
-                                  >
-                                    Delete
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            {cat?.productCount || 0} Products
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex">
-                              {cat?.status === "Active" ? (
-                                <span className="inline-flex px-2 py-[2px] rounded bg-green-500 text-xs font-semibold text-white">
-                                  Active
-                                </span>
-                              ) : (
-                                <span className="inline-flex px-2 py-[2px] rounded bg-red-500 text-xs font-semibold text-white">
-                                  Active
-                                </span>
-                              )}
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                  </React.Fragment>
-                ))}
             </TableBody>
           </Table>
         </div>

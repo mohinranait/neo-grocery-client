@@ -13,7 +13,7 @@ export const createNewCategory = async (formData: TCategoryType) => {
  * @api {get} Get all categories method
 */
 export const getAllCategory = async () => {
-    const {data} = await instance.get(`/categories`);
+    const {data} = await instance.get(`/categories?accessBy=admin`);
     return data;
 }
 

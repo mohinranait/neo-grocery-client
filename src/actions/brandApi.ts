@@ -1,10 +1,10 @@
 import { instance } from "@/hooks/useAxios";
-import { TBrandType } from "@/types/brand.type";
+import { TBrandForm, TBrandType } from "@/types/brand.type";
 
 /**
  * @api {post} Create new brand method
 */
-export const createNewBrand = async (formData: TBrandType) => {
+export const createNewBrand = async (formData: TBrandForm) => {
     const {data} = await instance.post(`/brand`, { ...formData  });
     return data;
 }
@@ -13,14 +13,14 @@ export const createNewBrand = async (formData: TBrandType) => {
  * @api {get} Get all brands method
 */
 export const getAllBrands = async () => {
-    const {data} = await instance.get(`/brands`);
+    const {data} = await instance.get(`/brands?accessBy=user`);
     return data;
 }
 
 /**
  * @api {patch} Update brand by ID
 */
-export const updateBrand = async (id:string, formData:TBrandType  ) => {
+export const updateBrand = async (id:string, formData: Record<string, string|number|Date>   ) => {
     const {data} = await instance.patch(`/brand/${id}`,{...formData});
     return data;
 }
