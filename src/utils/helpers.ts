@@ -8,3 +8,6 @@ export const generateSlug = (text: string) => {
   return text && text?.split(" ").join("-").toLowerCase();
 };
 
+
+// Define currency
+export const currency:string = '৳'

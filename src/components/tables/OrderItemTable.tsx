@@ -13,6 +13,7 @@ import Image from "next/image";
 import { TOrder } from "@/types/order.type";
 import { Button } from "../ui/button";
 import { format } from "date-fns";
+import { currency } from "@/utils/helpers";
 
 type Props = {
   order: TOrder;
@@ -82,13 +83,12 @@ const OrderItemTable = ({ order }: Props) => {
                 </p>
                 <p className="text-gray-600 text-right">
                   {order?.userId
-                    ? order?.shippingAddressId?.city
-                    : order?.shippingAddress?.city}
+                    ? order?.shippingAddressId?.subCity
+                    : order?.shippingAddress?.subCity}
                   ,{"  "}
                   {order?.userId
-                    ? order?.shippingAddressId?.postalCode
-                    : order?.shippingAddress?.postalCode}
-                  ,{"  "}
+                    ? order?.shippingAddressId?.city
+                    : order?.shippingAddress?.city}
                 </p>
                 <p className="text-gray-600 text-right">
                   <span className="text-gray-900 font-semibold">Phone:</span>
@@ -155,13 +155,16 @@ const OrderItemTable = ({ order }: Props) => {
                     {item?.quantity}
                   </TableCell>
                   <TableCell className="py-0 border-r border-gray-200 text-right">
-                    ${item?.price}
+                    {currency}
+                    {item?.price}
                   </TableCell>
                   <TableCell className="py-0 border-r border-gray-200 text-right">
-                    ${item?.tax?.toFixed(2)}
+                    {currency}
+                    {item?.tax?.toFixed(2)}
                   </TableCell>
                   <TableCell className="py-0 text-right">
-                    ${item?.price * item?.quantity}
+                    {currency}
+                    {item?.price * item?.quantity}
                   </TableCell>
                 </TableRow>
               ))}
@@ -175,7 +178,8 @@ const OrderItemTable = ({ order }: Props) => {
                   Sub Total
                 </TableCell>
                 <TableCell className="text-right py-1">
-                  ${subTotal?.toFixed(2)}
+                  {currency}
+                  {subTotal?.toFixed(2)}
                 </TableCell>
               </TableRow>
               <TableRow>
@@ -186,7 +190,8 @@ const OrderItemTable = ({ order }: Props) => {
                   Tax
                 </TableCell>
                 <TableCell className="text-right py-1">
-                  ${totalTax?.toFixed(2)}
+                  {currency}
+                  {totalTax?.toFixed(2)}
                 </TableCell>
               </TableRow>
               <TableRow>
@@ -197,7 +202,8 @@ const OrderItemTable = ({ order }: Props) => {
                   Shipping
                 </TableCell>
                 <TableCell className="text-right py-1">
-                  ${totalShipping?.toFixed(2)}
+                  {currency}
+                  {totalShipping?.toFixed(2)}
                 </TableCell>
               </TableRow>
               <TableRow>
@@ -208,7 +214,8 @@ const OrderItemTable = ({ order }: Props) => {
                   Total
                 </TableCell>
                 <TableCell className="text-right py-1 font-bold text-main">
-                  ${order?.totalAmount?.toFixed(2)}
+                  {currency}
+                  {order?.totalAmount?.toFixed(2)}
                 </TableCell>
               </TableRow>
             </TableFooter>

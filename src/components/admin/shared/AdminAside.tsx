@@ -6,6 +6,7 @@ import {
   LayoutDashboard,
   ShoppingBasket,
   Users,
+  Waypoints,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -47,6 +48,11 @@ const AdminAside: FC<Props> = ({ isToggle }) => {
       name: "Meida",
       icon: <ImageIcon size={20} />,
       link: "/admin/media",
+    },
+    {
+      name: "Section",
+      icon: <Waypoints size={20} />,
+      link: "/admin/section",
     },
     {
       name: "Users",

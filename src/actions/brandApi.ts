@@ -1,5 +1,5 @@
 import { instance } from "@/hooks/useAxios";
-import { TBrandForm, TBrandType } from "@/types/brand.type";
+import { TBrandForm } from "@/types/brand.type";
 
 /**
  * @api {post} Create new brand method

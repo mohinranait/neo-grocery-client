@@ -34,6 +34,7 @@ import Link from "next/link";
 import OrderStatus from "./OrderStatus";
 import { Badge } from "@/components/ui/badge";
 import { getPaymentStatusConfig } from "@/components/shared/order-status-badge";
+import { currency } from "@/utils/helpers";
 
 type Props = {
   statusName:
@@ -311,7 +312,8 @@ const OrderTables = ({ statusName }: Props) => {
                     </TableCell>
                     <TableCell>
                       <p className="text-gray-500">
-                        ${order?.totalAmount?.toFixed(2)}{" "}
+                        {currency}
+                        {order?.totalAmount?.toFixed(2)}{" "}
                       </p>
                     </TableCell>
                     <TableCell>

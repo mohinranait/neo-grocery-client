@@ -3,7 +3,7 @@ type TShippingAddress = {
     lastName: string;
     address: string;
     city: string;
-    postalCode: string;
+    subCity: string;
     type: "Home" | "Office" | "Other";
   };
   

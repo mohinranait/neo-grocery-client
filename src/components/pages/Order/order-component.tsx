@@ -14,6 +14,7 @@ import OrderStatusSection from "./OrderStatusSection";
 import OrderItemTable from "@/components/tables/OrderItemTable";
 import OrderUpdateForm from "./order-update-form";
 import { getPaymentStatusConfig } from "@/components/shared/order-status-badge";
+import { currency } from "@/utils/helpers";
 type Props = {
   orderId: string;
 };
@@ -114,7 +115,8 @@ const OrderComponent = ({ orderId }: Props) => {
         <div className="p-4  ">
           <p className="text-gray-600 text-sm "> Total Amount</p>
           <p className="text-center text-green-600 font-semibold">
-            ${order?.totalAmount?.toFixed(2)}
+            {currency}
+            {order?.totalAmount?.toFixed(2)}
           </p>
         </div>
         <div className="p-4  ">
@@ -165,14 +167,16 @@ const OrderComponent = ({ orderId }: Props) => {
               <div className="flex justify-between items-center">
                 <p className="text-sm font-medium text-gray-500">Subtotal</p>
                 <p className="text-sm font-semibold text-black">
-                  ${subTotal?.toFixed(2)}
+                  {currency}
+                  {subTotal?.toFixed(2)}
                 </p>
               </div>
               {totalTax > 0 && (
                 <div className="flex justify-between items-center">
                   <p className="text-sm font-medium text-gray-500">Tax</p>
                   <p className="text-sm font-semibold text-black">
-                    ${totalTax?.toFixed(2)}
+                    {currency}
+                    {totalTax?.toFixed(2)}
                   </p>
                 </div>
               )}
@@ -181,7 +185,8 @@ const OrderComponent = ({ orderId }: Props) => {
                 <div className="flex justify-between items-center">
                   <p className="text-sm font-medium text-gray-500">Shipping</p>
                   <p className="text-sm font-semibold text-black">
-                    ${totalShipping?.toFixed(2)}
+                    {currency}
+                    {totalShipping?.toFixed(2)}
                   </p>
                 </div>
               )}
@@ -190,7 +195,8 @@ const OrderComponent = ({ orderId }: Props) => {
               <div className="flex justify-between items-center">
                 <p className="text-sm font-semibold text-black">Total</p>
                 <p className="text-sm font-semibold text-black">
-                  ${order?.totalAmount?.toFixed(2)}
+                  {currency}
+                  {order?.totalAmount?.toFixed(2)}
                 </p>
               </div>
             </div>
@@ -222,8 +228,8 @@ const OrderComponent = ({ orderId }: Props) => {
                       <li>{order?.phone}</li>
                       <li>
                         {order?.shippingAddressId?.address},{" "}
-                        {order?.shippingAddressId?.city},{" "}
-                        {order?.shippingAddressId?.postalCode}
+                        {order?.shippingAddressId?.subCity},{" "}
+                        {order?.shippingAddressId?.city}
                       </li>
                       <li>Pickup From: {order?.shippingAddressId?.type}</li>
                     </ul>
@@ -235,11 +241,9 @@ const OrderComponent = ({ orderId }: Props) => {
                         {order?.shippingAddress?.lastName}
                       </li>
                       <li>{order?.phone}</li>
-                      <li>
-                        {order?.shippingAddress?.address},
-                        {order?.shippingAddress?.city},{" "}
-                        {order?.shippingAddress?.postalCode}
-                      </li>
+                      <li>জেলা:{order?.shippingAddress?.city}</li>
+                      <li>উপজেলা: {order?.shippingAddress?.subCity},</li>
+                      <li>ঠিকানা: {order?.shippingAddress?.address},</li>
                       <li>Pickup From: {order?.shippingAddress?.type}</li>
                     </ul>
                   )}

@@ -63,7 +63,7 @@ const ProductForm = () => {
   const [content, setContent] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [freeShipping, setFreeShipping] = useState<"no" | "yes">("no");
-  console.log({ product, gallarys });
+
   // Submit product form for SAVE Product in DB
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
