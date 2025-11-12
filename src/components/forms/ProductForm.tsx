@@ -202,6 +202,22 @@ const ProductForm = () => {
         <div className="flex-grow  ">
           <div className="flex flex-col gap-4 2xl:max-w-[1400px] mx-auto">
             <div>
+              <div className="mb-2">
+                <input
+                  type="text"
+                  className="py-2   px-3 rounded-md focus-visible:outline-primary w-full"
+                  placeholder="Product name"
+                  value={product.productName || ""}
+                  onChange={(e) => {
+                    dispatch(
+                      setProduct({ ...product, productName: e.target.value })
+                    );
+                  }}
+                />
+                {errors?.productName && (
+                  <p className="text-red-500 text-sm">{errors?.productName}</p>
+                )}
+              </div>
               <div>
                 <input
                   type="text"

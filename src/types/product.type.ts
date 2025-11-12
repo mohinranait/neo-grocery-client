@@ -64,6 +64,7 @@ export type TProduct = {
   featureImage: FeatureImage;
   imageGallery?: string[];
   name: string;
+  productName?: string;
   product_type: "Physical" | "Digital";
   price: Price;
   offerDate?: OfferDate;
