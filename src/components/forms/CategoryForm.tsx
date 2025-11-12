@@ -18,6 +18,7 @@ import { TCategoryType } from "@/types/category.type";
 import SelectImageFromModal from "../shared/SelectImageFromModal";
 import { addVariant, setIsModal } from "@/redux/features/mediaSlice";
 import { TMediaType } from "@/types/media.type";
+import Image from "next/image";
 
 // Category schema validation
 const categorySchema = Yup.object().shape({
@@ -179,8 +180,16 @@ const CategoryForm: FC<Props> = ({ selectedCategory, closeModal }) => {
               ?.filter((par) => par.parent == null)
               ?.map((cat) => (
                 <React.Fragment key={cat._id}>
-                  <SelectItem value={`${cat._id}`} className="cursor-pointer">
-                    {cat?.name}
+                  <SelectItem value={`${cat._id}`} className="cursor-pointer ">
+                    <div className="flex items-center gap-2">
+                      <Image
+                        src={cat?.catThumbnail || "/images/image.png"}
+                        width={14}
+                        height={14}
+                        alt="Category"
+                      />{" "}
+                      {cat?.name}
+                    </div>
                   </SelectItem>
                   {categories
                     ?.filter((p) => p?.parent === cat._id)
@@ -190,7 +199,16 @@ const CategoryForm: FC<Props> = ({ selectedCategory, closeModal }) => {
                         value={`${child._id}`}
                         className="cursor-pointer"
                       >
-                        - {child?.name}
+                        <div className="flex items-center gap-2">
+                          -
+                          <Image
+                            src={child?.catThumbnail || "/images/image.png"}
+                            width={14}
+                            height={14}
+                            alt="Category"
+                          />{" "}
+                          {child?.name}
+                        </div>
                       </SelectItem>
                     ))}
                 </React.Fragment>
