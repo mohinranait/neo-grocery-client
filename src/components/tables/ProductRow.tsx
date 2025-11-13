@@ -6,7 +6,7 @@ import { defaultImage } from "@/utils/exportImages";
 import { Switch } from "../ui/switch";
 import { updateProduct } from "@/actions/productApi";
 import { useAppDispatch } from "@/hooks/useRedux";
-import { setProducts, setSelectedProduct } from "@/redux/features/productSlice";
+import { setSelectedProduct } from "@/redux/features/productSlice";
 import {
   Tooltip,
   TooltipContent,
@@ -17,23 +17,19 @@ import Link from "next/link";
 
 type Props = {
   product: TProduct;
-  products: TProduct[];
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setProducts: React.Dispatch<React.SetStateAction<TProduct[]>>;
 };
-const ProductRow: FC<Props> = ({ product, products, setIsOpen }) => {
+const ProductRow: FC<Props> = ({ product, setIsOpen, setProducts }) => {
   const dispatch = useAppDispatch();
   const { name, slug, skuCode, _id, price, isStock, isFeature, status } =
     product || {};
 
   // handle update product
   const handleUpdateProduct = async (id: string, data: TProduct) => {
-    const arr = [...products];
-    const index = products?.findIndex((d) => d._id === id);
-    arr[index] = {
-      ...arr[index],
-      ...data,
-    };
-    dispatch(setProducts(arr));
+    setProducts((prev) =>
+      prev?.map((p) => (p?._id === id ? { ...p, ...data } : p))
+    );
     await updateProduct(id as string, data);
   };
 

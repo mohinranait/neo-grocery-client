@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
-  TableCell,
   TableHead,
   TableHeader,
   TableRow,
@@ -17,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { addDays, format } from "date-fns";
+import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { DateRange } from "react-day-picker";
 
@@ -35,11 +34,9 @@ import DeleteModal from "../modals/DeleteModal";
 import { deleteProduct, getAllProducts } from "@/actions/productApi";
 import toast from "react-hot-toast";
 
-import {
-  setSelectedProduct,
-  setProducts as setProductsRedux,
-  setProducts,
-} from "@/redux/features/productSlice";
+import { setSelectedProduct } from "@/redux/features/productSlice";
+import GlobalPagination from "../shared/GlobalPagination";
+import { TProduct } from "@/types/product.type";
 
 type TFilterType = {
   search: string;
@@ -47,6 +44,8 @@ type TFilterType = {
   features: string;
   firstDate: string;
   lastDate: string;
+  page: string;
+  limit: string;
 };
 
 const generateQuery = (
@@ -73,13 +72,11 @@ const generateQuery = (
 
 const ProductTable = () => {
   // Redux State
-  const { products, selectedProduct } = useAppSelector(
-    (state) => state.product
-  );
+  const { selectedProduct } = useAppSelector((state) => state.product);
   const dispatch = useAppDispatch();
 
   // Local State
-  // const [products, setProducts] = useState<TProduct[]>([]);
+  const [products, setProducts] = useState<TProduct[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
   // filter state
@@ -90,8 +87,9 @@ const ProductTable = () => {
     from: undefined,
     to: undefined,
   });
-
-  console.log({ date });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(20);
+  const [total, setTotal] = useState(0);
 
   // filter products
   const handleFilterProducts = async ({
@@ -100,6 +98,8 @@ const ProductTable = () => {
     features,
     firstDate,
     lastDate,
+    page,
+    limit,
   }: TFilterType) => {
     const query = {
       search,
@@ -108,14 +108,19 @@ const ProductTable = () => {
       status: status == "All Status" ? "All" : status,
       firstDate,
       lastDate,
+      page,
+      limit,
     };
 
     const qr = generateQuery(query);
 
     try {
       const data = await getAllProducts(qr);
-      dispatch(setProducts(data?.payload?.products));
-    } catch (error) {}
+      setProducts(data?.payload?.products);
+      setTotal(data?.payload?.total);
+    } catch (error) {
+      console.log({ error });
+    }
   };
 
   useEffect(() => {
@@ -127,8 +132,10 @@ const ProductTable = () => {
       features,
       firstDate: fd,
       lastDate: ld,
+      page: String(currentPage),
+      limit: String(itemsPerPage),
     });
-  }, [search, status, features, date]);
+  }, [search, status, features, date, currentPage, itemsPerPage]);
 
   // Handle delete product by ID
   const handleDelete = async () => {
@@ -140,7 +147,7 @@ const ProductTable = () => {
         const filter = arr?.filter(
           (product) => product?._id !== selectedProduct?._id
         );
-        dispatch(setProductsRedux(filter));
+        setProducts(filter);
         toast.success("Delete successfull");
       } else {
         toast.error("Somthing wrong");
@@ -151,6 +158,15 @@ const ProductTable = () => {
     } finally {
       setDeleteLoading(false);
       dispatch(setSelectedProduct(null));
+    }
+  };
+
+  // Handle page and items per page changes
+  const handlePageChange = (page: number, newItemsPerPage: number) => {
+    setCurrentPage(page);
+    if (newItemsPerPage !== itemsPerPage) {
+      setItemsPerPage(newItemsPerPage);
+      setCurrentPage(1);
     }
   };
 
@@ -258,7 +274,7 @@ const ProductTable = () => {
                 <ProductRow
                   key={index}
                   product={product}
-                  products={products}
+                  setProducts={setProducts}
                   setIsOpen={setIsOpen}
                 />
               ))}
@@ -266,25 +282,12 @@ const ProductTable = () => {
           </Table>{" "}
         </div>
       </div>
-      <div className="flex items-center justify-end space-x-2 pt-4">
-        <div className="flex-1 text-sm text-muted-foreground">
-          0 of 4 row(s) selected.
-        </div>
-        <div className="space-x-2">
-          <button
-            className="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-8 rounded-md px-3 text-xs"
-            disabled={true}
-          >
-            Previous
-          </button>
-          <button
-            className="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-8 rounded-md px-3 text-xs"
-            disabled={true}
-          >
-            Next
-          </button>
-        </div>
-      </div>
+      <GlobalPagination
+        totalItems={total}
+        itemsPerPage={itemsPerPage}
+        currentPage={currentPage}
+        onPageChange={handlePageChange}
+      />
 
       <DeleteModal
         isOpen={isOpen}
