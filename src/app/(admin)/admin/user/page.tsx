@@ -1,15 +1,17 @@
 "use client";
 import {
   CalendarIcon,
+  Delete,
   Edit,
   Eye,
   PlusIcon,
   Search,
   ShieldCheck,
   ShieldX,
+  Trash,
 } from "lucide-react";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 import {
   Popover,
   PopoverContent,
@@ -36,21 +38,48 @@ import {
 } from "@/components/ui/table";
 import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
 import Image from "next/image";
-import { setSelectedUser } from "@/redux/features/userSlice";
+import { setSelectedUser, setUser } from "@/redux/features/userSlice";
 import UpdateUserModal from "@/components/modals/UpdateUserModal";
 import { TUserType } from "@/types/user.type";
+import DeleteModal from "@/components/modals/DeleteModal";
+import { deleteUserById } from "@/actions/userApi";
+import toast from "react-hot-toast";
 
 const UserPage = () => {
   // Redux State
-  const { users } = useAppSelector((state) => state.users);
+  const { users, selectedUser } = useAppSelector((state) => state.users);
   const dispatch = useAppDispatch();
 
   // Local State
-  const [open, setOpen] = React.useState(false);
-  const [date, setDate] = React.useState<DateRange | undefined>({
+  const [open, setOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
+  const [date, setDate] = useState<DateRange | undefined>({
     from: undefined,
     to: undefined,
   });
+
+  // Handle delete product by ID
+  const handleDelete = async () => {
+    try {
+      setDeleteLoading(true);
+      const data = await deleteUserById(selectedUser?._id as string);
+      if (data?.success) {
+        const arr = [...users];
+        const filter = arr?.filter((user) => user?._id !== selectedUser?._id);
+        dispatch(setUser({ type: "Array", data: filter }));
+        toast.success("Delete successfull");
+      } else {
+        toast.error("Somthing wrong");
+      }
+      setIsOpen(false);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setDeleteLoading(false);
+      dispatch(setSelectedUser(null));
+    }
+  };
 
   return (
     <div>
@@ -223,6 +252,17 @@ const UserPage = () => {
                             >
                               <Eye size={22} />
                             </Button>
+                            <Button
+                              variant={"destructive"}
+                              onClick={() => {
+                                setIsOpen(true);
+                                dispatch(setSelectedUser(user));
+                              }}
+                              className="w-8 h-8"
+                              size={"icon"}
+                            >
+                              <Trash size={22} />
+                            </Button>
                           </div>
                         </TableCell>
                       </TableRow>
@@ -235,6 +275,13 @@ const UserPage = () => {
         </div>
       </div>
       <UpdateUserModal open={open} setOpen={setOpen} />
+
+      <DeleteModal
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        handleDelete={handleDelete}
+        isLoading={deleteLoading}
+      />
     </div>
   );
 };

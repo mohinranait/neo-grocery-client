@@ -40,3 +40,11 @@ export const getAllUserFromDB = async () => {
     const {data} = await instance.get(`/users`);
     return data;
 }
+
+/**
+ * Delete User method 
+*/
+export const deleteUserById = async (userId:string) => {
+    const {data} = await instance.delete(`/user/${userId}`);
+    return data;
+}
