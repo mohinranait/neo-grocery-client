@@ -26,6 +26,8 @@ import BrandUpdateModal from "../modals/BrandUpdateModal";
 import { defaultImage } from "@/utils/exportImages";
 import { Switch } from "../ui/switch";
 import { TBrandType } from "@/types/brand.type";
+import BrandCategoryForm from "../forms/BrandCategoryForm";
+import { Button } from "../ui/button";
 
 const BrandTable = () => {
   const dispatch = useAppDispatch();
@@ -33,6 +35,8 @@ const BrandTable = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
   const [brandEditModal, setBrandEditModal] = useState<boolean>(false);
+  const [categoryConfigModal, setCategoryConfigModal] =
+    useState<boolean>(false);
 
   // State for filters and pagination
   const [name, setName] = useState<string>("");
@@ -97,7 +101,6 @@ const BrandTable = () => {
         ...brand,
         status: value ? "Active" : "Inactive",
       });
-      console.log({ res });
       if (res.success) {
         const updatedBrands = brands.map((item) =>
           item?._id === res?.payload?._id
@@ -149,6 +152,7 @@ const BrandTable = () => {
             <TableRow>
               <TableHead>Brand</TableHead>
               <TableHead>Total</TableHead>
+              <TableHead>Categories</TableHead>
               <TableHead>Status</TableHead>
             </TableRow>
           </TableHeader>
@@ -195,6 +199,17 @@ const BrandTable = () => {
                 </TableCell>
                 <TableCell>{brand?.totalProduct} Product</TableCell>
                 <TableCell>
+                  <Button
+                    type="button"
+                    onClick={() => {
+                      dispatch(setSelectedBrand(brand));
+                      setCategoryConfigModal(true);
+                    }}
+                  >
+                    Add Category
+                  </Button>
+                </TableCell>
+                <TableCell>
                   <div className="flex">
                     <Switch
                       checked={brand?.status === "Active"}
@@ -226,13 +241,20 @@ const BrandTable = () => {
         </div>
       </div>
 
+      {/* Delete modal */}
       <DeleteModal
         isOpen={isOpen}
         setIsOpen={setIsOpen}
         handleDelete={handleDelete}
         isLoading={deleteLoading}
       />
+      {/* Brand update modal */}
       <BrandUpdateModal isOpen={brandEditModal} setIsOpen={setBrandEditModal} />
+      {/* Add category under brand modal */}
+      <BrandCategoryForm
+        open={categoryConfigModal}
+        onClose={() => setCategoryConfigModal(false)}
+      />
     </div>
   );
 };

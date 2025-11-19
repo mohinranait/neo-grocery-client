@@ -20,7 +20,7 @@ export const getAllBrands = async () => {
 /**
  * @api {patch} Update brand by ID
 */
-export const updateBrand = async (id:string, formData: Record<string, string|number|Date>   ) => {
+export const updateBrand = async (id:string, formData: Record<string, string|number|Date| string[]>   ) => {
     const {data} = await instance.patch(`/brand/${id}`,{...formData});
     return data;
 }

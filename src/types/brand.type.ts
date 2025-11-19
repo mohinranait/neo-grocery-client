@@ -1,6 +1,6 @@
 
 export type TBrandForm = {
-     name: string;
+    name: string;
     slug: string;
     brandBanner?: string;
     brandThumbnail?: string;
@@ -8,13 +8,14 @@ export type TBrandForm = {
 }
 
 export type TBrandType = {
-    _id?: string;
+    _id: string;
     name: string;
     slug: string;
     brandBanner?: string;
     brandThumbnail?: string;
     status: "Active" | "Inactive";
     totalProduct: number;
+    categoryIds: string[];
     createdAt?: Date;
     updatedAt?: Date;
 }

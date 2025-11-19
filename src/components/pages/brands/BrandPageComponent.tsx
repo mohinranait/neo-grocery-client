@@ -1,4 +1,3 @@
-"use client";
 import BrandForm from "@/components/forms/BrandForm";
 import BrandTable from "@/components/tables/BrandTable";
 import React from "react";
