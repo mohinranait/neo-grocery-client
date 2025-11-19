@@ -72,13 +72,13 @@ const AdminAside: FC<Props> = ({ isToggle }) => {
       <Sidebar collapsed={isToggle} toggled={true} className="bg-white">
         <div className="pl-5 h-[60px] z-10 flex bg-white items-center ">
           {isToggle ? (
-            <span className="text-xl font-bold">Neo</span>
+            <span className="text-xl font-bold">BC</span>
           ) : (
             <Link
               href={"/admin/dashboard"}
-              className="text-2xl  font-extralight "
+              className="text-2xl  font-extralight"
             >
-              Neo Grocery
+              CollectionBD
             </Link>
           )}
         </div>

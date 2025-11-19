@@ -404,6 +404,7 @@ const ProductForm = () => {
                         setProduct({
                           ...product,
                           shippingCharge: e === "no" ? 60 : 0,
+                          freeShipping: e,
                         })
                       );
                     }}
@@ -624,6 +625,55 @@ const ProductForm = () => {
                       />
                     </PopoverContent>
                   </Popover>
+                </div>
+              </div>
+            </div>
+            <div className=" g-white rounded border border-l-slate-100 bg-card text-card-foreground">
+              <div className="py-2 px-4 border-b border-l-slate-200">
+                <p className="text-base font-semibold">Features</p>
+              </div>
+              <div className="px-4 py-4 space-y-4">
+                <div>
+                  <RadioGroup
+                    className="flex flex-row gap-2"
+                    defaultValue={"Inactive"}
+                    value={product?.isFeature}
+                    onValueChange={(e: "Active" | "Inactive") =>
+                      dispatch(
+                        setProduct({
+                          ...product,
+                          isFeature: e,
+                        })
+                      )
+                    }
+                  >
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem
+                        value="Active"
+                        // checked={product?.status === "Active"}
+                        id="feature-active"
+                      />
+                      <Label
+                        htmlFor="feature-active"
+                        className="cursor-pointer"
+                      >
+                        Feature
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem
+                        value="Inactive"
+                        // checked={product?.status === "Inactive"}
+                        id="feature-inActive"
+                      />
+                      <Label
+                        htmlFor="feature-inActive"
+                        className="cursor-pointer"
+                      >
+                        No Feature
+                      </Label>
+                    </div>
+                  </RadioGroup>
                 </div>
               </div>
             </div>

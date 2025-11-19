@@ -96,6 +96,7 @@ export type TProduct = {
     attribute?:string;
     attributeConfig?:string[];
   }[],
+  freeShipping: 'yes'|'no';
   shippingCharge: number;
   tax: number;
   returnTime:number;

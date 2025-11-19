@@ -17,8 +17,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Neo Grocery admin",
-  description: "Neo grocery super shop",
+  title: "Brand Collection BD | admin",
+  description: "Brand Collection",
 };
 
 export default function RootLayout({
