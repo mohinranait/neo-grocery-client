@@ -16,15 +16,13 @@ const MediaModal = () => {
   const dispatch = useAppDispatch();
 
   return (
-    <React.Fragment>
-      <Dialog open={isModal} onOpenChange={() => dispatch(setIsModal(false))}>
-        <DialogContent className="max-w-[1200px] max-h-[80vh] overflow-y-auto 2xl:max-w-[1450px] ">
-          <DialogDescription className="  ">
-            <MediaModalWrapper />;
-          </DialogDescription>
-        </DialogContent>
-      </Dialog>
-    </React.Fragment>
+    <Dialog open={isModal} onOpenChange={() => dispatch(setIsModal(false))}>
+      <DialogContent className="max-w-[1200px]   2xl:max-w-[1450px] ">
+        <DialogDescription className="max-h-[80vh] overflow-y-auto">
+          <MediaModalWrapper />;
+        </DialogDescription>
+      </DialogContent>
+    </Dialog>
   );
 };
 
