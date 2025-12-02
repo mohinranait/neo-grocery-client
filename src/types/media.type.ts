@@ -7,6 +7,8 @@ export type TMediaType = {
     fileUrl: string; 
     height: number; 
     width: number; 
+    public_id: string; 
+    fileName: string; 
     size: number;
     __v: number; 
 }
